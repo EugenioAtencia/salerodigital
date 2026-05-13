@@ -1,8 +1,15 @@
+function saleroEndpointUrl(endpoint) {
+  if (endpoint.startsWith('http')) return endpoint;
+  if (endpoint.startsWith('salero/')) {
+    return `${SALERO_CONFIG.apiBase.replace('/wp/v2','')}/${endpoint}`;
+  }
+  return `${SALERO_CONFIG.apiBase}/${endpoint}`;
+}
 async function saleroFetch(endpoint, params = {}) {
-  const url = new URL(`${SALERO_CONFIG.apiBase}/${endpoint}`);
+  const url = new URL(saleroEndpointUrl(endpoint));
   Object.entries(params).forEach(([k,v]) => { if (v !== undefined && v !== null && v !== '') url.searchParams.set(k, v); });
   const res = await fetch(url.toString());
-  if (!res.ok) throw new Error(`No se pudo cargar ${endpoint}`);
+  if (!res.ok) throw new Error(`No se pudo cargar ${endpoint}: ${res.status}`);
   return res.json();
 }
 async function getCollection(endpoint, params = {}) { return saleroFetch(endpoint, { per_page:100, _embed:1, ...params }); }
