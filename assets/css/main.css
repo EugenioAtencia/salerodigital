@@ -819,3 +819,114 @@ body{
     display:none !important;
   }
 }
+/* Hero notes: 4 fichas flotantes - v18 */
+.hero-video-section .salero-visual{
+  position:relative !important;
+  width:100% !important;
+  height:560px !important;
+  min-height:560px !important;
+  max-width:540px !important;
+  justify-self:end !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  overflow:visible !important;
+  pointer-events:none !important;
+  display:block !important;
+}
+
+.hero-video-section .salero-visual::before,
+.hero-video-section .salero-visual::after,
+.hero-video-section .salt-shaker,
+.hero-video-section .grain{
+  display:none !important;
+}
+
+.hero-video-section .visual-card{
+  position:absolute !important;
+  width:260px !important;
+  padding:20px 22px !important;
+  background:rgba(255,253,247,.60) !important;
+  border:1px solid rgba(255,253,247,.74) !important;
+  border-radius:24px !important;
+  box-shadow:0 22px 60px rgba(31,42,36,.10) !important;
+  backdrop-filter:blur(14px) saturate(1.02) !important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.02) !important;
+  opacity:.95 !important;
+  color:var(--ink) !important;
+  z-index:3 !important;
+  pointer-events:none !important;
+  will-change:transform !important;
+  transform:translate3d(0,var(--move,0px),0) rotate(var(--rot,0deg)) !important;
+  transition:transform .18s linear, opacity .3s ease !important;
+}
+
+.hero-video-section .visual-card span{
+  display:block !important;
+  font-size:.72rem !important;
+  line-height:1 !important;
+  color:rgba(31,42,36,.74) !important;
+  margin-bottom:10px !important;
+  text-transform:uppercase !important;
+  letter-spacing:.07em !important;
+  font-weight:900 !important;
+}
+
+.hero-video-section .visual-card strong{
+  display:block !important;
+  font-size:1.06rem !important;
+  line-height:1.16 !important;
+  color:rgba(31,42,36,.92) !important;
+  letter-spacing:-.03em !important;
+}
+
+.hero-video-section .visual-card-top{
+  top:8% !important;
+  left:2% !important;
+  --rot:-3deg;
+}
+
+.hero-video-section .visual-card-web{
+  top:22% !important;
+  right:4% !important;
+  --rot:2.2deg;
+}
+
+.hero-video-section .visual-card-social{
+  top:52% !important;
+  left:7% !important;
+  --rot:-2deg;
+}
+
+.hero-video-section .visual-card-bottom{
+  bottom:8% !important;
+  right:2% !important;
+  --rot:2.8deg;
+}
+
+/* Ajuste fino para desktop medio */
+@media(max-width:1180px){
+  .hero-video-section .salero-visual{
+    max-width:500px !important;
+    height:520px !important;
+    min-height:520px !important;
+  }
+
+  .hero-video-section .visual-card{
+    width:240px !important;
+    padding:18px 20px !important;
+  }
+
+  .hero-video-section .visual-card strong{
+    font-size:1rem !important;
+  }
+}
+
+/* En tablet y móvil ocultamos las fichas para no ensuciar */
+@media(max-width:880px){
+  .hero-video-section .salero-visual{
+    display:none !important;
+  }
+}
