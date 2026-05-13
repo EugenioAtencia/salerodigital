@@ -531,3 +531,18 @@ h3{font-size:clamp(1.35rem,2.2vw,2.15rem);letter-spacing:-.045em}
   body,a,button,.btn,.card,.menu-card,.service-row,.sector-card,.whatsapp-float{cursor:var(--salero-cursor)}
   input,textarea,select{cursor:text}
 }
+
+.hero-media {
+  position: absolute;
+  inset: 0;
+  background-image: url("/assets/img/hero-poster-mobile.webp");
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+@media (min-width: 900px) {
+  .hero-media {
+    background-image: url("/assets/img/hero-poster-desktop.webp");
+  }
+}
