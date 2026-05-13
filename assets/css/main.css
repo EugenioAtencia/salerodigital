@@ -930,3 +930,27 @@ body{
     display:none !important;
   }
 }
+/* Cursor personalizado Salero Digital - v19 */
+@media (pointer:fine) {
+  :root {
+    --salero-cursor: url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='16' cy='16' r='15' fill='%231f2a24'/%3E%3Cpath d='M12 7h8v5h-8V7Z' fill='none' stroke='%23c7f458' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M11 12h10l-1.1 13h-7.8L11 12Z' fill='none' stroke='%23c7f458' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M14 16h4' stroke='%23c7f458' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='15' cy='19' r='1.2' fill='%23c7f458'/%3E%3Ccircle cx='18' cy='22' r='1.2' fill='%23c7f458'/%3E%3Ccircle cx='14.5' cy='24' r='1' fill='%23c7f458'/%3E%3C/svg%3E") 4 4, auto;
+  }
+
+  body,
+  a,
+  button,
+  .btn,
+  .card,
+  .menu-card,
+  .service-row,
+  .sector-card,
+  .whatsapp-float {
+    cursor: var(--salero-cursor) !important;
+  }
+
+  input,
+  textarea,
+  select {
+    cursor: text !important;
+  }
+}
