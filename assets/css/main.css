@@ -71,9 +71,9 @@ img,svg{max-width:100%;display:block}.container{width:min(100% - 36px,var(--cont
   inset:0 !important;
   background:linear-gradient(
     90deg,
-    rgba(246,241,232,.86) 0%,
-    rgba(246,241,232,.76) 48%,
-    rgba(246,241,232,.86) 100%
+    rgba(246,241,232,.68) 0%,
+    rgba(246,241,232,.54) 42%,
+    rgba(246,241,232,.74) 100%
   ) !important;
   z-index:1 !important;
   pointer-events:none !important;
@@ -90,8 +90,8 @@ img,svg{max-width:100%;display:block}.container{width:min(100% - 36px,var(--cont
   }
 
   .hero-bg-video{
-    opacity:.16 !important;
-    filter:saturate(.65) contrast(.9) blur(.35px) !important;
+    opacity:.64 !important;
+    filter:saturate(.66) contrast(.90) brightness(1.10) blur(1.5px) !important;
   }
 
   .hero-video-overlay{
