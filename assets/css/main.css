@@ -60,7 +60,7 @@ img,svg{max-width:100%;display:block}.container{width:min(100% - 36px,var(--cont
   min-width:100% !important;
   min-height:100% !important;
   object-fit:cover !important;
-  opacity:.28 !important;
+  opacity: .99 !important;
   filter:saturate(.72) contrast(.92) blur(.15px) !important;
   z-index:0 !important;
   pointer-events:none !important;
