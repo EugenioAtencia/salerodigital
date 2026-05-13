@@ -311,3 +311,26 @@ body{
     background:rgba(246,241,232,.66) !important;
   }
 }
+/* Eliminar resplandor del botón del hero */
+.hero-video-section .btn,
+.hero-video-section .btn-primary,
+.hero-video-section .btn-secondary,
+.hero-video-section .hero-actions a {
+  text-shadow: none !important;
+}
+
+.hero-video-section .btn-primary {
+  box-shadow: none !important;
+}
+/* Botón hero más limpio */
+.hero-video-section .btn-primary {
+  text-shadow: none !important;
+  box-shadow: none !important;
+  background: #142018 !important;
+  color: #fffdf7 !important;
+}
+
+.hero-video-section .btn-primary:hover {
+  background: #0f1712 !important;
+  transform: translateY(-2px);
+}
