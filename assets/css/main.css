@@ -87,120 +87,150 @@ h1,h2,h3{margin:0;line-height:.98;letter-spacing:-.055em}h1,h2{font-family:var(-
 @media(max-width:680px){.container{width:min(100% - 28px,var(--container))}.menu-cards,.sector-grid,.cards-grid,.cards-grid.four,.stat-row{grid-template-columns:1fr}h1{font-size:clamp(3.05rem,15vw,4.7rem)}.hero-grid{width:min(100% - 28px,720px);min-height:calc(100svh - 150px)}.hero-copy{gap:22px}.hero-video-overlay{background:rgba(246,241,232,.66)}.manifesto-inner h2{font-size:clamp(2.25rem,11vw,3.8rem)}.service-row{grid-template-columns:1fr;gap:14px;padding:28px 0}.service-row p,.service-row .editorial-link{grid-column:auto}.service-index{font-size:.8rem}.footer-grid{grid-template-columns:1fr}.footer-bottom{flex-direction:column}.whatsapp-float{left:16px;right:16px;text-align:center;justify-content:center;display:inline-flex}.cata-card{border-radius:30px}.btn{width:100%}.header-inner{min-height:72px}}
 @media(prefers-reduced-motion:reduce){.hero-media video{display:none}.visual-card{transition:none}}
 
-/* Fichas hero expandibles con acceso a servicios - v22 */
-.hero-notes {
-  pointer-events: none;
+/* Fichas hero interactivas sin solaparse - v23 */
+.hero-notes{
+  position:relative;
+  pointer-events:none;
 }
 
-.hero-notes .visual-card {
-  cursor: pointer !important;
-  pointer-events: auto !important;
-  text-decoration: none !important;
-  overflow: hidden !important;
+.hero-notes .visual-card{
+  pointer-events:auto !important;
+  cursor:var(--salero-cursor, pointer) !important;
+  overflow:hidden !important;
+  min-height:auto !important;
+  padding:20px 22px !important;
+  transition:
+    transform .28s ease,
+    opacity .24s ease,
+    background .24s ease,
+    box-shadow .24s ease,
+    width .24s ease,
+    padding .24s ease !important;
 }
 
-.hero-notes .visual-card em {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  min-height: 42px;
-  margin-top: 18px;
-  padding: 12px 18px;
-  border-radius: 999px;
-  background: var(--ink);
-  color: var(--paper);
-  font-family: var(--font-sans);
-  font-size: .88rem;
-  font-style: normal;
-  font-weight: 900;
-  line-height: 1;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity .22s ease, transform .22s ease, background .22s ease;
+.hero-notes .visual-card-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:fit-content;
+  max-height:0;
+  margin-top:0;
+  padding:0 18px;
+  border:0;
+  border-radius:999px;
+  background:var(--ink);
+  color:var(--paper);
+  font-family:var(--font-sans);
+  font-size:.88rem;
+  font-weight:900;
+  line-height:1;
+  opacity:0;
+  overflow:hidden;
+  transform:translateY(8px);
+  transition:
+    opacity .22s ease,
+    transform .22s ease,
+    max-height .22s ease,
+    margin-top .22s ease,
+    padding .22s ease,
+    background .22s ease;
 }
 
-.hero-notes .visual-card em::after {
-  content: "→";
-  margin-left: 8px;
-  transition: transform .22s ease;
+.hero-notes .visual-card-button::after{
+  content:"→";
+  margin-left:8px;
+  transition:transform .22s ease;
 }
 
-.hero-notes .visual-card:hover em,
-.hero-notes .visual-card:focus-visible em {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.hero-notes .visual-card:hover em::after,
-.hero-notes .visual-card:focus-visible em::after {
-  transform: translateX(4px);
+.hero-notes .visual-card-button:hover{
+  background:#0f1712;
 }
 
 .hero-notes .visual-card:hover,
-.hero-notes .visual-card:focus-visible {
-  position: fixed !important;
-  top: 50% !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: auto !important;
-  width: min(520px, calc(100vw - 42px)) !important;
-  min-height: 230px !important;
-  padding: 42px 46px !important;
-  border-radius: 34px !important;
-  background: rgba(255, 253, 247, .88) !important;
-  border: 1px solid rgba(255, 253, 247, .92) !important;
-  box-shadow: 0 38px 120px rgba(31, 42, 36, .24) !important;
-  backdrop-filter: blur(22px) saturate(1.08) !important;
-  -webkit-backdrop-filter: blur(22px) saturate(1.08) !important;
-  opacity: 1 !important;
-  z-index: 180 !important;
-  transform: translate3d(-50%, -50%, 0) rotate(0deg) scale(1) !important;
-}
-
-.hero-notes .visual-card:hover span,
-.hero-notes .visual-card:focus-visible span {
-  font-size: .78rem !important;
-  color: rgba(31, 42, 36, .72) !important;
+.hero-notes .visual-card:focus-within{
+  width:320px !important;
+  padding:28px 30px !important;
+  background:rgba(255,253,247,.82) !important;
+  border-color:rgba(255,253,247,.92) !important;
+  box-shadow:0 30px 90px rgba(31,42,36,.18) !important;
+  opacity:1 !important;
+  z-index:10 !important;
 }
 
 .hero-notes .visual-card:hover strong,
-.hero-notes .visual-card:focus-visible strong {
-  max-width: 420px;
-  font-size: clamp(1.75rem, 3vw, 2.7rem) !important;
-  line-height: 1.02 !important;
-  letter-spacing: -.055em !important;
-  color: var(--ink) !important;
+.hero-notes .visual-card:focus-within strong{
+  font-size:1.28rem !important;
+  line-height:1.08 !important;
 }
 
-/* Pantalla de fondo sutil cuando una ficha está activa */
-@supports selector(:has(*)) {
-  .hero-video-section:has(.visual-card:hover)::after,
-  .hero-video-section:has(.visual-card:focus-visible)::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 170;
-    background: rgba(31, 42, 36, .16);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-    pointer-events: none;
+.hero-notes .visual-card:hover .visual-card-button,
+.hero-notes .visual-card:focus-within .visual-card-button{
+  max-height:46px;
+  margin-top:18px;
+  padding:13px 18px;
+  opacity:1;
+  transform:translateY(0);
+}
+
+.hero-notes .visual-card:hover .visual-card-button::after,
+.hero-notes .visual-card:focus-within .visual-card-button::after{
+  transform:translateX(4px);
+}
+
+/* Evita que las fichas vecinas compitan cuando una está activa */
+@supports selector(:has(*)){
+  .hero-notes:has(.visual-card:hover) .visual-card:not(:hover),
+  .hero-notes:has(.visual-card:focus-within) .visual-card:not(:focus-within){
+    opacity:.54 !important;
+    transform:translate3d(0,var(--move,0px),0) rotate(var(--rot,0deg)) scale(.96) !important;
   }
 }
 
-/* Aseguramos que la ficha activa quede por encima del velo */
-@supports selector(:has(*)) {
-  .hero-video-section:has(.visual-card:hover) .visual-card:hover,
-  .hero-video-section:has(.visual-card:focus-visible) .visual-card:focus-visible {
-    z-index: 181 !important;
-  }
+/* Reposicionamos para que al crecer no se monten */
+.hero-video-section .visual-card-top{
+  top:4% !important;
+  left:0 !important;
+  right:auto !important;
+  --rot:-2.5deg;
 }
 
-/* En móvil mantenemos el hero limpio */
-@media(max-width:880px) {
+.hero-video-section .visual-card-web{
+  top:19% !important;
+  right:0 !important;
+  left:auto !important;
+  --rot:2deg;
+}
+
+.hero-video-section .visual-card-social{
+  top:47% !important;
+  left:3% !important;
+  right:auto !important;
+  --rot:-1.8deg;
+}
+
+.hero-video-section .visual-card-bottom{
+  bottom:5% !important;
+  right:3% !important;
+  left:auto !important;
+  top:auto !important;
+  --rot:2.4deg;
+}
+
+@media(max-width:1180px){
   .hero-notes .visual-card:hover,
-  .hero-notes .visual-card:focus-visible {
-    position: absolute !important;
-    transform: none !important;
+  .hero-notes .visual-card:focus-within{
+    width:290px !important;
+    padding:24px 26px !important;
+  }
+
+  .hero-notes .visual-card:hover strong,
+  .hero-notes .visual-card:focus-within strong{
+    font-size:1.16rem !important;
+  }
+}
+
+@media(max-width:880px){
+  .hero-notes{
+    display:none !important;
   }
 }
