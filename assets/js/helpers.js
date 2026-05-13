@@ -85,3 +85,21 @@ document.addEventListener('DOMContentLoaded',()=>{
   initHeroVideo();
   initHeroNotesMotion();
 });
+
+/* Navegación de fichas del hero - v23 */
+document.addEventListener('DOMContentLoaded', () => {
+  const cards = document.querySelectorAll('.hero-notes .visual-card');
+
+  cards.forEach((card) => {
+    const button = card.querySelector('.visual-card-button');
+    const url = card.dataset.url;
+
+    if (!button || !url) return;
+
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      window.location.href = url;
+    });
+  });
+});
