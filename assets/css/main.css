@@ -86,3 +86,121 @@ h1,h2,h3{margin:0;line-height:.98;letter-spacing:-.055em}h1,h2{font-family:var(-
 @media(max-width:880px){body.menu-open{overflow:hidden}.site-header,.site-header.is-scrolled,body.menu-open .site-header{background:rgba(246,241,232,.86);backdrop-filter:blur(18px) saturate(1.05);-webkit-backdrop-filter:blur(18px) saturate(1.05);border-bottom-color:rgba(31,42,36,.10)}.menu-toggle{display:inline-grid;place-items:center;position:relative;z-index:151;background:var(--ink);color:var(--paper);border-color:var(--ink);font-size:1.45rem;line-height:1}.header-actions .btn,.nav-contact{display:none}.nav{position:fixed;inset:0;width:100vw;height:100dvh;z-index:140;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(18px,4vh,34px);padding:110px 28px 44px;background:rgba(246,241,232,.97);border:0;border-radius:0;box-shadow:none;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-10px);transition:opacity .24s ease,visibility .24s ease,transform .24s ease}body.menu-open .nav{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0)}.nav a{display:block;padding:0;font-family:var(--font-serif);font-size:clamp(2.1rem,11vw,4.4rem);line-height:.95;letter-spacing:-.055em;color:var(--ink);text-align:center}.nav a:after{display:none}.nav-mobile-contact{display:block;margin-top:8px}.nav-mobile-cta{display:inline-flex;align-items:center;justify-content:center;min-height:54px;padding:16px 24px;border-radius:999px;background:var(--ink);color:var(--paper);font-family:var(--font-sans);font-size:1rem;font-weight:900;letter-spacing:0;line-height:1.1}.hero-video-section{padding-top:105px;padding-bottom:56px}.hero-grid{min-height:calc(100svh - 150px)}.hero-copy{max-width:680px}.hero-media video{display:none}}
 @media(max-width:680px){.container{width:min(100% - 28px,var(--container))}.menu-cards,.sector-grid,.cards-grid,.cards-grid.four,.stat-row{grid-template-columns:1fr}h1{font-size:clamp(3.05rem,15vw,4.7rem)}.hero-grid{width:min(100% - 28px,720px);min-height:calc(100svh - 150px)}.hero-copy{gap:22px}.hero-video-overlay{background:rgba(246,241,232,.66)}.manifesto-inner h2{font-size:clamp(2.25rem,11vw,3.8rem)}.service-row{grid-template-columns:1fr;gap:14px;padding:28px 0}.service-row p,.service-row .editorial-link{grid-column:auto}.service-index{font-size:.8rem}.footer-grid{grid-template-columns:1fr}.footer-bottom{flex-direction:column}.whatsapp-float{left:16px;right:16px;text-align:center;justify-content:center;display:inline-flex}.cata-card{border-radius:30px}.btn{width:100%}.header-inner{min-height:72px}}
 @media(prefers-reduced-motion:reduce){.hero-media video{display:none}.visual-card{transition:none}}
+
+/* Fichas hero expandibles con acceso a servicios - v22 */
+.hero-notes {
+  pointer-events: none;
+}
+
+.hero-notes .visual-card {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  text-decoration: none !important;
+  overflow: hidden !important;
+}
+
+.hero-notes .visual-card em {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 42px;
+  margin-top: 18px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-sans);
+  font-size: .88rem;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .22s ease, transform .22s ease, background .22s ease;
+}
+
+.hero-notes .visual-card em::after {
+  content: "→";
+  margin-left: 8px;
+  transition: transform .22s ease;
+}
+
+.hero-notes .visual-card:hover em,
+.hero-notes .visual-card:focus-visible em {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero-notes .visual-card:hover em::after,
+.hero-notes .visual-card:focus-visible em::after {
+  transform: translateX(4px);
+}
+
+.hero-notes .visual-card:hover,
+.hero-notes .visual-card:focus-visible {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: min(520px, calc(100vw - 42px)) !important;
+  min-height: 230px !important;
+  padding: 42px 46px !important;
+  border-radius: 34px !important;
+  background: rgba(255, 253, 247, .88) !important;
+  border: 1px solid rgba(255, 253, 247, .92) !important;
+  box-shadow: 0 38px 120px rgba(31, 42, 36, .24) !important;
+  backdrop-filter: blur(22px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.08) !important;
+  opacity: 1 !important;
+  z-index: 180 !important;
+  transform: translate3d(-50%, -50%, 0) rotate(0deg) scale(1) !important;
+}
+
+.hero-notes .visual-card:hover span,
+.hero-notes .visual-card:focus-visible span {
+  font-size: .78rem !important;
+  color: rgba(31, 42, 36, .72) !important;
+}
+
+.hero-notes .visual-card:hover strong,
+.hero-notes .visual-card:focus-visible strong {
+  max-width: 420px;
+  font-size: clamp(1.75rem, 3vw, 2.7rem) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -.055em !important;
+  color: var(--ink) !important;
+}
+
+/* Pantalla de fondo sutil cuando una ficha está activa */
+@supports selector(:has(*)) {
+  .hero-video-section:has(.visual-card:hover)::after,
+  .hero-video-section:has(.visual-card:focus-visible)::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 170;
+    background: rgba(31, 42, 36, .16);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    pointer-events: none;
+  }
+}
+
+/* Aseguramos que la ficha activa quede por encima del velo */
+@supports selector(:has(*)) {
+  .hero-video-section:has(.visual-card:hover) .visual-card:hover,
+  .hero-video-section:has(.visual-card:focus-visible) .visual-card:focus-visible {
+    z-index: 181 !important;
+  }
+}
+
+/* En móvil mantenemos el hero limpio */
+@media(max-width:880px) {
+  .hero-notes .visual-card:hover,
+  .hero-notes .visual-card:focus-visible {
+    position: absolute !important;
+    transform: none !important;
+  }
+}
