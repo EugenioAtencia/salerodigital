@@ -45,61 +45,146 @@ img,svg{max-width:100%;display:block}.container{width:min(100% - 36px,var(--cont
 @media(prefers-reduced-motion:reduce){.hero-bg-video{display:none}}
 
 
-/* OVERRIDE v5 - video visible en hero */
+/* Header transparente y menú móvil fullscreen - v7 */
+body{
+  padding-top:0;
+}
+
+.site-header{
+  position:fixed !important;
+  top:0;
+  left:0;
+  right:0;
+  width:100%;
+  z-index:120;
+  background:transparent !important;
+  border-bottom:1px solid transparent !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  transition:background .28s ease, backdrop-filter .28s ease, border-color .28s ease, box-shadow .28s ease;
+}
+
+.site-header.is-scrolled{
+  background:rgba(246,241,232,.60) !important;
+  backdrop-filter:blur(18px) saturate(1.05) !important;
+  -webkit-backdrop-filter:blur(18px) saturate(1.05) !important;
+  border-bottom-color:rgba(31,42,36,.10) !important;
+  box-shadow:0 18px 45px rgba(31,42,36,.06) !important;
+}
+
+.site-header .logo,
+.site-header .nav a,
+.site-header .nav-contact{
+  text-shadow:0 1px 16px rgba(246,241,232,.45);
+}
+
+.site-header.is-scrolled .logo,
+.site-header.is-scrolled .nav a,
+.site-header.is-scrolled .nav-contact{
+  text-shadow:none;
+}
+
 .hero.hero-video-section{
-  position:relative !important;
-  isolation:isolate;
-  background:var(--cream);
-  overflow:hidden;
+  padding-top:clamp(132px,12vw,190px) !important;
 }
 
-.hero.hero-video-section::before,
-.hero.hero-video-section::after{
-  z-index:1 !important;
-  pointer-events:none;
-  opacity:.28;
+.nav-mobile-contact,
+.nav-mobile-cta{
+  display:none;
 }
 
-.hero.hero-video-section .hero-bg-video{
-  position:absolute !important;
-  inset:0 !important;
-  display:block !important;
-  width:100% !important;
-  height:100% !important;
-  object-fit:cover !important;
-  opacity:.42 !important;
-  filter:saturate(.82) contrast(.96) blur(.15px) !important;
-  z-index:0 !important;
-  pointer-events:none !important;
-  mix-blend-mode:multiply;
-}
-
-.hero.hero-video-section .hero-video-overlay{
-  position:absolute !important;
-  inset:0 !important;
-  background:linear-gradient(90deg,rgba(246,241,232,.70) 0%,rgba(246,241,232,.54) 48%,rgba(246,241,232,.72) 100%) !important;
-  z-index:2 !important;
-  pointer-events:none !important;
-}
-
-.hero.hero-video-section .hero-grid{
-  position:relative !important;
-  z-index:3 !important;
-}
-
-@media(max-width:680px){
-  .hero.hero-video-section .hero-bg-video{
-    opacity:.28 !important;
-    filter:saturate(.7) contrast(.92) blur(.35px) !important;
+@media(max-width:880px){
+  body.menu-open{
+    overflow:hidden;
   }
 
-  .hero.hero-video-section .hero-video-overlay{
-    background:rgba(246,241,232,.70) !important;
+  .site-header,
+  .site-header.is-scrolled,
+  body.menu-open .site-header{
+    background:rgba(246,241,232,.86) !important;
+    backdrop-filter:blur(18px) saturate(1.05) !important;
+    -webkit-backdrop-filter:blur(18px) saturate(1.05) !important;
+    border-bottom-color:rgba(31,42,36,.10) !important;
   }
-}
 
-@media(prefers-reduced-motion:reduce){
-  .hero.hero-video-section .hero-bg-video{
+  .menu-toggle{
+    position:relative;
+    z-index:151;
+    background:var(--ink) !important;
+    color:var(--paper) !important;
+    border-color:var(--ink) !important;
+    font-size:1.45rem;
+    line-height:1;
+  }
+
+  .nav{
+    position:fixed !important;
+    inset:0 !important;
+    width:100vw !important;
+    height:100vh !important;
+    height:100dvh !important;
+    z-index:140 !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:clamp(18px,4vh,34px) !important;
+    padding:110px 28px 44px !important;
+    background:rgba(246,241,232,.97) !important;
+    border:0 !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transform:translateY(-10px);
+    transition:opacity .24s ease, visibility .24s ease, transform .24s ease;
+  }
+
+  body.menu-open .nav{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+    transform:translateY(0);
+  }
+
+  .nav a{
+    display:block !important;
+    padding:0 !important;
+    font-family:var(--font-serif);
+    font-size:clamp(2.1rem,11vw,4.4rem) !important;
+    line-height:.95;
+    letter-spacing:-.055em;
+    color:var(--ink) !important;
+    text-align:center;
+  }
+
+  .nav a:after{
     display:none !important;
+  }
+
+  .nav-mobile-contact{
+    display:block !important;
+    margin-top:8px;
+  }
+
+  .nav-mobile-cta{
+    display:inline-flex !important;
+    align-items:center;
+    justify-content:center;
+    min-height:54px;
+    padding:16px 24px !important;
+    border-radius:999px;
+    background:var(--ink);
+    color:var(--paper) !important;
+    font-family:var(--font-sans) !important;
+    font-size:1rem !important;
+    font-weight:900;
+    letter-spacing:0;
+    line-height:1.1;
+  }
+
+  .hero.hero-video-section{
+    padding-top:112px !important;
   }
 }
