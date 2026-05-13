@@ -366,3 +366,106 @@ body{
   color:rgba(31,42,36,.42) !important;
   filter:none !important;
 }
+/* Hero full viewport sin marca de agua - v15 */
+.hero.hero-video-section{
+  min-height:100vh !important;
+  min-height:100svh !important;
+  display:flex !important;
+  align-items:center !important;
+  padding-top:clamp(110px,12vh,160px) !important;
+  padding-bottom:clamp(48px,8vh,90px) !important;
+}
+
+.hero-video-section .hero-grid{
+  width:100% !important;
+  min-height:calc(100vh - 190px) !important;
+  min-height:calc(100svh - 190px) !important;
+  align-items:center !important;
+}
+
+/* Eliminamos salero, círculo, granos y marco visual */
+.hero-video-section .salero-visual{
+  min-height:520px !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  overflow:visible !important;
+  position:relative !important;
+  display:block !important;
+}
+
+.hero-video-section .salero-visual::before,
+.hero-video-section .salero-visual::after,
+.hero-video-section .salt-shaker,
+.hero-video-section .grain{
+  display:none !important;
+}
+
+/* Mensajes SEO y Ads como notas sutiles */
+.hero-video-section .visual-card{
+  width:min(250px,42vw) !important;
+  padding:18px 20px !important;
+  background:rgba(255,253,247,.28) !important;
+  border:1px solid rgba(255,253,247,.34) !important;
+  border-radius:22px !important;
+  box-shadow:none !important;
+  backdrop-filter:blur(10px) saturate(.9) !important;
+  -webkit-backdrop-filter:blur(10px) saturate(.9) !important;
+  opacity:.72 !important;
+  color:var(--ink) !important;
+}
+
+.hero-video-section .visual-card span{
+  font-size:.68rem !important;
+  color:rgba(31,42,36,.72) !important;
+  margin-bottom:7px !important;
+}
+
+.hero-video-section .visual-card strong{
+  font-size:.98rem !important;
+  line-height:1.15 !important;
+  color:rgba(31,42,36,.82) !important;
+  letter-spacing:-.025em !important;
+}
+
+/* Colocación más editorial */
+.hero-video-section .visual-card-top{
+  top:18% !important;
+  left:6% !important;
+  transform:rotate(-2deg) !important;
+}
+
+.hero-video-section .visual-card-bottom{
+  right:8% !important;
+  bottom:16% !important;
+  transform:rotate(2deg) !important;
+}
+
+/* El texto principal gana prioridad */
+.hero-video-section .hero-copy{
+  max-width:760px !important;
+}
+
+.hero-video-section h1{
+  max-width:760px !important;
+}
+
+/* En móvil dejamos el hero limpio y directo */
+@media(max-width:880px){
+  .hero.hero-video-section{
+    min-height:100svh !important;
+    padding-top:110px !important;
+    padding-bottom:60px !important;
+  }
+
+  .hero-video-section .hero-grid{
+    min-height:auto !important;
+    grid-template-columns:1fr !important;
+  }
+
+  .hero-video-section .salero-visual{
+    display:none !important;
+  }
+}
