@@ -546,3 +546,11 @@ h3{font-size:clamp(1.35rem,2.2vw,2.15rem);letter-spacing:-.045em}
     background-image: url("/assets/img/hero-poster-desktop.webp");
   }
 }
+
+.hero-media .hero-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
