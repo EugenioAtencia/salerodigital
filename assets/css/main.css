@@ -37,9 +37,62 @@ img,svg{max-width:100%;display:block}.container{width:min(100% - 36px,var(--cont
 @media(max-width:680px){.container{width:min(100% - 28px,var(--container))}.menu-cards,.sector-grid,.cards-grid,.cards-grid.four,.stat-row{grid-template-columns:1fr}h1{font-size:clamp(3.05rem,15vw,4.7rem)}.hero{padding-top:60px}.salero-visual{min-height:360px;border-radius:32px}.salt-shaker{width:64%}.service-row{grid-template-columns:1fr;gap:14px;padding:28px 0}.service-row p,.service-row .editorial-link{grid-column:auto}.service-index{font-size:.8rem}.manifesto-inner h2{font-size:clamp(2.25rem,11vw,3.8rem)}.footer-grid{grid-template-columns:1fr}.whatsapp-float{left:16px;right:16px;text-align:center;justify-content:center;display:inline-flex}.cata-card{border-radius:30px}.btn{width:100%}.header-inner{min-height:72px}}
 
 /* Hero con video de fondo discreto */
-.hero-video-section{isolation:isolate;background:var(--cream);}
-.hero-bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.14;filter:saturate(.65) contrast(.9) blur(.4px);z-index:-4;pointer-events:none;}
-.hero-video-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(246,241,232,.97) 0%,rgba(246,241,232,.86) 52%,rgba(246,241,232,.94) 100%);z-index:-3;pointer-events:none;}
-.hero-video-section .hero-grid{position:relative;z-index:1;}
-@media(max-width:680px){.hero-bg-video{opacity:.08;filter:saturate(.6) contrast(.9) blur(.6px)}.hero-video-overlay{background:rgba(246,241,232,.94)}}
-@media(prefers-reduced-motion:reduce){.hero-bg-video{display:none}}
+.hero-video-section{
+  position:relative;
+  isolation:isolate;
+  background:var(--cream);
+  overflow:hidden;
+}
+
+.hero-video-section::before,
+.hero-video-section::after{
+  z-index:1;
+  pointer-events:none;
+}
+
+.hero-bg-video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:.24;
+  filter:saturate(.72) contrast(.92) blur(.2px);
+  z-index:0;
+  pointer-events:none;
+}
+
+.hero-video-overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    90deg,
+    rgba(246,241,232,.90) 0%,
+    rgba(246,241,232,.80) 48%,
+    rgba(246,241,232,.88) 100%
+  );
+  z-index:1;
+  pointer-events:none;
+}
+
+.hero-video-section .hero-grid{
+  position:relative;
+  z-index:2;
+}
+
+@media(max-width:680px){
+  .hero-bg-video{
+    opacity:.14;
+    filter:saturate(.65) contrast(.9) blur(.4px);
+  }
+
+  .hero-video-overlay{
+    background:rgba(246,241,232,.90);
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .hero-bg-video{
+    display:none;
+  }
+}
