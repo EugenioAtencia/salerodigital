@@ -80,3 +80,27 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', updateHeroCards);
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const heroMedia = document.querySelector('.hero-media');
+
+  if (!heroMedia) return;
+  if (window.innerWidth < 900) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const video = document.createElement('video');
+  video.className = 'hero-bg-video';
+  video.autoplay = true;
+  video.muted = true;
+  video.loop = true;
+  video.playsInline = true;
+  video.preload = 'metadata';
+  video.poster = '/assets/img/hero-poster-desktop.webp';
+
+  video.innerHTML = `
+    <source src="/assets/video/hero-salero.webm" type="video/webm">
+    <source src="/assets/video/hero-salero.mp4" type="video/mp4">
+  `;
+
+  heroMedia.appendChild(video);
+});
