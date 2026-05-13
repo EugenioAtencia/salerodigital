@@ -277,7 +277,7 @@ body{
   background:linear-gradient(
     90deg,
     rgba(246,241,232,.46) 0%,
-    rgba(246,241,232,.30) 45%,
+    rgba(246,241,232,.40) 45%,
     rgba(246,241,232,.52) 100%
   ) !important;
   z-index:1 !important;
