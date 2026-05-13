@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;650;750;850;950&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/main.css?v=4">
 </head>
 <body>
   <header class="site-header">
@@ -39,7 +39,12 @@
   </header>
 
   <main>
-    <section class="hero hero-editorial">
+    <section class="hero hero-editorial hero-video-section">
+      <video class="hero-bg-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+        <source src="assets/video/hero-salero.webm" type="video/webm">
+        <source src="assets/video/hero-salero.mp4" type="video/mp4">
+      </video>
+      <div class="hero-video-overlay" aria-hidden="true"></div>
       <div class="container hero-grid">
         <div class="hero-copy">
           <span class="eyebrow">Agencia digital de aquí, para negocios de aquí</span>
@@ -204,9 +209,9 @@
     </div>
   </footer>
   <a class="whatsapp-float" href="https://wa.me/34665688916?text=Hola%2C%20quiero%20hacer%20una%20cata%20digital%20con%20Salero%20Digital." target="_blank" rel="noopener">¿Te hace un café y hablamos?</a>
-  <script src="assets/js/config.js?v=3"></script>
-  <script src="assets/js/api.js?v=3"></script>
-  <script src="assets/js/helpers.js?v=3"></script>
-  <script src="assets/js/home.js?v=3"></script>
+  <script src="assets/js/config.js?v=4"></script>
+  <script src="assets/js/api.js?v=4"></script>
+  <script src="assets/js/helpers.js?v=4"></script>
+  <script src="assets/js/home.js?v=4"></script>
 </body>
 </html>
