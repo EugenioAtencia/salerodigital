@@ -43,3 +43,40 @@ function initMenuToggle(){
   window.addEventListener('keydown',(e)=>{if(e.key==='Escape')close()});
 }
 document.addEventListener('DOMContentLoaded',()=>{setActiveNav();initHeaderScroll();initMenuToggle()});
+
+/* Movimiento sutil de fichas del hero - v18 */
+document.addEventListener('DOMContentLoaded', () => {
+  const hero = document.querySelector('.hero-video-section');
+  const cards = document.querySelectorAll('.hero-notes .visual-card');
+
+  if (!hero || !cards.length) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (window.innerWidth <= 880) return;
+
+  let ticking = false;
+
+  function updateHeroCards() {
+    const rect = hero.getBoundingClientRect();
+    const scrolled = Math.max(0, -rect.top);
+    const range = Math.min(scrolled, 380);
+
+    cards.forEach((card) => {
+      const speed = parseFloat(card.dataset.speed || '0.12');
+      const move = range * speed;
+      card.style.setProperty('--move', `${move}px`);
+    });
+
+    ticking = false;
+  }
+
+  function onScroll() {
+    if (!ticking) {
+      window.requestAnimationFrame(updateHeroCards);
+      ticking = true;
+    }
+  }
+
+  updateHeroCards();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', updateHeroCards);
+});
