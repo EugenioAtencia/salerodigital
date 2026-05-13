@@ -265,8 +265,8 @@ body{
   min-height:100% !important;
   object-fit:cover !important;
   object-position:center center !important;
-  opacity:1 !important;
-  filter:saturate(.95) contrast(1.02) brightness(1.06) blur(0px) !important;
+  opacity:.58 !important;
+  filter:saturate(.62) contrast(.88) brightness(1.12) blur(1.8px) !important;
   z-index:0 !important;
   pointer-events:none !important;
 }
@@ -276,9 +276,9 @@ body{
   inset:0 !important;
   background:linear-gradient(
     90deg,
-    rgba(246,241,232,.46) 0%,
-    rgba(246,241,232,.40) 45%,
-    rgba(246,241,232,.52) 100%
+    rgba(246,241,232,.76) 0%,
+    rgba(246,241,232,.60) 42%,
+    rgba(246,241,232,.82) 100%
   ) !important;
   z-index:1 !important;
   pointer-events:none !important;
