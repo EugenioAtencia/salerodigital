@@ -666,3 +666,156 @@ body{
     width:100% !important;
   }
 }
+/* Hero alineado como antes, sin salero y con fichas SEO ADS visibles - v17 */
+.hero.hero-video-section{
+  min-height:100vh !important;
+  min-height:100svh !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding-top:clamp(110px,12vh,160px) !important;
+  padding-bottom:clamp(56px,8vh,90px) !important;
+  position:relative !important;
+  overflow:hidden !important;
+}
+
+/* Recuperamos la estructura en dos columnas */
+.hero-video-section .hero-grid{
+  width:min(100% - 72px, 1320px) !important;
+  min-height:calc(100vh - 170px) !important;
+  min-height:calc(100svh - 170px) !important;
+  display:grid !important;
+  grid-template-columns:minmax(0, .98fr) minmax(360px, .82fr) !important;
+  gap:clamp(42px,6vw,92px) !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  position:relative !important;
+  z-index:2 !important;
+}
+
+/* Texto principal alineado como antes */
+.hero-video-section .hero-copy{
+  width:100% !important;
+  max-width:760px !important;
+  margin:0 !important;
+  text-align:left !important;
+  align-items:start !important;
+  justify-items:start !important;
+  display:grid !important;
+  gap:26px !important;
+}
+
+.hero-video-section h1{
+  max-width:760px !important;
+  margin:0 !important;
+  text-align:left !important;
+}
+
+.hero-video-section .lead{
+  max-width:690px !important;
+  margin:0 !important;
+  text-align:left !important;
+}
+
+.hero-video-section .hero-actions{
+  justify-content:flex-start !important;
+}
+
+/* Columna derecha: solo fichas, sin salero ni marca de agua */
+.hero-video-section .salero-visual{
+  position:relative !important;
+  inset:auto !important;
+  width:100% !important;
+  height:520px !important;
+  min-height:520px !important;
+  max-width:520px !important;
+  justify-self:end !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  overflow:visible !important;
+  pointer-events:none !important;
+  display:block !important;
+  opacity:1 !important;
+  transform:none !important;
+}
+
+.hero-video-section .salero-visual::before,
+.hero-video-section .salero-visual::after,
+.hero-video-section .salt-shaker,
+.hero-video-section .grain{
+  display:none !important;
+}
+
+/* Fichas SEO y ADS más presentes */
+.hero-video-section .visual-card{
+  display:block !important;
+  position:absolute !important;
+  width:270px !important;
+  padding:22px 24px !important;
+  background:rgba(255,253,247,.58) !important;
+  border:1px solid rgba(255,253,247,.72) !important;
+  border-radius:26px !important;
+  box-shadow:0 22px 70px rgba(31,42,36,.10) !important;
+  backdrop-filter:blur(14px) saturate(1.05) !important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.05) !important;
+  opacity:.92 !important;
+  color:var(--ink) !important;
+  z-index:3 !important;
+  pointer-events:none !important;
+}
+
+.hero-video-section .visual-card span{
+  display:block !important;
+  font-size:.72rem !important;
+  line-height:1 !important;
+  color:rgba(31,42,36,.76) !important;
+  margin-bottom:10px !important;
+  text-transform:uppercase !important;
+  letter-spacing:.07em !important;
+  font-weight:950 !important;
+}
+
+.hero-video-section .visual-card strong{
+  display:block !important;
+  font-size:1.12rem !important;
+  line-height:1.16 !important;
+  color:rgba(31,42,36,.92) !important;
+  letter-spacing:-.03em !important;
+}
+
+/* Posición editorial de las fichas en la zona derecha */
+.hero-video-section .visual-card-top{
+  top:18% !important;
+  left:6% !important;
+  right:auto !important;
+  bottom:auto !important;
+  transform:rotate(-2deg) !important;
+}
+
+.hero-video-section .visual-card-bottom{
+  right:3% !important;
+  bottom:18% !important;
+  left:auto !important;
+  top:auto !important;
+  transform:rotate(2deg) !important;
+}
+
+/* Móvil: mantenemos limpio */
+@media(max-width:880px){
+  .hero-video-section .hero-grid{
+    width:min(100% - 28px, 720px) !important;
+    grid-template-columns:1fr !important;
+    min-height:calc(100svh - 150px) !important;
+  }
+
+  .hero-video-section .hero-copy{
+    max-width:680px !important;
+  }
+
+  .hero-video-section .salero-visual{
+    display:none !important;
+  }
+}
