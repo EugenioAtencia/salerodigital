@@ -13,5 +13,33 @@ function excerpt(item={}){if(item.excerpt&&item.excerpt.rendered)return stripHtm
 function setSeoFromItem(item={}){const a=getAcf(item);const title=a.meta_title||a.og_title||itemTitle(item);const desc=a.meta_description||a.og_description||excerpt(item);if(title)document.title=`${stripHtml(title)} | Salero Digital`;const meta=document.querySelector('meta[name="description"]');if(meta&&desc)meta.setAttribute('content',stripHtml(desc).slice(0,160))}
 function renderCard(item,basePath,label=''){const a=getAcf(item),title=itemTitle(item),desc=a.claim||a.subtitulo_comercial||a.titular_seo||excerpt(item);return `<article class="card">${label?`<span class="tag">${escapeHtml(label)}</span>`:''}<h3>${title}</h3><p>${escapeHtml(stripHtml(desc)).slice(0,170)}</p><a class="card-link" href="${basePath}/${item.slug}/">Ver más</a></article>`}
 function setActiveNav(){const current=window.location.pathname.replace(/\/$/,'')||'/';document.querySelectorAll('.nav a').forEach(l=>{const h=l.getAttribute('href').replace(/\/$/,'')||'/';if(h===current||(h!=='/'&&current.startsWith(h)))l.classList.add('is-active')})}
-function initMenuToggle(){const b=document.querySelector('[data-menu-toggle]');if(b)b.addEventListener('click',()=>document.body.classList.toggle('menu-open'))}
-document.addEventListener('DOMContentLoaded',()=>{setActiveNav();initMenuToggle()});
+
+function initHeaderScroll(){
+  const header=document.querySelector('.site-header');
+  if(!header)return;
+  const update=()=>header.classList.toggle('is-scrolled', window.scrollY>24);
+  update();
+  window.addEventListener('scroll', update, {passive:true});
+}
+function initMenuToggle(){
+  const b=document.querySelector('[data-menu-toggle]');
+  const nav=document.querySelector('.nav');
+  if(!b)return;
+  const close=()=>{
+    document.body.classList.remove('menu-open');
+    b.setAttribute('aria-expanded','false');
+    b.textContent='☰';
+  };
+  const open=()=>{
+    document.body.classList.add('menu-open');
+    b.setAttribute('aria-expanded','true');
+    b.textContent='×';
+  };
+  b.setAttribute('aria-expanded','false');
+  b.addEventListener('click',()=>document.body.classList.contains('menu-open')?close():open());
+  if(nav){
+    nav.querySelectorAll('a').forEach(link=>link.addEventListener('click', close));
+  }
+  window.addEventListener('keydown',(e)=>{if(e.key==='Escape')close()});
+}
+document.addEventListener('DOMContentLoaded',()=>{setActiveNav();initHeaderScroll();initMenuToggle()});
