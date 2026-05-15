@@ -195,8 +195,8 @@ h1,h2,h3{margin:0;line-height:.98;letter-spacing:-.055em}h1,h2{font-family:var(-
   }
 }
 
-/* Fondo editorial para Sectores - v26 */
-.sectors-editorial{
+/* Fondo de vídeo para Sectores - v27 */
+.sectors-video-section{
   position:relative;
   isolation:isolate;
   overflow:hidden;
@@ -204,20 +204,24 @@ h1,h2,h3{margin:0;line-height:.98;letter-spacing:-.055em}h1,h2{font-family:var(-
   border-block:0;
 }
 
-.sectors-editorial::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  z-index:-2;
-  background-image:url("/assets/img/terraza-pueblo-serrania.webp");
-  background-size:cover;
-  background-position:center center;
-  background-repeat:no-repeat;
-  transform:scale(1.04);
-  filter:saturate(.74) contrast(.92) brightness(.82) blur(.35px);
+.sectors-video-section::before{
+  display:none;
 }
 
-.sectors-editorial::after{
+.sectors-bg-video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center center;
+  z-index:-2;
+  opacity:.82;
+  filter:saturate(.74) contrast(.92) brightness(.82) blur(.35px);
+  pointer-events:none;
+}
+
+.sectors-video-section::after{
   content:"";
   position:absolute;
   inset:0;
@@ -225,9 +229,9 @@ h1,h2,h3{margin:0;line-height:.98;letter-spacing:-.055em}h1,h2{font-family:var(-
   background:
     linear-gradient(
       180deg,
-      rgba(31,42,36,.70) 0%,
+      rgba(31,42,36,.72) 0%,
       rgba(31,42,36,.50) 44%,
-      rgba(31,42,36,.76) 100%
+      rgba(31,42,36,.78) 100%
     ),
     linear-gradient(
       90deg,
@@ -238,76 +242,17 @@ h1,h2,h3{margin:0;line-height:.98;letter-spacing:-.055em}h1,h2{font-family:var(-
   pointer-events:none;
 }
 
-.sectors-editorial .container{
+.sectors-video-section .container{
   position:relative;
   z-index:1;
 }
 
-.sectors-editorial .eyebrow{
+.sectors-video-section .eyebrow{
   color:var(--lime);
 }
 
-.sectors-editorial .eyebrow::before{
+.sectors-video-section .eyebrow::before{
   background:var(--albero);
 }
 
-.sectors-editorial h2{
-  color:var(--paper);
-  text-shadow:0 2px 34px rgba(0,0,0,.24);
-}
-
-.sectors-editorial .lead{
-  color:rgba(255,253,247,.84);
-  text-shadow:0 2px 24px rgba(0,0,0,.18);
-}
-
-.sectors-editorial .sector-card{
-  background:rgba(255,253,247,.80);
-  border-color:rgba(255,253,247,.48);
-  backdrop-filter:blur(14px) saturate(1.02);
-  -webkit-backdrop-filter:blur(14px) saturate(1.02);
-  box-shadow:0 28px 90px rgba(0,0,0,.16);
-}
-
-.sectors-editorial .sector-card::before{
-  background:linear-gradient(
-    180deg,
-    rgba(255,253,247,.18),
-    rgba(255,253,247,.82)
-  );
-}
-
-.sectors-editorial .sector-card::after{
-  background:var(--lime);
-  opacity:.12;
-}
-
-.sectors-editorial .sector-card:hover{
-  background:rgba(255,253,247,.92);
-  transform:translateY(-6px);
-  box-shadow:0 34px 100px rgba(0,0,0,.20);
-}
-
-.sectors-editorial .sector-card h3{
-  color:var(--ink);
-}
-
-.sectors-editorial .sector-card p{
-  color:rgba(31,42,36,.76);
-}
-
-@media(max-width:680px){
-  .sectors-editorial::before{
-    background-position:center center;
-    transform:scale(1.08);
-    filter:saturate(.68) contrast(.9) brightness(.78) blur(.6px);
-  }
-
-  .sectors-editorial::after{
-    background:rgba(31,42,36,.70);
-  }
-
-  .sectors-editorial .sector-card{
-    background:rgba(255,253,247,.88);
-  }
-}
+.sectors-video-section
