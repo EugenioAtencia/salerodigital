@@ -194,3 +194,120 @@ h1,h2,h3{margin:0;line-height:.98;letter-spacing:-.055em}h1,h2{font-family:var(-
     background:rgba(255,253,247,.88);
   }
 }
+
+/* Fondo editorial para Sectores - v26 */
+.sectors-editorial{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:var(--olive-dark);
+  border-block:0;
+}
+
+.sectors-editorial::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  background-image:url("/assets/img/terraza-pueblo-serrania.webp");
+  background-size:cover;
+  background-position:center center;
+  background-repeat:no-repeat;
+  transform:scale(1.04);
+  filter:saturate(.74) contrast(.92) brightness(.82) blur(.35px);
+}
+
+.sectors-editorial::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(31,42,36,.70) 0%,
+      rgba(31,42,36,.50) 44%,
+      rgba(31,42,36,.76) 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(102,117,72,.30) 0%,
+      rgba(246,241,232,.06) 52%,
+      rgba(31,42,36,.34) 100%
+    );
+  pointer-events:none;
+}
+
+.sectors-editorial .container{
+  position:relative;
+  z-index:1;
+}
+
+.sectors-editorial .eyebrow{
+  color:var(--lime);
+}
+
+.sectors-editorial .eyebrow::before{
+  background:var(--albero);
+}
+
+.sectors-editorial h2{
+  color:var(--paper);
+  text-shadow:0 2px 34px rgba(0,0,0,.24);
+}
+
+.sectors-editorial .lead{
+  color:rgba(255,253,247,.84);
+  text-shadow:0 2px 24px rgba(0,0,0,.18);
+}
+
+.sectors-editorial .sector-card{
+  background:rgba(255,253,247,.80);
+  border-color:rgba(255,253,247,.48);
+  backdrop-filter:blur(14px) saturate(1.02);
+  -webkit-backdrop-filter:blur(14px) saturate(1.02);
+  box-shadow:0 28px 90px rgba(0,0,0,.16);
+}
+
+.sectors-editorial .sector-card::before{
+  background:linear-gradient(
+    180deg,
+    rgba(255,253,247,.18),
+    rgba(255,253,247,.82)
+  );
+}
+
+.sectors-editorial .sector-card::after{
+  background:var(--lime);
+  opacity:.12;
+}
+
+.sectors-editorial .sector-card:hover{
+  background:rgba(255,253,247,.92);
+  transform:translateY(-6px);
+  box-shadow:0 34px 100px rgba(0,0,0,.20);
+}
+
+.sectors-editorial .sector-card h3{
+  color:var(--ink);
+}
+
+.sectors-editorial .sector-card p{
+  color:rgba(31,42,36,.76);
+}
+
+@media(max-width:680px){
+  .sectors-editorial::before{
+    background-position:center center;
+    transform:scale(1.08);
+    filter:saturate(.68) contrast(.9) brightness(.78) blur(.6px);
+  }
+
+  .sectors-editorial::after{
+    background:rgba(31,42,36,.70);
+  }
+
+  .sectors-editorial .sector-card{
+    background:rgba(255,253,247,.88);
+  }
+}
