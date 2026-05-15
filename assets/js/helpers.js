@@ -94,47 +94,43 @@ function initHeroCardNavigation(){
 }
 
 function initLazySectionVideos(){
-  const videoBlocks = document.querySelectorAll('[data-lazy-video]');
+  const videoBlocks=document.querySelectorAll('[data-lazy-video]');
+  if(!videoBlocks.length)return;
+  if(window.innerWidth<=880)return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
 
-  if (!videoBlocks.length) return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const loadVideo=(block)=>{
+    if(block.dataset.loaded==='true')return;
+    const src=block.dataset.lazyVideo;
+    if(!src)return;
 
-  const loadVideo = (block) => {
-    if (block.dataset.loaded === 'true') return;
-
-    const src = block.dataset.lazyVideo;
-    if (!src) return;
-
-    const video = document.createElement('video');
-    video.autoplay = true;
-    video.muted = true;
-    video.loop = true;
-    video.playsInline = true;
-    video.preload = 'metadata';
-    video.setAttribute('aria-hidden', 'true');
-
-    video.innerHTML = `<source src="${src}" type="video/mp4">`;
+    const video=document.createElement('video');
+    video.autoplay=true;
+    video.muted=true;
+    video.loop=true;
+    video.playsInline=true;
+    video.preload='metadata';
+    video.setAttribute('aria-hidden','true');
+    video.innerHTML=`<source src="${src}" type="video/mp4">`;
 
     block.appendChild(video);
-    block.dataset.loaded = 'true';
+    block.dataset.loaded='true';
   };
 
-  if (!('IntersectionObserver' in window)) {
+  if(!('IntersectionObserver' in window)){
     videoBlocks.forEach(loadVideo);
     return;
   }
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
+  const observer=new IntersectionObserver((entries)=>{
+    entries.forEach((entry)=>{
+      if(!entry.isIntersecting)return;
       loadVideo(entry.target);
       observer.unobserve(entry.target);
     });
-  }, {
-    rootMargin: '450px 0px'
-  });
+  },{rootMargin:'450px 0px'});
 
-  videoBlocks.forEach((block) => observer.observe(block));
+  videoBlocks.forEach((block)=>observer.observe(block));
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
