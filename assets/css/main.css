@@ -1,4 +1,4 @@
-/* Salero Digital - frontend HTML headless limpio v24 */
+/* Salero Digital - frontend HTML headless limpio v30 */
 :root{
   --ink:#1f2a24;
   --ink-2:#2f392f;
@@ -83,6 +83,20 @@ h1,h2,h3{margin:0;line-height:.98;letter-spacing:-.055em}h1,h2{font-family:var(-
 
 /* Componentes genéricos */
 .card,.content-panel,.hero-card{background:var(--paper);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:var(--radius)}.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.cards-grid.four{grid-template-columns:repeat(4,1fr)}.card{padding:28px;min-height:100%;display:flex;flex-direction:column;gap:15px}.tag{display:inline-flex;width:fit-content;padding:7px 11px;border-radius:999px;background:rgba(102,117,72,.12);color:var(--olive-dark);font-size:.74rem;font-weight:900;text-transform:uppercase;letter-spacing:.04em}.card p,.muted{color:var(--muted)}.card-link{margin-top:auto;color:var(--olive-dark);font-weight:900}.band{background:var(--ink);color:var(--paper);border-radius:34px;padding:clamp(34px,5vw,60px);display:grid;grid-template-columns:1fr auto;gap:26px;align-items:center}.band h2,.band p{color:var(--paper)}.band p{opacity:.82;max-width:680px}.detail-layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:38px;align-items:start}.content-panel{padding:clamp(28px,5vw,56px)}.content-block+.content-block{margin-top:38px}.content-block h2{font-size:clamp(1.75rem,3vw,2.65rem);margin-bottom:18px}.content-block ul{padding-left:1.2rem}.content-block li+li{margin-top:10px}.sidebar-card{position:sticky;top:106px;background:var(--olive-dark);color:var(--paper);border-radius:24px;padding:28px;box-shadow:var(--shadow)}.sidebar-card h3,.sidebar-card p{color:var(--paper)}.sidebar-card p{opacity:.8}.faq-list{display:grid;gap:12px}.faq-list details{background:var(--cream2);border:1px solid var(--border);border-radius:14px;padding:18px}.faq-list summary{font-weight:900;cursor:pointer}.loading,.empty,.error{padding:22px;background:var(--paper);border:1px solid var(--border);border-radius:20px;color:var(--muted)}.form-grid{display:grid;gap:16px}.form-grid input,.form-grid textarea,.form-grid select{width:100%;min-height:52px;border:1px solid var(--border);border-radius:14px;padding:14px 16px;font:inherit;background:var(--paper)}.form-grid textarea{min-height:160px;resize:vertical}
+
+/* Optimización de renderizado para secciones bajo el primer viewport */
+@supports (content-visibility:auto){
+  .manifest-section,
+  .services-editorial,
+  .menus-editorial,
+  .quote-band,
+  .sectors-editorial,
+  .trust-section,
+  .cata-section{
+    content-visibility:auto;
+    contain-intrinsic-size:800px;
+  }
+}
 
 /* Footer */
 .footer{background:var(--ink);color:var(--paper);padding:74px 0 30px}.footer-grid{display:grid;grid-template-columns:1.2fr .8fr .8fr .9fr;gap:34px}.footer h2,.footer h3,.footer p,.footer a{color:var(--paper)}.footer h2{font-family:var(--font-serif);font-size:2.6rem}.footer p,.footer a{opacity:.78}.footer-nav{display:grid;gap:10px}.footer-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:24px;margin-top:54px;display:flex;justify-content:space-between;gap:18px;color:rgba(255,255,255,.64);font-size:.9rem}.whatsapp-float{position:fixed;right:20px;bottom:20px;z-index:60;background:var(--lime);color:var(--ink);box-shadow:var(--shadow);border-radius:999px;padding:14px 18px;font-weight:900}
