@@ -1,4 +1,4 @@
-Archivos definitivos Salero Digital v34
+Salero Digital v35 - corrección visual urgente
 
 Sustituir en GitHub:
 - index.html
@@ -6,22 +6,12 @@ Sustituir en GitHub:
 - assets/js/helpers.js
 - _headers
 
+Motivo: la versión anterior no incluía el CSS completo de Nuestros menús, Sectores y carrusel de marcas, por eso las secciones se desconfiguraban.
+
 Mantener sin cambios:
 - assets/js/config.js
 - assets/js/api.js
 - assets/js/home.js
-- assets/video/hero-salero.mp4
-- assets/video/patio-de-pueblo.mp4
-- assets/img/hero-poster-mobile.webp
-- assets/img/hero-poster-desktop.webp
-- assets/img/foto-moron.webp
-- assets/img/patio-de-pueblo.jpg
+- assets/img/*
 - assets/img/logos/*
-
-Mejoras incluidas:
-- Vídeo del hero solo en escritorio y con carga diferida.
-- Poster móvil precargado para mejorar LCP.
-- Vídeo de Sectores cargado de forma diferida y desactivado en móvil.
-- Carrusel de logos con alt semánticos y duplicados ocultos.
-- CSS y JS versionados a v34.
-- Caché recomendada para Cloudflare Pages.
+- assets/video/*
