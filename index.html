@@ -7,8 +7,8 @@
   <meta name="description" content="Agencia digital para negocios locales: desarrollo web, SEO, redes sociales y campañas Ads con estrategia, cercanía y salero.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/main.css?v=27">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;650;750;850;950&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css?v=19">
 </head>
 <body>
   <header class="site-header">
@@ -23,7 +23,6 @@
         </span>
         <span>Salero Digital</span>
       </a>
-
       <nav class="nav" aria-label="Menú principal">
         <a href="/el-menu/">El Menú</a>
         <a href="/nuestros-menus/">Nuestros menús</a>
@@ -33,7 +32,6 @@
         <a class="nav-mobile-contact" href="/hablamos/">¿Hablamos?</a>
         <a class="nav-mobile-cta" href="/hablamos/">Pide tu cata digital</a>
       </nav>
-
       <div class="header-actions">
         <a class="nav-contact" href="/hablamos/">¿Hablamos?</a>
         <a class="btn btn-primary" href="/hablamos/">Pide tu cata digital</a>
@@ -43,10 +41,12 @@
   </header>
 
   <main>
-    <section class="hero hero-video-section">
-      <div class="hero-media" data-video-src="/assets/video/hero-salero.mp4" aria-hidden="true"></div>
+    <section class="hero hero-editorial hero-video-section">
+      <video class="hero-bg-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+        <source src="/assets/video/hero-salero.webm" type="video/webm">
+        <source src="/assets/video/hero-salero.mp4" type="video/mp4">
+      </video>
       <div class="hero-video-overlay" aria-hidden="true"></div>
-
       <div class="container hero-grid">
         <div class="hero-copy">
           <span class="eyebrow">Agencia digital de aquí, para negocios de aquí</span>
@@ -57,33 +57,27 @@
             <a class="btn btn-secondary" href="/el-menu/">Ver el menú</a>
           </div>
         </div>
-
-        <aside class="salero-visual hero-notes" aria-label="Servicios destacados de Salero Digital">
-          <article class="visual-card visual-card-top" tabindex="0" data-speed="0.10" data-url="/el-menu/el-pregonero/">
+        <aside class="salero-visual hero-notes" aria-hidden="true">
+          <div class="visual-card visual-card-top" data-speed="0.10">
             <span>SEO</span>
             <strong>Que te encuentren como Dios manda</strong>
-            <button class="visual-card-button" type="button">Ver El Pregonero</button>
-          </article>
+          </div>
         
-          <article class="visual-card visual-card-web" tabindex="0" data-speed="0.16" data-url="/el-menu/cimientos-digitales/">
+          <div class="visual-card visual-card-web" data-speed="0.16">
             <span>Desarrollo web</span>
             <strong>Cimientos Digitales pa una web con fundamento</strong>
-            <button class="visual-card-button" type="button">Ver Cimientos Digitales</button>
-          </article>
+          </div>
         
-          <article class="visual-card visual-card-social" tabindex="0" data-speed="0.13" data-url="/el-menu/gracia-y-presencia/">
+          <div class="visual-card visual-card-social" data-speed="0.13">
             <span>Redes sociales</span>
             <strong>Gracia y Presencia pa que tu marca se recuerde</strong>
-            <button class="visual-card-button" type="button">Ver Gracia y Presencia</button>
-          </article>
+          </div>
         
-          <article class="visual-card visual-card-bottom" tabindex="0" data-speed="0.18" data-url="/el-menu/el-empujon/">
+          <div class="visual-card visual-card-bottom" data-speed="0.18">
             <span>Ads</span>
             <strong>Pa vender con más arte</strong>
-            <button class="visual-card-button" type="button">Ver El Empujón</button>
-          </article>
+          </div>
         </aside>
-        
       </div>
     </section>
 
@@ -94,19 +88,17 @@
       </div>
     </section>
 
-    <section class="section sectors-editorial">
-      <div class="section-video-bg section-video-bg-sectores" data-lazy-video="/assets/video/patio-de-pueblo.mp4" aria-hidden="true"></div>
-    
+    <section class="section services-editorial">
       <div class="container">
         <div class="section-header split-header">
           <div>
-            <span class="eyebrow">Sectores</span>
-            <h2>Donde mejor nos movemos</h2>
+            <span class="eyebrow">El Menú</span>
+            <h2>Servicios para que tu marca coja sabor digital</h2>
           </div>
-          <p class="lead">No se comunica igual una almazara que un comercio, ni se vende igual un restaurante que una empresa de servicios. Cada sector pide contexto.</p>
+          <p class="lead">Cada negocio necesita una receta distinta. Nosotros ponemos estrategia, tecnología y ejecución para que cada canal tenga sentido.</p>
         </div>
-        <div class="sector-grid" data-home-sectores>
-          <div class="loading">Cargando sectores desde el CMS...</div>
+        <div class="service-list" data-home-servicios>
+          <div class="loading">Cargando servicios desde el CMS...</div>
         </div>
       </div>
     </section>
@@ -132,19 +124,9 @@
       </div>
     </section>
 
-    <section class="section sectors-editorial sectors-video-section">
-      <video
-        class="sectors-bg-video"
-        autoplay
-        muted
-        loop
-        playsinline
-        preload="metadata"
-        poster="/assets/img/patio-de-pueblo.jpg"
-        aria-hidden="true">
-        <source src="/assets/video/patio-de-pueblo.mp4" type="video/mp4">
-      </video>
-    
+    <section class="section sectors-editorial">
+      <div class="section-video-bg section-video-bg-sectores" data-lazy-video="/assets/video/patio-de-pueblo.mp4" aria-hidden="true"></div>
+
       <div class="container">
         <div class="section-header split-header">
           <div>
@@ -230,12 +212,10 @@
       </div>
     </div>
   </footer>
-
   <a class="whatsapp-float" href="https://wa.me/34665688916?text=Hola%2C%20quiero%20hacer%20una%20cata%20digital%20con%20Salero%20Digital." target="_blank" rel="noopener">¿Te hace un café y hablamos?</a>
-
-  <script src="/assets/js/config.js?v=4" defer></script>
-  <script src="/assets/js/api.js?v=4" defer></script>
-  <script src="/assets/js/helpers.js?v=27" defer></script>
-  <script src="/assets/js/home.js?v=4" defer></script>
+  <script src="assets/js/config.js?v=4"></script>
+  <script src="assets/js/api.js?v=4"></script>
+  <script src="assets/js/helpers.js?v=18"></script>
+  <script src="assets/js/home.js?v=4"></script>
 </body>
 </html>
