@@ -36,23 +36,38 @@ function initMenuToggle(){
 function initHeroVideo(){
   const media=document.querySelector('.hero-media');
   if(!media)return;
-  if(window.innerWidth<900)return;
-  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+
+  const isDesktop=window.matchMedia('(min-width:1024px)').matches;
+  const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if(!isDesktop||reduceMotion)return;
+
   const src=media.dataset.videoSrc||'/assets/video/hero-salero.mp4';
+
   const load=()=>{
     if(media.querySelector('video'))return;
+
     const video=document.createElement('video');
     video.className='hero-bg-video';
     video.autoplay=true;
     video.muted=true;
     video.loop=true;
     video.playsInline=true;
-    video.preload='metadata';
+    video.preload='none';
+    video.poster='/assets/img/hero-poster-desktop.webp';
     video.setAttribute('aria-hidden','true');
     video.innerHTML=`<source src="${src}" type="video/mp4">`;
+
     media.appendChild(video);
   };
-  window.addEventListener('load',()=>setTimeout(load,280),{once:true});
+
+  window.addEventListener('load',()=>{
+    if('requestIdleCallback' in window){
+      requestIdleCallback(load,{timeout:1800});
+    }else{
+      setTimeout(load,600);
+    }
+  },{once:true});
 }
 
 function initHeroNotesMotion(){
@@ -60,7 +75,7 @@ function initHeroNotesMotion(){
   const cards=document.querySelectorAll('.hero-notes .visual-card');
   if(!hero||!cards.length)return;
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  if(window.innerWidth<=880)return;
+  if(window.innerWidth<1024)return;
   let ticking=false;
   const update=()=>{
     const rect=hero.getBoundingClientRect();
@@ -96,7 +111,7 @@ function initHeroCardNavigation(){
 function initLazySectionVideos(){
   const videoBlocks=document.querySelectorAll('[data-lazy-video]');
   if(!videoBlocks.length)return;
-  if(window.innerWidth<=880)return;
+  if(window.innerWidth<1024)return;
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
 
   const loadVideo=(block)=>{
