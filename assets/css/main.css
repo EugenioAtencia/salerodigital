@@ -658,3 +658,186 @@ h1,h2,h3{margin:0;line-height:.98;letter-spacing:-.055em}h1,h2{font-family:var(-
     font-size:.95rem !important;
   }
 }
+
+/* Sistema global de fichas Salero - v47 */
+.salero-card-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(22px,3vw,34px);
+  align-items:stretch;
+}
+
+.salero-card-grid .card,
+.salero-card{
+  min-height:420px;
+  display:flex;
+  flex-direction:column;
+  padding:clamp(30px,3.4vw,46px);
+  border-radius:34px;
+  background:rgba(255,253,247,.88);
+  border:1px solid rgba(255,253,247,.62);
+  box-shadow:0 24px 70px rgba(31,42,36,.12);
+  backdrop-filter:blur(10px) saturate(1.02);
+  -webkit-backdrop-filter:blur(10px) saturate(1.02);
+  transition:
+    transform .28s ease,
+    background .28s ease,
+    box-shadow .28s ease,
+    border-color .28s ease;
+}
+
+.salero-card-grid .card:hover,
+.salero-card:hover{
+  transform:translateY(-6px);
+  background:rgba(255,253,247,.96);
+  border-color:rgba(255,253,247,.86);
+  box-shadow:0 32px 90px rgba(31,42,36,.18);
+}
+
+.salero-card-grid .card .tag,
+.salero-card-grid .card .badge,
+.salero-card-grid .card small,
+.salero-card .tag,
+.salero-card .badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:max-content;
+  max-width:100%;
+  margin-bottom:clamp(24px,3vw,34px);
+  padding:9px 16px;
+  border-radius:999px;
+  background:rgba(102,117,72,.10);
+  color:var(--olive-dark);
+  font-size:.76rem;
+  font-weight:900;
+  line-height:1;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+}
+
+.salero-card-grid .card h3,
+.salero-card h3{
+  margin:0;
+  color:var(--ink);
+  font-family:var(--font-serif);
+  font-size:clamp(2.3rem,3.2vw,4rem);
+  line-height:.98;
+  letter-spacing:-.055em;
+}
+
+.salero-card-grid .card p,
+.salero-card p{
+  margin:clamp(26px,3vw,34px) 0 0;
+  color:rgba(31,42,36,.72);
+  font-size:clamp(1rem,1.16vw,1.18rem);
+  font-weight:700;
+  line-height:1.55;
+}
+
+.salero-card-grid .card a[href],
+.salero-card .card-link,
+.salero-card a[href]{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:max-content;
+  min-height:54px;
+  margin-top:auto;
+  padding:16px 24px;
+  border-radius:999px;
+  background:var(--ink);
+  color:var(--paper);
+  font-family:var(--font-sans);
+  font-size:.98rem;
+  font-weight:900;
+  line-height:1;
+  letter-spacing:-.01em;
+  text-decoration:none;
+  text-shadow:none;
+  box-shadow:0 16px 34px rgba(31,42,36,.14);
+  transition:
+    transform .22s ease,
+    background .22s ease,
+    color .22s ease,
+    box-shadow .22s ease;
+}
+
+.salero-card-grid .card a[href]::after,
+.salero-card .card-link::after,
+.salero-card a[href]::after{
+  content:"→";
+  display:inline-block;
+  margin-left:10px;
+  transform:translateY(-1px);
+  transition:transform .22s ease;
+}
+
+.salero-card-grid .card a[href]:hover,
+.salero-card-grid .card a[href]:focus-visible,
+.salero-card .card-link:hover,
+.salero-card .card-link:focus-visible,
+.salero-card a[href]:hover,
+.salero-card a[href]:focus-visible{
+  background:#0f1712;
+  color:var(--lime);
+  transform:translateY(-2px);
+  box-shadow:0 22px 48px rgba(31,42,36,.20);
+  outline:none;
+}
+
+.salero-card-grid .card a[href]:hover::after,
+.salero-card-grid .card a[href]:focus-visible::after,
+.salero-card .card-link:hover::after,
+.salero-card .card-link:focus-visible::after,
+.salero-card a[href]:hover::after,
+.salero-card a[href]:focus-visible::after{
+  transform:translate(4px,-1px);
+}
+
+/* Variante recomendada */
+.salero-card-grid .card.featured,
+.salero-card.featured{
+  background:rgba(221,230,200,.88);
+  border-color:rgba(199,244,88,.22);
+}
+
+/* Variante sobre fondo oscuro o con imagen */
+.dark-section .salero-card-grid .card,
+.video-section .salero-card-grid .card,
+.has-media-bg .salero-card-grid .card{
+  background:rgba(255,253,247,.88);
+  border-color:rgba(255,253,247,.62);
+}
+
+/* Responsive */
+@media(max-width:1180px){
+  .salero-card-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+@media(max-width:680px){
+  .salero-card-grid{
+    grid-template-columns:1fr;
+    gap:18px;
+  }
+
+  .salero-card-grid .card,
+  .salero-card{
+    min-height:auto;
+    padding:30px;
+    border-radius:28px;
+  }
+
+  .salero-card-grid .card h3,
+  .salero-card h3{
+    font-size:clamp(2.35rem,13vw,3.7rem);
+  }
+
+  .salero-card-grid .card a[href],
+  .salero-card .card-link,
+  .salero-card a[href]{
+    width:100%;
+  }
+}
