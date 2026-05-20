@@ -465,3 +465,70 @@
     transition:none !important;
   }
 }
+
+/* Botones CTA en fichas de servicios El Menú - v46 */
+.menu-services-grid .card{
+  display:flex !important;
+  flex-direction:column !important;
+}
+
+.menu-services-grid .card a[href]{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  min-height:58px !important;
+  margin-top:auto !important;
+  padding:17px 24px !important;
+  border-radius:999px !important;
+  background:var(--ink) !important;
+  color:var(--paper) !important;
+  font-family:var(--font-sans) !important;
+  font-size:.98rem !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  letter-spacing:-.01em !important;
+  text-decoration:none !important;
+  text-shadow:none !important;
+  box-shadow:0 16px 34px rgba(31,42,36,.14) !important;
+  transition:
+    transform .22s ease,
+    background .22s ease,
+    color .22s ease,
+    box-shadow .22s ease !important;
+}
+
+.menu-services-grid .card a[href]::after{
+  content:"→";
+  display:inline-block;
+  margin-left:10px;
+  font-size:1.05em;
+  line-height:1;
+  transform:translateY(-1px);
+  transition:transform .22s ease;
+}
+
+.menu-services-grid .card a[href]:hover,
+.menu-services-grid .card a[href]:focus-visible{
+  background:#0f1712 !important;
+  color:var(--lime) !important;
+  transform:translateY(-2px) !important;
+  box-shadow:0 22px 48px rgba(31,42,36,.20) !important;
+  outline:none !important;
+}
+
+.menu-services-grid .card a[href]:hover::after,
+.menu-services-grid .card a[href]:focus-visible::after{
+  transform:translate(4px,-1px);
+}
+
+.menu-services-grid .card p{
+  margin-bottom:30px !important;
+}
+
+@media(max-width:680px){
+  .menu-services-grid .card a[href]{
+    min-height:56px !important;
+    font-size:.96rem !important;
+  }
+}
