@@ -659,709 +659,219 @@ h1,h2,h3{margin:0;line-height:.98;letter-spacing:-.055em}h1,h2{font-family:var(-
   }
 }
 
-/* Sistema global de fichas Salero - v47 */
-.salero-card-grid{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:clamp(22px,3vw,34px);
-  align-items:stretch;
-}
-
-.salero-card-grid .card,
-.salero-card{
-  min-height:420px;
-  display:flex;
-  flex-direction:column;
-  padding:clamp(30px,3.4vw,46px);
-  border-radius:34px;
-  background:rgba(255,253,247,.88);
-  border:1px solid rgba(255,253,247,.62);
-  box-shadow:0 24px 70px rgba(31,42,36,.12);
-  backdrop-filter:blur(10px) saturate(1.02);
-  -webkit-backdrop-filter:blur(10px) saturate(1.02);
-  transition:
-    transform .28s ease,
-    background .28s ease,
-    box-shadow .28s ease,
-    border-color .28s ease;
-}
-
-.salero-card-grid .card:hover,
-.salero-card:hover{
-  transform:translateY(-6px);
-  background:rgba(255,253,247,.96);
-  border-color:rgba(255,253,247,.86);
-  box-shadow:0 32px 90px rgba(31,42,36,.18);
-}
-
-.salero-card-grid .card .tag,
-.salero-card-grid .card .badge,
-.salero-card-grid .card small,
-.salero-card .tag,
-.salero-card .badge{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:max-content;
-  max-width:100%;
-  margin-bottom:clamp(24px,3vw,34px);
-  padding:9px 16px;
-  border-radius:999px;
-  background:rgba(102,117,72,.10);
-  color:var(--olive-dark);
-  font-size:.76rem;
-  font-weight:900;
-  line-height:1;
-  letter-spacing:.055em;
-  text-transform:uppercase;
-}
-
-.salero-card-grid .card h3,
-.salero-card h3{
-  margin:0;
-  color:var(--ink);
-  font-family:var(--font-serif);
-  font-size:clamp(2.3rem,3.2vw,4rem);
-  line-height:.98;
-  letter-spacing:-.055em;
-}
-
-.salero-card-grid .card p,
-.salero-card p{
-  margin:clamp(26px,3vw,34px) 0 0;
-  color:rgba(31,42,36,.72);
-  font-size:clamp(1rem,1.16vw,1.18rem);
-  font-weight:700;
-  line-height:1.55;
-}
-
-.salero-card-grid .card a[href],
-.salero-card .card-link,
-.salero-card a[href]{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:max-content;
-  min-height:54px;
-  margin-top:auto;
-  padding:16px 24px;
-  border-radius:999px;
-  background:var(--ink);
-  color:var(--paper);
-  font-family:var(--font-sans);
-  font-size:.98rem;
-  font-weight:900;
-  line-height:1;
-  letter-spacing:-.01em;
-  text-decoration:none;
-  text-shadow:none;
-  box-shadow:0 16px 34px rgba(31,42,36,.14);
-  transition:
-    transform .22s ease,
-    background .22s ease,
-    color .22s ease,
-    box-shadow .22s ease;
-}
-
-.salero-card-grid .card a[href]::after,
-.salero-card .card-link::after,
-.salero-card a[href]::after{
-  content:"→";
-  display:inline-block;
-  margin-left:10px;
-  transform:translateY(-1px);
-  transition:transform .22s ease;
-}
-
-.salero-card-grid .card a[href]:hover,
-.salero-card-grid .card a[href]:focus-visible,
-.salero-card .card-link:hover,
-.salero-card .card-link:focus-visible,
-.salero-card a[href]:hover,
-.salero-card a[href]:focus-visible{
-  background:#0f1712;
-  color:var(--lime);
-  transform:translateY(-2px);
-  box-shadow:0 22px 48px rgba(31,42,36,.20);
-  outline:none;
-}
-
-.salero-card-grid .card a[href]:hover::after,
-.salero-card-grid .card a[href]:focus-visible::after,
-.salero-card .card-link:hover::after,
-.salero-card .card-link:focus-visible::after,
-.salero-card a[href]:hover::after,
-.salero-card a[href]:focus-visible::after{
-  transform:translate(4px,-1px);
-}
-
-/* Variante recomendada */
-.salero-card-grid .card.featured,
-.salero-card.featured{
-  background:rgba(221,230,200,.88);
-  border-color:rgba(199,244,88,.22);
-}
-
-/* Variante sobre fondo oscuro o con imagen */
-.dark-section .salero-card-grid .card,
-.video-section .salero-card-grid .card,
-.has-media-bg .salero-card-grid .card{
-  background:rgba(255,253,247,.88);
-  border-color:rgba(255,253,247,.62);
-}
-
-/* Responsive */
-@media(max-width:1180px){
-  .salero-card-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-}
-
-@media(max-width:680px){
-  .salero-card-grid{
-    grid-template-columns:1fr;
-    gap:18px;
-  }
-
-  .salero-card-grid .card,
-  .salero-card{
-    min-height:auto;
-    padding:30px;
-    border-radius:28px;
-  }
-
-  .salero-card-grid .card h3,
-  .salero-card h3{
-    font-size:clamp(2.35rem,13vw,3.7rem);
-  }
-
-  .salero-card-grid .card a[href],
-  .salero-card .card-link,
-  .salero-card a[href]{
-    width:100%;
-  }
-}
-
-/* Sistema global de fichas Salero - v48
-   Uso:
-   <div class="cards-grid salero-card-grid">...</div>
-   <div class="sector-grid salero-card-grid">...</div>
-   Compatible con cards dinámicas de home.js: .menu-card, .sector-card y .card.
+/* Ajuste estable Home - v50
+   Servicios y Sectores vuelven a su diseño original.
+   Nuestros menús se queda con sus tarjetas propias sin heredar estilos globales.
 */
 
-.salero-card-grid{
+/* Servicios: formato editorial original */
+.services-editorial .service-list{
+  display:block !important;
+  border-top:1px solid var(--border-strong) !important;
+}
+
+.services-editorial .service-row{
   display:grid !important;
-  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
-  gap:clamp(24px,3vw,34px) !important;
-  align-items:stretch !important;
-}
-
-.salero-card-grid > .loading{
-  grid-column:1 / -1;
-}
-
-/* Base común para cualquier ficha generada */
-.salero-card-grid > :not(.loading),
-.salero-card-grid .menu-card,
-.salero-card-grid .sector-card,
-.salero-card-grid .card,
-.salero-card{
-  position:relative !important;
-  min-height:430px !important;
-  display:flex !important;
-  flex-direction:column !important;
-  justify-content:flex-start !important;
-  padding:clamp(30px,3.2vw,46px) !important;
-  border-radius:36px !important;
-  overflow:hidden !important;
-  background:rgba(255,253,247,.88) !important;
-  border:1px solid rgba(255,253,247,.62) !important;
-  box-shadow:0 24px 70px rgba(31,42,36,.14) !important;
-  backdrop-filter:blur(10px) saturate(1.02) !important;
-  -webkit-backdrop-filter:blur(10px) saturate(1.02) !important;
-  transition:
-    transform .28s ease,
-    background .28s ease,
-    box-shadow .28s ease,
-    border-color .28s ease !important;
-}
-
-/* Halo suave decorativo como en Sectores */
-.salero-card-grid > :not(.loading)::before,
-.salero-card-grid .menu-card::before,
-.salero-card-grid .sector-card::before,
-.salero-card-grid .card::before,
-.salero-card::before{
-  content:"";
-  position:absolute;
-  width:220px;
-  height:220px;
-  right:-74px;
-  top:-74px;
-  border-radius:50%;
-  background:rgba(199,244,88,.10);
-  pointer-events:none;
-  z-index:0;
-}
-
-.salero-card-grid > :not(.loading) > *,
-.salero-card-grid .menu-card > *,
-.salero-card-grid .sector-card > *,
-.salero-card-grid .card > *,
-.salero-card > *{
-  position:relative;
-  z-index:1;
-}
-
-.salero-card-grid > :not(.loading):hover,
-.salero-card-grid .menu-card:hover,
-.salero-card-grid .sector-card:hover,
-.salero-card-grid .card:hover,
-.salero-card:hover{
-  transform:translateY(-6px) !important;
-  background:rgba(255,253,247,.96) !important;
-  border-color:rgba(255,253,247,.86) !important;
-  box-shadow:0 34px 90px rgba(31,42,36,.20) !important;
-}
-
-/* Destacado de Nuestros menús: segunda ficha recomendada */
-.menus-editorial .salero-card-grid > :not(.loading):nth-child(2),
-.menus-editorial .salero-card-grid .menu-card:nth-child(2){
-  background:rgba(221,230,200,.88) !important;
-  border-color:rgba(199,244,88,.20) !important;
-}
-
-/* Etiquetas superiores. Cubrimos varias posibilidades del JS */
-.salero-card-grid .tag,
-.salero-card-grid .badge,
-.salero-card-grid .card-label,
-.salero-card-grid .card-kicker,
-.salero-card-grid small,
-.salero-card .tag,
-.salero-card .badge{
-  display:inline-flex !important;
+  grid-template-columns:90px minmax(220px,.85fr) minmax(280px,1fr) auto !important;
+  gap:28px !important;
   align-items:center !important;
-  justify-content:center !important;
-  width:max-content !important;
-  max-width:100% !important;
-  margin:0 0 clamp(28px,3vw,42px) !important;
-  padding:9px 16px !important;
-  border-radius:999px !important;
-  background:rgba(102,117,72,.10) !important;
-  color:var(--olive-dark) !important;
-  font-family:var(--font-sans) !important;
-  font-size:.76rem !important;
-  font-weight:900 !important;
-  line-height:1 !important;
-  letter-spacing:.055em !important;
-  text-transform:uppercase !important;
-}
-
-/* Títulos */
-.salero-card-grid h3,
-.salero-card h3{
-  margin:0 !important;
-  color:var(--ink) !important;
-  font-family:var(--font-serif) !important;
-  font-size:clamp(2.65rem,3.5vw,4.65rem) !important;
-  line-height:.96 !important;
-  letter-spacing:-.06em !important;
-}
-
-/* Texto */
-.salero-card-grid p,
-.salero-card p{
-  margin:clamp(26px,3vw,36px) 0 0 !important;
-  color:rgba(31,42,36,.74) !important;
-  font-family:var(--font-sans) !important;
-  font-size:clamp(1.04rem,1.2vw,1.22rem) !important;
-  font-weight:700 !important;
-  line-height:1.55 !important;
-}
-
-/* Enlace final tipo editorial, como en las fichas de referencia */
-.salero-card-grid a[href],
-.salero-card a[href],
-.salero-card .card-link{
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:flex-start !important;
-  width:max-content !important;
-  max-width:100% !important;
-  margin-top:auto !important;
-  padding-top:34px !important;
-  color:var(--olive-dark) !important;
-  background:transparent !important;
-  border:0 !important;
+  border-bottom:1px solid var(--border-strong) !important;
+  padding:34px 0 !important;
+  min-height:0 !important;
   border-radius:0 !important;
+  border-left:0 !important;
+  border-right:0 !important;
+  border-top:0 !important;
+  background:transparent !important;
   box-shadow:none !important;
-  font-family:var(--font-sans) !important;
-  font-size:1.02rem !important;
-  font-weight:900 !important;
-  line-height:1.1 !important;
-  text-decoration:none !important;
-  text-shadow:none !important;
-  transition:color .22s ease, transform .22s ease !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  overflow:visible !important;
 }
 
-.salero-card-grid a[href]::after,
-.salero-card a[href]::after,
-.salero-card .card-link::after{
-  content:"→";
-  display:inline-block;
-  margin-left:12px;
-  font-size:1.1em;
-  line-height:1;
-  transform:translateY(-1px);
-  transition:transform .22s ease;
+.services-editorial .service-row::before,
+.services-editorial .service-row::after{
+  display:none !important;
 }
 
-.salero-card-grid a[href]:hover,
-.salero-card-grid a[href]:focus-visible,
-.salero-card a[href]:hover,
-.salero-card a[href]:focus-visible,
-.salero-card .card-link:hover,
-.salero-card .card-link:focus-visible{
-  color:var(--ink) !important;
-  transform:translateY(-2px) !important;
-  outline:none !important;
+.services-editorial .service-row:hover{
+  background:rgba(221,230,200,.35) !important;
+  padding-inline:20px !important;
+  transform:none !important;
+  box-shadow:none !important;
 }
 
-.salero-card-grid a[href]:hover::after,
-.salero-card-grid a[href]:focus-visible::after,
-.salero-card a[href]:hover::after,
-.salero-card a[href]:focus-visible::after,
-.salero-card .card-link:hover::after,
-.salero-card .card-link:focus-visible::after{
-  transform:translate(5px,-1px);
-}
-
-/* Ajustes específicos sobre secciones con fondo oscuro */
-.menus-editorial .salero-card-grid > :not(.loading),
-.sectors-editorial .salero-card-grid > :not(.loading){
-  background:rgba(255,253,247,.88) !important;
-  border-color:rgba(255,253,247,.62) !important;
-}
-
-/* En sectores mantenemos el texto claro de cabecera y fichas limpias */
-.sectors-editorial .salero-card-grid{
-  margin-top:clamp(32px,4vw,54px);
-}
-
-/* Responsive */
-@media(max-width:1180px){
-  .salero-card-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-  }
-}
-
-@media(max-width:680px){
-  .salero-card-grid{
-    grid-template-columns:1fr !important;
-    gap:18px !important;
-  }
-
-  .salero-card-grid > :not(.loading),
-  .salero-card-grid .menu-card,
-  .salero-card-grid .sector-card,
-  .salero-card-grid .card,
-  .salero-card{
-    min-height:auto !important;
-    padding:30px !important;
-    border-radius:28px !important;
-  }
-
-  .salero-card-grid h3,
-  .salero-card h3{
-    font-size:clamp(2.45rem,13vw,3.85rem) !important;
-  }
-
-  .salero-card-grid a[href],
-  .salero-card a[href],
-  .salero-card .card-link{
-    width:max-content !important;
-    padding-top:28px !important;
-  }
-}
-
-/* Sistema unificado de fichas Salero como Nuestros menús - v49 */
-
-.salero-card-grid{
+/* Nuestros menús: tarjetas tipo menú, sin sistema global */
+.menus-editorial .menu-cards{
   display:grid !important;
+  grid-template-columns:repeat(3,1fr) !important;
   gap:clamp(24px,3vw,38px) !important;
   align-items:stretch !important;
 }
 
-.salero-card-grid-menus,
-.salero-card-grid-sectors{
-  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
-}
-
-.salero-card-grid-services{
-  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
-}
-
-/* Reseteo de estructuras antiguas */
-.service-list.salero-card-grid{
-  border-top:0 !important;
-}
-
-.salero-card-grid .service-row,
-.salero-card-grid .menu-card,
-.salero-card-grid .sector-card,
-.salero-card-grid .card{
+.menus-editorial .menu-card{
   position:relative !important;
   overflow:hidden !important;
   display:flex !important;
   flex-direction:column !important;
-  justify-content:flex-start !important;
+  gap:20px !important;
   min-height:430px !important;
-  padding:clamp(30px,3vw,44px) !important;
+  padding:34px !important;
   border-radius:34px !important;
-  border:1px solid rgba(255,253,247,.58) !important;
-  background:rgba(255,253,247,.86) !important;
-  box-shadow:0 28px 90px rgba(0,0,0,.14) !important;
+  background:rgba(255,253,247,.82) !important;
+  border:1px solid rgba(255,253,247,.48) !important;
+  box-shadow:0 28px 90px rgba(0,0,0,.16) !important;
   backdrop-filter:blur(14px) saturate(1.04) !important;
   -webkit-backdrop-filter:blur(14px) saturate(1.04) !important;
-  transition:
-    transform .28s ease,
-    background .28s ease,
-    box-shadow .28s ease,
-    border-color .28s ease !important;
 }
 
-/* círculo suave de esquina, como en Nuestros menús */
-.salero-card-grid .service-row::after,
-.salero-card-grid .menu-card::after,
-.salero-card-grid .sector-card::after,
-.salero-card-grid .card::after{
+.menus-editorial .menu-card::before{
+  display:none !important;
+}
+
+.menus-editorial .menu-card::after{
   content:"" !important;
   position:absolute !important;
-  width:240px !important;
-  height:240px !important;
+  width:230px !important;
+  height:230px !important;
   border-radius:50% !important;
-  top:-78px !important;
-  right:-78px !important;
-  background:rgba(199,244,88,.10) !important;
-  opacity:1 !important;
+  background:var(--lime) !important;
+  opacity:.10 !important;
+  right:-80px !important;
+  top:-75px !important;
   pointer-events:none !important;
   z-index:0 !important;
 }
 
-/* anulamos efectos antiguos de sector */
-.salero-card-grid .sector-card::before{
-  display:none !important;
-}
-
-.salero-card-grid .service-row > *,
-.salero-card-grid .menu-card > *,
-.salero-card-grid .sector-card > *,
-.salero-card-grid .card > *{
+.menus-editorial .menu-card > *{
   position:relative !important;
   z-index:1 !important;
 }
 
-.salero-card-grid .service-row:hover,
-.salero-card-grid .menu-card:hover,
-.salero-card-grid .sector-card:hover,
-.salero-card-grid .card:hover{
+.menus-editorial .menu-card.featured,
+.menus-editorial .menu-card:nth-child(2){
+  background:rgba(221,230,200,.84) !important;
+  border-color:rgba(199,244,88,.30) !important;
+}
+
+.menus-editorial .menu-card:hover{
+  background:rgba(255,253,247,.92) !important;
   transform:translateY(-6px) !important;
-  background:rgba(255,253,247,.94) !important;
-  border-color:rgba(255,253,247,.82) !important;
-  box-shadow:0 34px 105px rgba(0,0,0,.20) !important;
+  box-shadow:0 34px 100px rgba(0,0,0,.20) !important;
 }
 
-/* tarjeta destacada */
-.salero-card-grid .menu-card.featured,
-.salero-card-grid .card.featured,
-.salero-card-grid .featured{
-  background:rgba(221,230,200,.88) !important;
-  border-color:rgba(199,244,88,.18) !important;
-}
-
-/* Etiquetas */
-.salero-card-grid .tag,
-.salero-card-grid .badge,
-.salero-card-grid .service-meta,
-.salero-card-grid .service-index,
-.salero-card-grid small{
+.menus-editorial .menu-card .tag,
+.menus-editorial .menu-card .badge,
+.menus-editorial .menu-card small{
   display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  width:max-content !important;
-  max-width:100% !important;
-  margin:0 0 clamp(28px,3vw,42px) !important;
-  padding:9px 16px !important;
+  width:fit-content !important;
+  padding:7px 11px !important;
   border-radius:999px !important;
-  background:rgba(102,117,72,.10) !important;
+  background:rgba(102,117,72,.12) !important;
   color:var(--olive-dark) !important;
-  font-size:.78rem !important;
+  font-size:.74rem !important;
   font-weight:900 !important;
-  line-height:1 !important;
-  letter-spacing:.055em !important;
   text-transform:uppercase !important;
-}
-
-/* Títulos */
-.salero-card-grid .service-row h3,
-.salero-card-grid .menu-card h3,
-.salero-card-grid .sector-card h3,
-.salero-card-grid .card h3{
+  letter-spacing:.04em !important;
   margin:0 !important;
-  color:var(--ink) !important;
+}
+
+.menus-editorial .menu-card h3{
   font-family:var(--font-serif) !important;
-  font-size:clamp(2.4rem,3.5vw,4.1rem) !important;
-  line-height:.96 !important;
+  font-size:clamp(2rem,3.2vw,3.5rem) !important;
+  line-height:.98 !important;
   letter-spacing:-.055em !important;
+  color:var(--ink) !important;
+  margin:0 !important;
 }
 
-/* Ajuste específico para servicios, al ser 4 columnas */
-.salero-card-grid-services .service-row h3,
-.salero-card-grid-services .card h3{
-  font-size:clamp(2rem,2.6vw,3.25rem) !important;
+.menus-editorial .menu-card p{
+  color:var(--soft) !important;
+  margin:0 !important;
+  font-size:1rem !important;
+  font-weight:500 !important;
+  line-height:1.6 !important;
 }
 
-/* Textos */
-.salero-card-grid .service-row p,
-.salero-card-grid .menu-card p,
-.salero-card-grid .sector-card p,
-.salero-card-grid .card p{
-  margin:clamp(28px,3vw,36px) 0 0 !important;
-  color:rgba(31,42,36,.72) !important;
-  font-size:clamp(1rem,1.15vw,1.18rem) !important;
-  font-weight:700 !important;
-  line-height:1.58 !important;
-}
-
-.salero-card-grid .service-row strong,
-.salero-card-grid .menu-card strong,
-.salero-card-grid .sector-card strong,
-.salero-card-grid .card strong{
-  color:var(--olive-dark) !important;
-  font-weight:900 !important;
-}
-
-/* Enlaces CTA: como en Nuestros menús, no botón gigante */
-.salero-card-grid .editorial-link,
-.salero-card-grid .card-link,
-.salero-card-grid .service-row a[href],
-.salero-card-grid .menu-card a[href],
-.salero-card-grid .sector-card a[href],
-.salero-card-grid .card a[href]{
+.menus-editorial .menu-card a[href],
+.menus-editorial .menu-card .card-link{
+  margin-top:auto !important;
   display:inline-flex !important;
   align-items:center !important;
-  justify-content:flex-start !important;
-  gap:10px !important;
+  gap:8px !important;
   width:max-content !important;
-  min-height:0 !important;
-  margin-top:auto !important;
-  padding:clamp(30px,3vw,42px) 0 0 !important;
+  padding:0 !important;
+  border:0 !important;
   border-radius:0 !important;
   background:transparent !important;
-  color:var(--olive-dark) !important;
   box-shadow:none !important;
+  color:var(--olive-dark) !important;
   font-family:var(--font-sans) !important;
-  font-size:1.05rem !important;
+  font-size:1rem !important;
   font-weight:900 !important;
-  line-height:1.1 !important;
-  letter-spacing:-.01em !important;
   text-decoration:none !important;
-  text-shadow:none !important;
-  transition:transform .22s ease, color .22s ease, opacity .22s ease !important;
 }
 
-.salero-card-grid .editorial-link::after,
-.salero-card-grid .card-link::after,
-.salero-card-grid .service-row a[href]::after,
-.salero-card-grid .menu-card a[href]::after,
-.salero-card-grid .sector-card a[href]::after,
-.salero-card-grid .card a[href]::after{
+.menus-editorial .menu-card a[href]::after,
+.menus-editorial .menu-card .card-link::after{
   content:"→" !important;
-  display:inline-block !important;
   margin-left:4px !important;
-  font-size:1.15em !important;
-  line-height:1 !important;
-  transform:translateY(-1px) !important;
-  transition:transform .22s ease !important;
+  transition:transform .2s ease !important;
 }
 
-.salero-card-grid .editorial-link:hover,
-.salero-card-grid .editorial-link:focus-visible,
-.salero-card-grid .card-link:hover,
-.salero-card-grid .card-link:focus-visible,
-.salero-card-grid .service-row a[href]:hover,
-.salero-card-grid .service-row a[href]:focus-visible,
-.salero-card-grid .menu-card a[href]:hover,
-.salero-card-grid .menu-card a[href]:focus-visible,
-.salero-card-grid .sector-card a[href]:hover,
-.salero-card-grid .sector-card a[href]:focus-visible,
-.salero-card-grid .card a[href]:hover,
-.salero-card-grid .card a[href]:focus-visible{
-  color:var(--ink) !important;
+.menus-editorial .menu-card a[href]:hover::after,
+.menus-editorial .menu-card .card-link:hover::after{
   transform:translateX(4px) !important;
-  outline:none !important;
 }
 
-.salero-card-grid .editorial-link:hover::after,
-.salero-card-grid .editorial-link:focus-visible::after,
-.salero-card-grid .card-link:hover::after,
-.salero-card-grid .card-link:focus-visible::after,
-.salero-card-grid .service-row a[href]:hover::after,
-.salero-card-grid .service-row a[href]:focus-visible::after,
-.salero-card-grid .menu-card a[href]:hover::after,
-.salero-card-grid .menu-card a[href]:focus-visible::after,
-.salero-card-grid .sector-card a[href]:hover::after,
-.salero-card-grid .sector-card a[href]:focus-visible::after,
-.salero-card-grid .card a[href]:hover::after,
-.salero-card-grid .card a[href]:focus-visible::after{
-  transform:translate(5px,-1px) !important;
+/* Sectores: sistema original */
+.sectors-editorial .sector-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3,1fr) !important;
+  gap:22px !important;
 }
 
-/* Fondo oscuro: mantiene estética de tarjetas tipo menú */
-.menus-editorial .salero-card-grid .menu-card,
-.sectors-editorial .salero-card-grid .sector-card,
-.services-editorial .salero-card-grid .service-row,
-.services-editorial .salero-card-grid .card{
-  background:rgba(255,253,247,.86) !important;
-  border-color:rgba(255,253,247,.58) !important;
+.sectors-editorial .sector-card{
+  min-height:390px !important;
 }
 
 /* Responsive */
-@media(max-width:1280px){
-  .salero-card-grid-services{
-    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+@media(max-width:1120px){
+  .services-editorial .service-row{
+    grid-template-columns:64px 1fr !important;
   }
-}
 
-@media(max-width:1180px){
-  .salero-card-grid-menus,
-  .salero-card-grid-sectors{
-    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  .services-editorial .service-row p,
+  .services-editorial .service-row .editorial-link{
+    grid-column:2 !important;
+  }
+
+  .menus-editorial .menu-cards,
+  .sectors-editorial .sector-grid{
+    grid-template-columns:repeat(2,1fr) !important;
   }
 }
 
 @media(max-width:680px){
-  .salero-card-grid,
-  .salero-card-grid-services,
-  .salero-card-grid-menus,
-  .salero-card-grid-sectors{
+  .services-editorial .service-row{
     grid-template-columns:1fr !important;
-    gap:20px !important;
+    gap:14px !important;
+    padding:28px 0 !important;
   }
 
-  .salero-card-grid .service-row,
-  .salero-card-grid .menu-card,
-  .salero-card-grid .sector-card,
-  .salero-card-grid .card{
+  .services-editorial .service-row p,
+  .services-editorial .service-row .editorial-link{
+    grid-column:auto !important;
+  }
+
+  .menus-editorial .menu-cards,
+  .sectors-editorial .sector-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  .menus-editorial .menu-card{
     min-height:auto !important;
     padding:30px !important;
     border-radius:28px !important;
-  }
-
-  .salero-card-grid .service-row h3,
-  .salero-card-grid .menu-card h3,
-  .salero-card-grid .sector-card h3,
-  .salero-card-grid .card h3{
-    font-size:clamp(2.3rem,12vw,3.8rem) !important;
   }
 }
