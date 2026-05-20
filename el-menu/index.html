@@ -1,19 +1,19 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <title>El Menú | Salero Digital</title>
+  <title>El Menú | Servicios digitales con salero | Salero Digital</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Servicios digitales de Salero Digital: desarrollo web, SEO local, redes sociales y campañas Ads para negocios locales con estrategia y salero.">
+  <meta name="description" content="Servicios digitales de Salero Digital: desarrollo web, SEO local, redes sociales y campañas Ads para negocios locales con estrategia y cercanía.">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="image" href="/assets/img/menu-hero-poster.webp" fetchpriority="high">
-  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/main.css?v=38">
+  <link rel="preload" as="image" href="/assets/img/menu-hero-poster.webp" fetchpriority="high">
+  <link rel="stylesheet" href="/assets/css/main.css?v=37">
+  <link rel="stylesheet" href="/assets/css/el-menu.css?v=1">
 </head>
-
-<body>
+<body class="el-menu-page">
   <header class="site-header">
     <div class="container header-inner">
       <a class="logo logo-wordmark" href="/" aria-label="Salero Digital">
@@ -21,7 +21,7 @@
       </a>
 
       <nav class="nav" aria-label="Menú principal">
-        <a href="/el-menu/">El Menú</a>
+        <a href="/el-menu/" aria-current="page">El Menú</a>
         <a href="/nuestros-menus/">Nuestros menús</a>
         <a href="/sectores/">Sectores</a>
         <a href="/la-receta/">La Receta</a>
@@ -39,40 +39,38 @@
   </header>
 
   <main>
-    <section class="page-hero menu-hero menu-video-section">
-      <div class="menu-hero-media" data-video-src="/assets/video/menu-hero.mp4" aria-hidden="true"></div>
-      <div class="menu-hero-overlay" aria-hidden="true"></div>
+    <section class="el-menu-hero" aria-labelledby="el-menu-title">
+      <div class="el-menu-hero-media" data-menu-video-src="/assets/video/menu-hero.mp4" aria-hidden="true"></div>
+      <div class="el-menu-hero-overlay" aria-hidden="true"></div>
 
-      <div class="container menu-hero-grid">
-        <div class="menu-hero-copy">
+      <div class="container el-menu-hero-grid">
+        <div class="el-menu-hero-copy">
           <span class="eyebrow">El Menú</span>
-          <h1>Servicios digitales con el punto justo de sal</h1>
-          <p class="lead">
-            Web, SEO, redes sociales y campañas de publicidad pensadas para que tu negocio deje de estar de adorno y empiece a generar oportunidades reales.
-          </p>
+          <h1 id="el-menu-title">Servicios digitales con el punto justo de sal</h1>
+          <p class="lead">Web, SEO, redes sociales y campañas de publicidad pensadas para que tu negocio deje de estar de adorno y empiece a generar oportunidades reales.</p>
           <div class="hero-actions">
             <a class="btn btn-primary" href="/hablamos/">Pide tu cata digital</a>
             <a class="btn btn-secondary" href="#servicios-menu">Ver servicios</a>
           </div>
         </div>
 
-        <aside class="menu-hero-notes" aria-label="Servicios principales de Salero Digital">
-          <a class="menu-note menu-note-web" href="/el-menu/cimientos-digitales/">
+        <aside class="el-menu-hero-notes" aria-label="Servicios principales de Salero Digital">
+          <a class="el-menu-note el-menu-note-web" href="/el-menu/cimientos-digitales/">
             <span>Desarrollo web</span>
             <strong>Cimientos Digitales</strong>
           </a>
 
-          <a class="menu-note menu-note-seo" href="/el-menu/el-pregonero/">
+          <a class="el-menu-note el-menu-note-seo" href="/el-menu/el-pregonero/">
             <span>SEO local</span>
             <strong>El Pregonero</strong>
           </a>
 
-          <a class="menu-note menu-note-social" href="/el-menu/gracia-y-presencia/">
+          <a class="el-menu-note el-menu-note-social" href="/el-menu/gracia-y-presencia/">
             <span>Redes sociales</span>
             <strong>Gracia y Presencia</strong>
           </a>
 
-          <a class="menu-note menu-note-ads" href="/el-menu/el-empujon/">
+          <a class="el-menu-note el-menu-note-ads" href="/el-menu/el-empujon/">
             <span>Campañas Ads</span>
             <strong>El Empujón</strong>
           </a>
@@ -80,60 +78,72 @@
       </div>
     </section>
 
-    <section class="manifest-section">
-      <div class="container manifesto-inner">
-        <h2>No vendemos piezas sueltas. Cocinamos una estrategia digital con <em>sentido de negocio</em>.</h2>
-        <p>
-          El Menú reúne los cuatro servicios principales de Salero Digital: desarrollo web, posicionamiento, contenido social y campañas. Cada uno puede funcionar por separado, pero juntos hacen que la marca gane presencia, confianza y oportunidades reales.
-        </p>
+    <section class="el-menu-manifest">
+      <div class="container el-menu-manifest-inner">
+        <h2>No vendemos piezas sueltas. Cocinamos una estrategia completa.</h2>
+        <p>Un negocio no crece porque tenga una web, una publicación o una campaña aislada. Crece cuando cada canal trabaja con una intención clara: que te vean, que te entiendan y que contacten contigo.</p>
       </div>
     </section>
 
-    <section id="servicios-menu" class="section services-editorial">
+    <section class="section el-menu-services" id="servicios-menu">
       <div class="container">
         <div class="section-header split-header">
           <div>
-            <span class="eyebrow">Servicios principales</span>
-            <h2>Cuatro formas de darle sabor digital a tu negocio</h2>
+            <span class="eyebrow">Servicios</span>
+            <h2>Cuatro recetas para que tu marca coja sabor digital</h2>
           </div>
-          <p class="lead">
-            Empezamos por entender dónde está el negocio, qué necesita vender y qué canales tienen sentido. Después elegimos la receta: web, SEO, redes, Ads o una combinación bien medida.
-          </p>
+          <p class="lead">Cada servicio puede funcionar por separado, pero juntos forman una presencia digital más sólida, medible y orientada a negocio.</p>
         </div>
 
-        <div class="cards-grid" data-collection data-endpoint="servicios" data-base-path="/el-menu" data-label="Servicio">
-          <div class="loading">Cargando servicios desde el CMS...</div>
+        <div class="cards-grid el-menu-service-grid" data-collection data-endpoint="servicios" data-base-path="/el-menu" data-label="Servicio">
+          <div class="loading">Cargando contenido desde el CMS...</div>
         </div>
       </div>
     </section>
 
-    <section class="quote-band">
-      <div class="container quote-inner">
-        <span>Método Salero</span>
-        <h2>Primero probamos, luego aliñamos.</h2>
-        <p>
-          Antes de tocar una web, una campaña o una red social, hacemos una cata digital: revisamos qué está pasando, qué frena la visibilidad y dónde está la oportunidad real.
-        </p>
+    <section class="el-menu-method">
+      <div class="container el-menu-method-grid">
+        <div class="el-menu-method-copy">
+          <span class="eyebrow">Método Salero</span>
+          <h2>Primero probamos, luego aliñamos</h2>
+          <p>Antes de proponerte una web, una campaña o una estrategia de contenidos, miramos cómo está tu negocio ahora mismo. Sin tecnicismos innecesarios y sin venderte lo que no necesitas.</p>
+        </div>
+
+        <div class="el-menu-method-steps">
+          <article>
+            <span>01</span>
+            <h3>Cata digital</h3>
+            <p>Revisamos tu web, tu visibilidad, tus redes y tus oportunidades reales de captación.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Receta estratégica</h3>
+            <p>Definimos qué canal debe liderar, qué hay que corregir y dónde tiene sentido invertir.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Ejecución senior</h3>
+            <p>Desarrollamos, optimizamos, publicamos y lanzamos campañas con criterio técnico y comercial.</p>
+          </article>
+          <article>
+            <span>04</span>
+            <h3>Medición en cristiano</h3>
+            <p>Te explicamos qué se ha hecho, qué ha funcionado y qué conviene mejorar en el siguiente movimiento.</p>
+          </article>
+        </div>
       </div>
     </section>
 
-    <section class="section trust-section">
-      <div class="container trust-grid">
-        <div>
-          <span class="eyebrow">Cómo trabajamos</span>
-          <h2>Sin humo, sin prisas raras y sin tecnicismos de escaparate</h2>
-        </div>
-        <div class="trust-copy">
-          <p>
-            Trabajamos como socio estratégico, no como proveedor de tareas sueltas. Medimos, explicamos y ajustamos para que cada acción tenga un porqué.
-          </p>
-          <div class="trust-list">
-            <span>Diagnóstico inicial de presencia digital</span>
-            <span>Estrategia por prioridad y oportunidad</span>
-            <span>Ejecución técnica y creativa</span>
-            <span>Medición de resultados con datos claros</span>
-            <span>Optimización continua según evolución</span>
-          </div>
+    <section class="section el-menu-trust">
+      <div class="container el-menu-trust-card">
+        <span class="eyebrow">Equipo senior</span>
+        <h2>El trato de siempre, los resultados de ahora</h2>
+        <p>Somos de aquí, pero trabajamos con metodología de agencia. Eso significa cercanía, sí, pero también estrategia, análisis, control técnico y foco comercial.</p>
+        <div class="el-menu-trust-list">
+          <span>Desarrollo web rápido y estable</span>
+          <span>SEO local orientado a negocio</span>
+          <span>Contenido con tono de marca</span>
+          <span>Campañas medidas con datos claros</span>
         </div>
       </div>
     </section>
@@ -142,10 +152,8 @@
       <div class="container">
         <div class="cata-card">
           <span class="eyebrow">Cata digital</span>
-          <h2>¿Vemos qué necesita tu negocio para saber mejor?</h2>
-          <p>
-            Revisamos tu web, tu posicionamiento, tus redes y tus campañas para decirte por dónde conviene empezar. Sin venderte de más y sin darte una receta que no toca.
-          </p>
+          <h2>¿Le damos el punto de sal que le falta a tu negocio?</h2>
+          <p>Cuéntanos dónde estás, qué quieres conseguir y revisamos qué servicio tiene más sentido para empezar. Sin presión, sin humo y con los pies en la tierra.</p>
           <div class="hero-actions">
             <a class="btn btn-primary" href="/hablamos/">Pedir mi cata digital</a>
             <a class="btn btn-secondary" href="https://wa.me/34665688916?text=Hola%2C%20quiero%20hacer%20una%20cata%20digital%20con%20Salero%20Digital." target="_blank" rel="noopener">Escribir por WhatsApp</a>
@@ -162,7 +170,6 @@
           <h2>Salero Digital</h2>
           <p>Tu marca, con salero. Agencia digital para negocios que quieren dejar de estar sosos en internet.</p>
         </div>
-
         <div>
           <h3>El Menú</h3>
           <nav class="footer-nav">
@@ -172,7 +179,6 @@
             <a href="/el-menu/el-empujon/">El Empujón</a>
           </nav>
         </div>
-
         <div>
           <h3>Nuestros menús</h3>
           <nav class="footer-nav">
@@ -181,14 +187,12 @@
             <a href="/nuestros-menus/menu-degustacion/">El Menú Degustación</a>
           </nav>
         </div>
-
         <div>
           <h3>¿Hablamos?</h3>
           <p>Morón de la Frontera, Sierra Sur y Campiña.</p>
           <a href="/hablamos/">Pide tu cata digital</a>
         </div>
       </div>
-
       <div class="footer-bottom">
         <span>© 2026 Salero Digital</span>
         <span>Digitalizamos con salero, pero con los pies en la tierra.</span>
@@ -200,7 +204,8 @@
 
   <script src="/assets/js/config.js?v=4" defer></script>
   <script src="/assets/js/api.js?v=4" defer></script>
-  <script src="/assets/js/helpers.js?v=38" defer></script>
+  <script src="/assets/js/helpers.js?v=37" defer></script>
   <script src="/assets/js/collection.js?v=4" defer></script>
+  <script src="/assets/js/el-menu.js?v=1" defer></script>
 </body>
 </html>
