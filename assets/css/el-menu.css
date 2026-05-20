@@ -602,3 +602,104 @@
     background:rgba(246,241,232,.24);
   }
 }
+
+/* Vídeo ambiental en bloque de servicios El Menú - v43 */
+.menu-services-video-section{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:var(--cream);
+  padding:clamp(86px,10vw,150px) 0;
+}
+
+.menu-services-bg{
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  overflow:hidden;
+  background:
+    url("/assets/img/servicios-menu-poster.webp") center center/cover no-repeat,
+    var(--cream);
+}
+
+.menu-services-video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center center;
+  opacity:.72;
+  filter:saturate(.82) contrast(.92) brightness(.96) blur(.45px);
+}
+
+.menu-services-video-section::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(246,241,232,.86) 0%,
+      rgba(246,241,232,.64) 44%,
+      rgba(246,241,232,.88) 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(246,241,232,.84) 0%,
+      rgba(246,241,232,.58) 48%,
+      rgba(246,241,232,.82) 100%
+    );
+}
+
+.menu-services-video-section .container{
+  position:relative;
+  z-index:1;
+}
+
+.menu-services-video-section .section-header{
+  margin-bottom:clamp(34px,5vw,58px);
+}
+
+.menu-services-video-section h2,
+.menu-services-video-section .lead{
+  text-shadow:
+    0 2px 22px rgba(246,241,232,.82),
+    0 0 42px rgba(246,241,232,.70);
+}
+
+.menu-services-grid .card{
+  background:rgba(255,253,247,.82);
+  border-color:rgba(255,253,247,.54);
+  backdrop-filter:blur(14px) saturate(1.02);
+  -webkit-backdrop-filter:blur(14px) saturate(1.02);
+  box-shadow:0 28px 90px rgba(31,42,36,.10);
+}
+
+.menu-services-grid .card:hover{
+  background:rgba(255,253,247,.94);
+  transform:translateY(-6px);
+  box-shadow:0 34px 100px rgba(31,42,36,.16);
+}
+
+@media(max-width:880px){
+  .menu-services-video{
+    display:none;
+  }
+
+  .menu-services-bg{
+    background:
+      url("/assets/img/servicios-menu-poster.webp") center center/cover no-repeat,
+      var(--cream);
+  }
+
+  .menu-services-video-section::after{
+    background:rgba(246,241,232,.82);
+  }
+
+  .menu-services-grid .card{
+    background:rgba(255,253,247,.90);
+  }
+}
