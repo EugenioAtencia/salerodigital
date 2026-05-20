@@ -40,7 +40,18 @@
 
   <main>
     <section class="el-menu-hero" aria-labelledby="el-menu-title">
-      <div class="menu-hero-media" data-video-src="/assets/video/menu-hero.mp4" aria-hidden="true"></div>
+      <div class="menu-hero-media" aria-hidden="true">
+        <video
+          class="menu-bg-video"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          poster="/assets/img/menu-hero-poster.webp">
+          <source src="/assets/video/menu-hero.mp4" type="video/mp4">
+        </video>
+      </div>
 
       <div class="container el-menu-hero-grid">
         <div class="el-menu-hero-copy">
