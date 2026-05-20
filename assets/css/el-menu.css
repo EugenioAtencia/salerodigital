@@ -301,3 +301,77 @@
   .el-menu-hero-media video{display:none}
   .el-menu-note{transition:none}
 }
+
+/* Ajuste hero El Menú sin fichas ni veladura extra - v40 */
+.menu-hero-overlay{
+  display:none !important;
+}
+
+.menu-hero-media{
+  background:
+    url("/assets/img/menu-hero-poster.webp") center center/cover no-repeat,
+    var(--cream) !important;
+}
+
+.menu-hero-media video{
+  opacity:.94 !important;
+  filter:saturate(.92) contrast(.96) brightness(1) blur(.35px) !important;
+}
+
+.menu-hero-grid{
+  grid-template-columns:minmax(0,.98fr) minmax(360px,.82fr) !important;
+}
+
+.menu-hero-copy{
+  position:relative;
+  z-index:2;
+  max-width:790px;
+  text-shadow:
+    0 2px 20px rgba(246,241,232,.82),
+    0 0 44px rgba(246,241,232,.60);
+}
+
+.menu-hero-copy .lead{
+  max-width:700px;
+}
+
+.menu-hero-copy .btn,
+.menu-hero-copy .hero-actions a{
+  text-shadow:none;
+}
+
+.menu-hero-notes,
+.menu-note{
+  display:none !important;
+}
+
+.menu-hero-visual-space{
+  display:block;
+  width:100%;
+  min-height:600px;
+  justify-self:end;
+  pointer-events:none;
+}
+
+@media(max-width:1120px){
+  .menu-hero-grid{
+    grid-template-columns:1fr !important;
+    width:min(100% - 36px,820px) !important;
+  }
+
+  .menu-hero-visual-space{
+    display:none !important;
+  }
+}
+
+@media(max-width:880px){
+  .menu-hero-media video{
+    display:none !important;
+  }
+}
+
+@media(max-width:680px){
+  .menu-hero-grid{
+    width:min(100% - 28px,720px) !important;
+  }
+}
