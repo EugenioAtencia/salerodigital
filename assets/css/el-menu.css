@@ -731,3 +731,17 @@
       ) !important;
   }
 }
+
+.menu-services-video-section .section-header{
+  margin-bottom:44px !important;
+}
+
+.menu-services-video-section h2{
+  max-width:780px !important;
+}
+
+.menu-services-video-section .lead{
+  max-width:520px !important;
+  font-size:clamp(1.05rem,1.3vw,1.28rem) !important;
+  line-height:1.5 !important;
+}
