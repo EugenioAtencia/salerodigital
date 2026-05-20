@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="/assets/img/menu-hero-poster.webp" fetchpriority="high">
   <link rel="stylesheet" href="/assets/css/main.css?v=37">
-  <link rel="stylesheet" href="/assets/css/el-menu.css?v=42">
+  <link rel="stylesheet" href="/assets/css/el-menu.css?v=43">
 </head>
 <body class="el-menu-page">
   <header class="site-header">
@@ -77,17 +77,32 @@
       </div>
     </section>
 
-    <section class="section el-menu-services" id="servicios-menu">
+    <section id="servicios-menu" class="section-tight menu-services-video-section">
+      <div class="menu-services-bg" aria-hidden="true">
+        <video
+          class="menu-services-video"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          poster="/assets/img/servicios-menu-poster.webp">
+          <source src="/assets/video/servicios-menu-bg.mp4" type="video/mp4">
+        </video>
+      </div>
+    
       <div class="container">
         <div class="section-header split-header">
           <div>
             <span class="eyebrow">Servicios</span>
             <h2>Cuatro recetas para que tu marca coja sabor digital</h2>
           </div>
-          <p class="lead">Cada servicio puede funcionar por separado, pero juntos forman una presencia digital más sólida, medible y orientada a negocio.</p>
+          <p class="lead">
+            Cada servicio puede funcionar por separado, pero juntos forman una presencia digital más sólida, medible y orientada a negocio.
+          </p>
         </div>
-
-        <div class="cards-grid el-menu-service-grid" data-collection data-endpoint="servicios" data-base-path="/el-menu" data-label="Servicio">
+    
+        <div class="cards-grid menu-services-grid" data-collection data-endpoint="servicios" data-base-path="/el-menu" data-label="Servicio">
           <div class="loading">Cargando contenido desde el CMS...</div>
         </div>
       </div>
