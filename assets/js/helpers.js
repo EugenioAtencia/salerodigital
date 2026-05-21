@@ -10,7 +10,23 @@ function formatFaqs(v=''){const t=String(v||'').trim();if(!t)return '';const blo
 function itemTitle(item={}){return item.title&&item.title.rendered?stripHtml(item.title.rendered):''}
 function excerpt(item={}){if(item.excerpt&&item.excerpt.rendered)return stripHtml(item.excerpt.rendered);const a=getAcf(item);return a.claim||a.subtitulo_comercial||a.titular_seo||a.meta_description||''}
 function setSeoFromItem(item={}){const a=getAcf(item);const title=a.meta_title||a.og_title||itemTitle(item);const desc=a.meta_description||a.og_description||excerpt(item);if(title)document.title=`${stripHtml(title)} | Salero Digital`;const meta=document.querySelector('meta[name="description"]');if(meta&&desc)meta.setAttribute('content',stripHtml(desc).slice(0,160))}
-function renderCard(item,basePath,label=''){const a=getAcf(item),title=itemTitle(item),desc=a.claim||a.subtitulo_comercial||a.titular_seo||excerpt(item);return `<article class="card">${label?`<span class="tag">${escapeHtml(label)}</span>`:''}<h3>${title}</h3><p>${escapeHtml(stripHtml(desc)).slice(0,170)}</p><a class="card-link" href="${basePath}/${item.slug}/">Ver más</a></article>`}
+function sectorCardKind(item={}){const t=`${item.slug||''} ${itemTitle(item)}`.toLowerCase();if(t.includes('hosteler')||t.includes('turismo')||t.includes('restaurante')||t.includes('alojamiento'))return 'hosteleria';if(t.includes('comercio')||t.includes('pyme')||t.includes('pymes')||t.includes('tienda'))return 'comercio';if(t.includes('almazara')||t.includes('aceite')||t.includes('olivar')||t.includes('oliva'))return 'aceite';return 'generico'}
+function renderSectorIcon(kind='generico'){
+  const attrs='viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"';
+  if(kind==='hosteleria')return `<svg ${attrs}><path d="M18 35c0-9.4 6.2-17 14-17s14 7.6 14 17" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/><path d="M14 36h36" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/><path d="M20 44h24" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/><path d="M32 14v4" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/><path d="M29 14h6" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/></svg>`;
+  if(kind==='comercio')return `<svg ${attrs}><path d="M16 29h32l-3-12H19l-3 12Z" stroke="currentColor" stroke-width="3.8" stroke-linejoin="round"/><path d="M20 29v18h24V29" stroke="currentColor" stroke-width="3.8" stroke-linejoin="round"/><path d="M28 47V36h8v11" stroke="currentColor" stroke-width="3.8" stroke-linejoin="round"/><path d="M16 29c0 4 3.2 6 6.3 6 2.8 0 4.8-1.7 5.7-4 .9 2.3 2.9 4 5.7 4s4.8-1.7 5.7-4c.9 2.3 2.9 4 5.7 4 3.1 0 6.3-2 6.3-6" stroke="currentColor" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  if(kind==='aceite')return `<svg ${attrs}><path d="M18 48c13-9 21-20 28-34" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/><path d="M27 39c-8 1-13-2-15-8 7-2 13 0 15 8Z" stroke="currentColor" stroke-width="3.8" stroke-linejoin="round"/><path d="M35 30c-8 1-13-2-15-8 7-2 13 0 15 8Z" stroke="currentColor" stroke-width="3.8" stroke-linejoin="round"/><path d="M43 21c-7 1-12-2-14-8 7-2 12 0 14 8Z" stroke="currentColor" stroke-width="3.8" stroke-linejoin="round"/><path d="M37 39c7 0 12 3 14 9-7 2-12-.4-14-9Z" stroke="currentColor" stroke-width="3.8" stroke-linejoin="round"/></svg>`;
+  return `<svg ${attrs}><path d="M18 18h28v28H18V18Z" stroke="currentColor" stroke-width="3.8"/><path d="M32 18v28M18 32h28" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/></svg>`;
+}
+function renderCard(item,basePath,label=''){
+  const a=getAcf(item),title=itemTitle(item),desc=a.claim||a.subtitulo_comercial||a.titular_seo||excerpt(item);
+  const isSector=(String(basePath||'').replace(/\/$/,'')==='/sectores')||String(label||'').toLowerCase()==='sector';
+  if(isSector){
+    const kind=sectorCardKind(item);
+    return `<article class="card sector-card-dynamic sector-card-${kind}"><span class="sector-card-icon" aria-hidden="true">${renderSectorIcon(kind)}</span>${label?`<span class="tag">${escapeHtml(label)}</span>`:''}<h3>${escapeHtml(title)}</h3><p>${escapeHtml(stripHtml(desc)).slice(0,170)}</p><a class="card-link" href="${basePath}/${item.slug}/">Ver más</a></article>`;
+  }
+  return `<article class="card">${label?`<span class="tag">${escapeHtml(label)}</span>`:''}<h3>${escapeHtml(title)}</h3><p>${escapeHtml(stripHtml(desc)).slice(0,170)}</p><a class="card-link" href="${basePath}/${item.slug}/">Ver más</a></article>`
+}
 function setActiveNav(){const current=window.location.pathname.replace(/\/$/,'')||'/';document.querySelectorAll('.nav a').forEach(l=>{const h=(l.getAttribute('href')||'').replace(/\/$/,'')||'/';if(h===current||(h!=='/'&&current.startsWith(h)))l.classList.add('is-active')})}
 
 function initHeaderScroll(){
