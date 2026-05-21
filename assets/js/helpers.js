@@ -11,6 +11,12 @@ function itemTitle(item={}){return item.title&&item.title.rendered?stripHtml(ite
 function excerpt(item={}){if(item.excerpt&&item.excerpt.rendered)return stripHtml(item.excerpt.rendered);const a=getAcf(item);return a.claim||a.subtitulo_comercial||a.titular_seo||a.meta_description||''}
 function setSeoFromItem(item={}){const a=getAcf(item);const title=a.meta_title||a.og_title||itemTitle(item);const desc=a.meta_description||a.og_description||excerpt(item);if(title)document.title=`${stripHtml(title)} | Salero Digital`;const meta=document.querySelector('meta[name="description"]');if(meta&&desc)meta.setAttribute('content',stripHtml(desc).slice(0,160))}
 function sectorCardKind(item={}){const t=`${item.slug||''} ${itemTitle(item)}`.toLowerCase();if(t.includes('hosteler')||t.includes('turismo')||t.includes('restaurante')||t.includes('alojamiento'))return 'hosteleria';if(t.includes('comercio')||t.includes('pyme')||t.includes('pymes')||t.includes('tienda'))return 'comercio';if(t.includes('almazara')||t.includes('aceite')||t.includes('olivar')||t.includes('oliva'))return 'aceite';return 'generico'}
+function sectorCardLabel(kind='generico'){
+  if(kind==='hosteleria')return 'Reservas, imagen y reputación';
+  if(kind==='comercio')return 'Visibilidad local y ventas';
+  if(kind==='aceite')return 'Origen, producto y marca';
+  return 'Estrategia sectorial';
+}
 function renderSectorIcon(kind='generico'){
   const attrs='viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"';
   if(kind==='hosteleria')return `<svg ${attrs}><path d="M18 35c0-9.4 6.2-17 14-17s14 7.6 14 17" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/><path d="M14 36h36" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/><path d="M20 44h24" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/><path d="M32 14v4" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/><path d="M29 14h6" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/></svg>`;
@@ -23,7 +29,8 @@ function renderCard(item,basePath,label=''){
   const isSector=(String(basePath||'').replace(/\/$/,'')==='/sectores')||String(label||'').toLowerCase()==='sector';
   if(isSector){
     const kind=sectorCardKind(item);
-    return `<article class="card sector-card-dynamic sector-card-${kind}"><span class="sector-card-icon" aria-hidden="true">${renderSectorIcon(kind)}</span>${label?`<span class="tag">${escapeHtml(label)}</span>`:''}<h3>${escapeHtml(title)}</h3><p>${escapeHtml(stripHtml(desc)).slice(0,170)}</p><a class="card-link" href="${basePath}/${item.slug}/">Ver más</a></article>`;
+    const sectorLabel=sectorCardLabel(kind);
+    return `<article class="card sector-card-dynamic sector-card-${kind}"><span class="sector-card-icon" aria-hidden="true">${renderSectorIcon(kind)}</span><span class="tag sector-value-tag">${escapeHtml(sectorLabel)}</span><h3>${escapeHtml(title)}</h3><p>${escapeHtml(stripHtml(desc)).slice(0,170)}</p><a class="card-link" href="${basePath}/${item.slug}/" aria-label="Ver estrategia de ${escapeHtml(title)}">Ver estrategia</a></article>`;
   }
   return `<article class="card">${label?`<span class="tag">${escapeHtml(label)}</span>`:''}<h3>${escapeHtml(title)}</h3><p>${escapeHtml(stripHtml(desc)).slice(0,170)}</p><a class="card-link" href="${basePath}/${item.slug}/">Ver más</a></article>`
 }
