@@ -1,4 +1,4 @@
-/* Sectores | Salero Digital | v1 */
+/* Sectores | Salero Digital | v2 */
 
 .sectores-page{
   background:var(--cream);
@@ -19,6 +19,10 @@
   position:relative;
   overflow:hidden;
   isolation:isolate;
+  min-height:100vh;
+  min-height:100svh;
+  display:flex;
+  align-items:center;
   padding:clamp(136px,16vw,190px) 0 clamp(72px,9vw,118px);
   background:
     radial-gradient(circle at 82% 24%, rgba(199,244,88,.24), transparent 28%),
@@ -26,16 +30,39 @@
     linear-gradient(135deg, rgba(221,230,200,.72), rgba(246,241,232,.96) 48%, rgba(255,250,240,.96));
 }
 
+.sectores-hero-media{
+  position:absolute;
+  inset:0;
+  z-index:-3;
+  overflow:hidden;
+  background:
+    linear-gradient(110deg, rgba(246,241,232,.78), rgba(246,241,232,.52) 48%, rgba(246,241,232,.82)),
+    url("/assets/img/sectores-hero-poster.webp") center center/cover no-repeat,
+    var(--cream);
+}
+
+.sectores-hero-video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center center;
+  opacity:.68;
+  filter:saturate(.74) contrast(.92) brightness(1.05) blur(.8px);
+}
+
 .sectores-hero:before{
   content:"";
   position:absolute;
   inset:0;
   z-index:-2;
-  background-image:
-    linear-gradient(rgba(31,42,36,.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(31,42,36,.055) 1px, transparent 1px);
-  background-size:64px 64px;
-  mask-image:linear-gradient(180deg, rgba(0,0,0,.7), transparent 86%);
+  background:
+    linear-gradient(90deg, rgba(246,241,232,.84) 0%, rgba(246,241,232,.68) 45%, rgba(246,241,232,.82) 100%),
+    linear-gradient(rgba(31,42,36,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(31,42,36,.045) 1px, transparent 1px);
+  background-size:auto,64px 64px,64px 64px;
+  pointer-events:none;
 }
 
 .sectores-hero:after{
@@ -56,10 +83,17 @@
   grid-template-columns:minmax(0,1fr) minmax(320px,440px);
   gap:clamp(38px,6vw,88px);
   align-items:end;
+  width:100%;
 }
 
 .sectores-hero-copy{
   max-width:850px;
+  text-shadow:0 2px 20px rgba(246,241,232,.86),0 0 40px rgba(246,241,232,.64);
+}
+
+.sectores-hero-copy .btn,
+.sectores-hero-copy .sectores-hero-actions a{
+  text-shadow:none;
 }
 
 .sectores-hero-copy .lead{
@@ -419,12 +453,19 @@
   }
 }
 
+@media(max-width:880px){
+  .sectores-hero-video{
+    display:none;
+  }
+}
+
 @media(max-width:680px){
   .sectores-page .site-header{
     background:rgba(246,241,232,.86);
   }
 
   .sectores-hero{
+    min-height:auto;
     padding-top:112px;
   }
 
@@ -452,5 +493,11 @@
 
   .sectores-dynamic-grid .card{
     min-height:300px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .sectores-hero-video{
+    display:none;
   }
 }
