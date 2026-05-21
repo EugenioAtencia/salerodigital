@@ -1,42 +1,49 @@
-/* Sectores | Salero Digital | v2 */
+/* Sectores | Salero Digital | v3 */
 
 .sectores-page{
   background:var(--cream);
 }
 
+/* Mantener el header con el mismo comportamiento visual que El Menú */
 .sectores-page .site-header{
-  background:rgba(246,241,232,.68);
-  border-bottom-color:rgba(31,42,36,.08);
-  backdrop-filter:blur(18px) saturate(1.04);
-  -webkit-backdrop-filter:blur(18px) saturate(1.04);
+  background:transparent;
+  border-bottom-color:transparent;
+  box-shadow:none;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
 }
 
 .sectores-page .site-header.is-scrolled{
-  background:rgba(246,241,232,.82);
+  background:rgba(246,241,232,.60);
+  backdrop-filter:blur(18px) saturate(1.05);
+  -webkit-backdrop-filter:blur(18px) saturate(1.05);
+  border-bottom-color:rgba(31,42,36,.10);
+  box-shadow:0 18px 45px rgba(31,42,36,.06);
 }
 
+/* Hero alineado con /el-menu/ */
 .sectores-hero{
   position:relative;
-  overflow:hidden;
-  isolation:isolate;
   min-height:100vh;
   min-height:100svh;
   display:flex;
   align-items:center;
-  padding:clamp(136px,16vw,190px) 0 clamp(72px,9vw,118px);
-  background:
-    radial-gradient(circle at 82% 24%, rgba(199,244,88,.24), transparent 28%),
-    radial-gradient(circle at 10% 82%, rgba(215,179,77,.22), transparent 30%),
-    linear-gradient(135deg, rgba(221,230,200,.72), rgba(246,241,232,.96) 48%, rgba(255,250,240,.96));
+  justify-content:center;
+  padding-top:clamp(110px,12vh,160px);
+  padding-bottom:clamp(56px,8vh,90px);
+  overflow:hidden;
+  isolation:isolate;
+  background:var(--cream);
 }
 
 .sectores-hero-media{
   position:absolute;
   inset:0;
-  z-index:-3;
+  z-index:0;
+  width:100%;
+  height:100%;
   overflow:hidden;
   background:
-    linear-gradient(110deg, rgba(246,241,232,.78), rgba(246,241,232,.52) 48%, rgba(246,241,232,.82)),
     url("/assets/img/sectores-hero-poster.webp") center center/cover no-repeat,
     var(--cream);
 }
@@ -46,49 +53,67 @@
   inset:0;
   width:100%;
   height:100%;
+  display:block;
   object-fit:cover;
   object-position:center center;
-  opacity:.68;
-  filter:saturate(.74) contrast(.92) brightness(1.05) blur(.8px);
+  opacity:.92;
+  filter:saturate(.94) contrast(.96) brightness(1) blur(.25px);
 }
 
-.sectores-hero:before{
+.sectores-hero::before{
   content:"";
   position:absolute;
   inset:0;
-  z-index:-2;
-  background:
-    linear-gradient(90deg, rgba(246,241,232,.84) 0%, rgba(246,241,232,.68) 45%, rgba(246,241,232,.82) 100%),
-    linear-gradient(rgba(31,42,36,.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(31,42,36,.045) 1px, transparent 1px);
-  background-size:auto,64px 64px,64px 64px;
+  z-index:1;
   pointer-events:none;
+  background:linear-gradient(
+    90deg,
+    rgba(246,241,232,.22) 0%,
+    rgba(246,241,232,.08) 42%,
+    rgba(246,241,232,.16) 100%
+  );
 }
 
-.sectores-hero:after{
-  content:"";
-  position:absolute;
-  width:min(48vw,620px);
-  aspect-ratio:1;
-  right:-14vw;
-  bottom:-22vw;
-  z-index:-1;
-  border-radius:50%;
-  background:rgba(102,117,72,.14);
-  border:1px solid rgba(31,42,36,.08);
+.sectores-hero::after{
+  display:none;
 }
 
 .sectores-hero-grid{
+  position:relative;
+  z-index:2;
+  width:min(100% - 72px,1320px);
+  min-height:calc(100vh - 170px);
+  min-height:calc(100svh - 170px);
   display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(320px,440px);
-  gap:clamp(38px,6vw,88px);
-  align-items:end;
-  width:100%;
+  grid-template-columns:minmax(0,.98fr) minmax(360px,.82fr);
+  gap:clamp(42px,6vw,92px);
+  align-items:center;
+  justify-content:space-between;
+  margin:auto;
 }
 
 .sectores-hero-copy{
-  max-width:850px;
-  text-shadow:0 2px 20px rgba(246,241,232,.86),0 0 40px rgba(246,241,232,.64);
+  width:100%;
+  max-width:790px;
+  display:grid;
+  gap:26px;
+  text-align:left;
+  align-items:start;
+  justify-items:start;
+  position:relative;
+  z-index:2;
+  text-shadow:
+    0 2px 20px rgba(246,241,232,.86),
+    0 0 44px rgba(246,241,232,.70);
+}
+
+.sectores-hero-copy h1{
+  max-width:790px;
+}
+
+.sectores-hero-copy .lead{
+  max-width:700px;
+  margin:0;
 }
 
 .sectores-hero-copy .btn,
@@ -96,58 +121,17 @@
   text-shadow:none;
 }
 
-.sectores-hero-copy .lead{
-  margin:28px 0 0;
-  max-width:760px;
-}
-
 .sectores-hero-actions{
   display:flex;
   flex-wrap:wrap;
   gap:14px;
-  margin-top:32px;
+  margin-top:4px;
+  justify-content:flex-start;
 }
 
+/* Se oculta la nota lateral para igualar el tratamiento del hero con El Menú */
 .sectores-hero-card{
-  position:relative;
-  padding:34px;
-  border:1px solid rgba(31,42,36,.14);
-  border-radius:34px;
-  background:rgba(255,253,247,.62);
-  box-shadow:0 28px 80px rgba(31,42,36,.09);
-  backdrop-filter:blur(18px) saturate(1.05);
-  -webkit-backdrop-filter:blur(18px) saturate(1.05);
-}
-
-.sectores-hero-card:before{
-  content:"";
-  position:absolute;
-  width:132px;
-  height:132px;
-  right:24px;
-  top:-44px;
-  border-radius:50%;
-  background:rgba(199,244,88,.45);
-  filter:blur(1px);
-  z-index:-1;
-}
-
-.sectores-hero-card span{
-  display:inline-flex;
-  padding:8px 12px;
-  border-radius:999px;
-  background:rgba(102,117,72,.12);
-  color:var(--olive-dark);
-  font-size:.72rem;
-  font-weight:900;
-  letter-spacing:.055em;
-  text-transform:uppercase;
-}
-
-.sectores-hero-card p{
-  margin:20px 0 0;
-  color:var(--soft);
-  font-size:1.08rem;
+  display:none;
 }
 
 .sectores-intro{
@@ -448,25 +432,36 @@
     grid-template-columns:1fr;
   }
 
-  .sectores-hero-card{
-    max-width:620px;
+  .sectores-hero-grid{
+    width:min(100% - 36px,820px);
   }
 }
 
 @media(max-width:880px){
+  .sectores-page .site-header,
+  .sectores-page .site-header.is-scrolled,
+  body.menu-open .sectores-page .site-header{
+    background:rgba(246,241,232,.86);
+    backdrop-filter:blur(18px) saturate(1.05);
+    -webkit-backdrop-filter:blur(18px) saturate(1.05);
+    border-bottom-color:rgba(31,42,36,.10);
+  }
+
   .sectores-hero-video{
     display:none;
   }
 }
 
 @media(max-width:680px){
-  .sectores-page .site-header{
-    background:rgba(246,241,232,.86);
-  }
-
   .sectores-hero{
     min-height:auto;
-    padding-top:112px;
+    padding-top:105px;
+    padding-bottom:56px;
+  }
+
+  .sectores-hero-grid{
+    width:min(100% - 28px,720px);
+    min-height:calc(100svh - 150px);
   }
 
   .sectores-hero-actions,
@@ -475,24 +470,19 @@
     grid-template-columns:1fr;
   }
 
-  .sectores-hero-card,
   .sectores-dynamic-grid .card,
   .sectores-fit-card,
   .sectores-cta-card{
     border-radius:28px;
   }
 
-  .sectores-hero-card,
   .sectores-dynamic-grid .card{
     padding:28px;
+    min-height:300px;
   }
 
   .sectores-grid-heading{
     margin-bottom:28px;
-  }
-
-  .sectores-dynamic-grid .card{
-    min-height:300px;
   }
 }
 
