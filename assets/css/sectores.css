@@ -1,27 +1,33 @@
-/* Sectores | Salero Digital | v4 */
+/* Sectores | Salero Digital | v5 */
 
 .sectores-page{
   background:var(--cream);
 }
 
-/* Mantener el header con el mismo comportamiento visual que El Menú */
+/* Header sólido y legible sobre el hero, en la línea de Nuestros menús */
 .sectores-page .site-header{
-  background:transparent;
-  border-bottom-color:transparent;
-  box-shadow:none;
-  backdrop-filter:none;
-  -webkit-backdrop-filter:none;
+  background:rgba(246,241,232,.92);
+  border-bottom-color:rgba(31,42,36,.10);
+  box-shadow:0 12px 36px rgba(31,42,36,.045);
+  backdrop-filter:blur(18px) saturate(1.04);
+  -webkit-backdrop-filter:blur(18px) saturate(1.04);
 }
 
 .sectores-page .site-header.is-scrolled{
-  background:rgba(246,241,232,.60);
+  background:rgba(246,241,232,.96);
   backdrop-filter:blur(18px) saturate(1.05);
   -webkit-backdrop-filter:blur(18px) saturate(1.05);
-  border-bottom-color:rgba(31,42,36,.10);
+  border-bottom-color:rgba(31,42,36,.12);
   box-shadow:0 18px 45px rgba(31,42,36,.06);
 }
 
-/* Hero alineado con Nuestros menús, con degradado inferior a #fffdf7 */
+.sectores-page .site-header .logo,
+.sectores-page .site-header .nav a,
+.sectores-page .site-header .nav-contact{
+  text-shadow:none;
+}
+
+/* Hero alineado con Nuestros menús, con degradado inferior más intenso a #fffdf7 */
 .sectores-hero{
   position:relative;
   min-height:100vh;
@@ -31,9 +37,10 @@
   justify-content:center;
   padding-top:clamp(110px,12vh,160px);
   padding-bottom:clamp(56px,8vh,90px);
+  margin-bottom:-1px;
   overflow:hidden;
   isolation:isolate;
-  background:var(--cream);
+  background:#fffdf7;
 }
 
 .sectores-hero-media{
@@ -56,8 +63,8 @@
   display:block;
   object-fit:cover;
   object-position:center center;
-  opacity:.94;
-  filter:saturate(.96) contrast(.98) brightness(1) blur(.22px);
+  opacity:.95;
+  filter:saturate(.98) contrast(.98) brightness(1) blur(.22px);
 }
 
 .sectores-hero::before{
@@ -66,24 +73,30 @@
   inset:0;
   z-index:1;
   pointer-events:none;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,253,247,0) 0%,
-      rgba(255,253,247,.08) 34%,
-      rgba(255,253,247,.52) 74%,
-      #fffdf7 100%
-    ),
-    linear-gradient(
-      90deg,
-      rgba(246,241,232,.18) 0%,
-      rgba(246,241,232,.06) 42%,
-      rgba(246,241,232,.14) 100%
-    );
+  background:linear-gradient(
+    90deg,
+    rgba(246,241,232,.18) 0%,
+    rgba(246,241,232,.06) 42%,
+    rgba(246,241,232,.14) 100%
+  );
 }
 
 .sectores-hero::after{
-  display:none;
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:-1px;
+  height:58%;
+  z-index:1;
+  pointer-events:none;
+  background:linear-gradient(
+    180deg,
+    rgba(255,253,247,0) 0%,
+    rgba(255,253,247,.28) 28%,
+    rgba(255,253,247,.72) 64%,
+    #fffdf7 100%
+  );
 }
 
 .sectores-hero-grid{
@@ -184,7 +197,8 @@
 .sectores-intro{
   padding:clamp(72px,9vw,124px) 0;
   background:#fffdf7;
-  border-block:1px solid var(--border);
+  border-top:0;
+  border-bottom:1px solid var(--border);
 }
 
 .sectores-intro-inner{
@@ -494,8 +508,8 @@
 @media(max-width:880px){
   .sectores-page .site-header,
   .sectores-page .site-header.is-scrolled,
-  body.menu-open .sectores-page .site-header{
-    background:rgba(246,241,232,.86);
+  body.sectores-page.menu-open .site-header{
+    background:rgba(246,241,232,.92);
     backdrop-filter:blur(18px) saturate(1.05);
     -webkit-backdrop-filter:blur(18px) saturate(1.05);
     border-bottom-color:rgba(31,42,36,.10);
