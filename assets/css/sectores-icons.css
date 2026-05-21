@@ -1,4 +1,4 @@
-/* Iconos sectoriales para /sectores/ | v1 */
+/* Iconos sectoriales para /sectores/ | v2 */
 
 .sectores-dynamic-grid .sector-card-dynamic{
   padding-top:34px;
@@ -53,8 +53,24 @@
   box-shadow:0 26px 70px rgba(31,42,36,.12);
 }
 
-.sectores-dynamic-grid .sector-card-dynamic .tag{
-  margin-right:132px;
+/* Etiqueta sectorial alineada con .nm-pack-label de Nuestros menús */
+.sectores-dynamic-grid .sector-card-dynamic .tag,
+.sectores-dynamic-grid .sector-card-dynamic .sector-value-tag{
+  display:inline-flex;
+  width:fit-content;
+  max-width:calc(100% - 152px);
+  align-items:center;
+  margin:0 132px 24px 0;
+  padding:7px 12px;
+  border:1px solid rgba(83,97,47,.22);
+  border-radius:999px;
+  background:rgba(83,97,47,.08);
+  color:var(--olive-dark);
+  font-size:.76rem;
+  font-weight:800;
+  line-height:1.1;
+  letter-spacing:.08em;
+  text-transform:uppercase;
 }
 
 .sectores-dynamic-grid .sector-card-dynamic h3,
@@ -85,6 +101,12 @@
     width:52px;
     height:52px;
   }
+
+  .sectores-dynamic-grid .sector-card-dynamic .tag,
+  .sectores-dynamic-grid .sector-card-dynamic .sector-value-tag{
+    max-width:calc(100% - 136px);
+    margin-right:120px;
+  }
 }
 
 @media(max-width:680px){
@@ -111,8 +133,10 @@
     bottom:-7px;
   }
 
-  .sectores-dynamic-grid .sector-card-dynamic .tag{
-    margin-right:0;
+  .sectores-dynamic-grid .sector-card-dynamic .tag,
+  .sectores-dynamic-grid .sector-card-dynamic .sector-value-tag{
+    max-width:100%;
+    margin:0 0 18px;
   }
 
   .sectores-dynamic-grid .sector-card-dynamic h3,
