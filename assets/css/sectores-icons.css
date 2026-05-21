@@ -1,0 +1,122 @@
+/* Iconos sectoriales para /sectores/ | v1 */
+
+.sectores-dynamic-grid .sector-card-dynamic{
+  padding-top:34px;
+}
+
+.sectores-dynamic-grid .sector-card-dynamic::before,
+.sectores-dynamic-grid .sector-card-dynamic::after{
+  display:none;
+}
+
+.sectores-dynamic-grid .sector-card-icon{
+  position:absolute;
+  top:28px;
+  right:28px;
+  z-index:1;
+  display:grid;
+  place-items:center;
+  width:116px;
+  height:116px;
+  border-radius:32px;
+  background:linear-gradient(135deg, rgba(221,230,200,.92), rgba(199,244,88,.30));
+  border:1px solid rgba(102,117,72,.16);
+  color:var(--olive-dark);
+  opacity:.94;
+  box-shadow:0 22px 58px rgba(31,42,36,.08);
+  transform:rotate(2deg);
+  transition:transform .22s ease, opacity .22s ease, box-shadow .22s ease;
+}
+
+.sectores-dynamic-grid .sector-card-icon::after{
+  content:"";
+  position:absolute;
+  width:32px;
+  height:32px;
+  right:-10px;
+  bottom:-10px;
+  border-radius:999px;
+  background:var(--lime);
+  opacity:.72;
+}
+
+.sectores-dynamic-grid .sector-card-icon svg{
+  width:58px;
+  height:58px;
+  position:relative;
+  z-index:1;
+}
+
+.sectores-dynamic-grid .sector-card-dynamic:hover .sector-card-icon{
+  transform:translateY(-4px) rotate(0deg) scale(1.03);
+  opacity:1;
+  box-shadow:0 26px 70px rgba(31,42,36,.12);
+}
+
+.sectores-dynamic-grid .sector-card-dynamic .tag{
+  margin-right:132px;
+}
+
+.sectores-dynamic-grid .sector-card-dynamic h3,
+.sectores-dynamic-grid .sector-card-dynamic p{
+  max-width:calc(100% - 92px);
+}
+
+.sectores-dynamic-grid .sector-card-hosteleria .sector-card-icon{
+  background:linear-gradient(135deg, rgba(221,230,200,.95), rgba(215,179,77,.30));
+}
+
+.sectores-dynamic-grid .sector-card-comercio .sector-card-icon{
+  background:linear-gradient(135deg, rgba(221,230,200,.95), rgba(199,244,88,.28));
+}
+
+.sectores-dynamic-grid .sector-card-aceite .sector-card-icon{
+  background:linear-gradient(135deg, rgba(221,230,200,.95), rgba(102,117,72,.22));
+}
+
+@media(max-width:1120px){
+  .sectores-dynamic-grid .sector-card-icon{
+    width:104px;
+    height:104px;
+    border-radius:28px;
+  }
+
+  .sectores-dynamic-grid .sector-card-icon svg{
+    width:52px;
+    height:52px;
+  }
+}
+
+@media(max-width:680px){
+  .sectores-dynamic-grid .sector-card-icon{
+    position:relative;
+    top:auto;
+    right:auto;
+    width:86px;
+    height:86px;
+    margin-bottom:20px;
+    border-radius:24px;
+    transform:none;
+  }
+
+  .sectores-dynamic-grid .sector-card-icon svg{
+    width:44px;
+    height:44px;
+  }
+
+  .sectores-dynamic-grid .sector-card-icon::after{
+    width:24px;
+    height:24px;
+    right:-7px;
+    bottom:-7px;
+  }
+
+  .sectores-dynamic-grid .sector-card-dynamic .tag{
+    margin-right:0;
+  }
+
+  .sectores-dynamic-grid .sector-card-dynamic h3,
+  .sectores-dynamic-grid .sector-card-dynamic p{
+    max-width:none;
+  }
+}
