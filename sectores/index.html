@@ -9,8 +9,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="/assets/img/sectores-hero-poster.webp" fetchpriority="high">
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
-  <link rel="stylesheet" href="/assets/css/sectores.css?v=1">
+  <link rel="stylesheet" href="/assets/css/sectores.css?v=2">
 </head>
 <body class="sectores-page">
   <header class="site-header">
@@ -39,6 +40,12 @@
 
   <main>
     <section class="sectores-hero">
+      <div class="sectores-hero-media" aria-hidden="true">
+        <video class="sectores-hero-video" autoplay muted loop playsinline preload="metadata" poster="/assets/img/sectores-hero-poster.webp">
+          <source src="/assets/video/sectores-hero.mp4" type="video/mp4">
+        </video>
+      </div>
+
       <div class="container sectores-hero-grid">
         <div class="sectores-hero-copy">
           <span class="eyebrow">Sectores</span>
