@@ -1,0 +1,456 @@
+/* Sectores | Salero Digital | v1 */
+
+.sectores-page{
+  background:var(--cream);
+}
+
+.sectores-page .site-header{
+  background:rgba(246,241,232,.68);
+  border-bottom-color:rgba(31,42,36,.08);
+  backdrop-filter:blur(18px) saturate(1.04);
+  -webkit-backdrop-filter:blur(18px) saturate(1.04);
+}
+
+.sectores-page .site-header.is-scrolled{
+  background:rgba(246,241,232,.82);
+}
+
+.sectores-hero{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  padding:clamp(136px,16vw,190px) 0 clamp(72px,9vw,118px);
+  background:
+    radial-gradient(circle at 82% 24%, rgba(199,244,88,.24), transparent 28%),
+    radial-gradient(circle at 10% 82%, rgba(215,179,77,.22), transparent 30%),
+    linear-gradient(135deg, rgba(221,230,200,.72), rgba(246,241,232,.96) 48%, rgba(255,250,240,.96));
+}
+
+.sectores-hero:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  background-image:
+    linear-gradient(rgba(31,42,36,.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(31,42,36,.055) 1px, transparent 1px);
+  background-size:64px 64px;
+  mask-image:linear-gradient(180deg, rgba(0,0,0,.7), transparent 86%);
+}
+
+.sectores-hero:after{
+  content:"";
+  position:absolute;
+  width:min(48vw,620px);
+  aspect-ratio:1;
+  right:-14vw;
+  bottom:-22vw;
+  z-index:-1;
+  border-radius:50%;
+  background:rgba(102,117,72,.14);
+  border:1px solid rgba(31,42,36,.08);
+}
+
+.sectores-hero-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(320px,440px);
+  gap:clamp(38px,6vw,88px);
+  align-items:end;
+}
+
+.sectores-hero-copy{
+  max-width:850px;
+}
+
+.sectores-hero-copy .lead{
+  margin:28px 0 0;
+  max-width:760px;
+}
+
+.sectores-hero-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px;
+  margin-top:32px;
+}
+
+.sectores-hero-card{
+  position:relative;
+  padding:34px;
+  border:1px solid rgba(31,42,36,.14);
+  border-radius:34px;
+  background:rgba(255,253,247,.62);
+  box-shadow:0 28px 80px rgba(31,42,36,.09);
+  backdrop-filter:blur(18px) saturate(1.05);
+  -webkit-backdrop-filter:blur(18px) saturate(1.05);
+}
+
+.sectores-hero-card:before{
+  content:"";
+  position:absolute;
+  width:132px;
+  height:132px;
+  right:24px;
+  top:-44px;
+  border-radius:50%;
+  background:rgba(199,244,88,.45);
+  filter:blur(1px);
+  z-index:-1;
+}
+
+.sectores-hero-card span{
+  display:inline-flex;
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(102,117,72,.12);
+  color:var(--olive-dark);
+  font-size:.72rem;
+  font-weight:900;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+}
+
+.sectores-hero-card p{
+  margin:20px 0 0;
+  color:var(--soft);
+  font-size:1.08rem;
+}
+
+.sectores-intro{
+  padding:clamp(72px,9vw,124px) 0;
+  background:var(--paper);
+  border-block:1px solid var(--border);
+}
+
+.sectores-intro-inner{
+  max-width:1040px;
+}
+
+.sectores-intro h2{
+  max-width:980px;
+  font-size:clamp(2.35rem,5.8vw,5.55rem);
+  line-height:1;
+}
+
+.sectores-intro p{
+  margin:30px 0 0;
+  max-width:790px;
+  color:var(--soft);
+  font-size:clamp(1.08rem,1.8vw,1.36rem);
+}
+
+.sectores-grid-section{
+  position:relative;
+  overflow:hidden;
+  padding:clamp(72px,9vw,124px) 0;
+  background:
+    linear-gradient(180deg, rgba(246,241,232,.95), rgba(255,250,240,.92)),
+    var(--cream);
+}
+
+.sectores-grid-section:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 16% 8%, rgba(215,179,77,.16), transparent 30%),
+    radial-gradient(circle at 88% 90%, rgba(102,117,72,.16), transparent 28%);
+}
+
+.sectores-grid-section .container{
+  position:relative;
+  z-index:1;
+}
+
+.sectores-grid-heading{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(300px,520px);
+  gap:42px;
+  align-items:end;
+  margin-bottom:42px;
+}
+
+.sectores-grid-heading h2{
+  max-width:780px;
+}
+
+.sectores-grid-heading .lead{
+  margin:0;
+}
+
+.sectores-dynamic-grid{
+  align-items:stretch;
+}
+
+.sectores-dynamic-grid .card{
+  position:relative;
+  min-height:330px;
+  padding:34px;
+  border-radius:34px;
+  background:rgba(255,253,247,.82);
+  overflow:hidden;
+  transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+
+.sectores-dynamic-grid .card:before{
+  content:"";
+  position:absolute;
+  width:240px;
+  height:240px;
+  right:-92px;
+  top:-96px;
+  border-radius:50%;
+  background:rgba(221,230,200,.72);
+  z-index:0;
+}
+
+.sectores-dynamic-grid .card:after{
+  content:"";
+  position:absolute;
+  inset:auto 28px 28px auto;
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  background:rgba(199,244,88,.72);
+  opacity:.62;
+  z-index:0;
+}
+
+.sectores-dynamic-grid .card > *{
+  position:relative;
+  z-index:1;
+}
+
+.sectores-dynamic-grid .card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 30px 90px rgba(31,42,36,.12);
+  border-color:rgba(102,117,72,.28);
+}
+
+.sectores-dynamic-grid .card h3{
+  margin-top:10px;
+  font-family:var(--font-sans);
+  font-size:clamp(1.72rem,2.6vw,2.55rem);
+  line-height:1.05;
+  letter-spacing:-.06em;
+}
+
+.sectores-dynamic-grid .card p{
+  margin:8px 0 0;
+  max-width:360px;
+  font-size:1.05rem;
+  line-height:1.65;
+  color:var(--soft);
+}
+
+.sectores-dynamic-grid .card-link{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-top:auto;
+  color:var(--olive-dark);
+}
+
+.sectores-dynamic-grid .card-link:after{
+  content:"→";
+  transition:transform .18s ease;
+}
+
+.sectores-dynamic-grid .card-link:hover:after{
+  transform:translateX(4px);
+}
+
+.sectores-recipe-section{
+  padding:clamp(78px,10vw,136px) 0;
+  background:var(--olive-dark);
+  color:var(--cream);
+}
+
+.sectores-recipe-grid{
+  display:grid;
+  grid-template-columns:minmax(0,.95fr) minmax(320px,1fr);
+  gap:clamp(42px,6vw,78px);
+  align-items:start;
+}
+
+.sectores-recipe-copy h2,
+.sectores-recipe-copy p{
+  color:var(--cream);
+}
+
+.sectores-recipe-copy p{
+  margin:28px 0 0;
+  max-width:680px;
+  color:rgba(246,241,232,.78);
+  font-size:clamp(1.08rem,1.7vw,1.32rem);
+}
+
+.sectores-recipe-list{
+  display:grid;
+  gap:16px;
+}
+
+.sectores-recipe-list article{
+  padding:24px;
+  border:1px solid rgba(246,241,232,.15);
+  border-radius:24px;
+  background:rgba(255,253,247,.06);
+}
+
+.sectores-recipe-list span{
+  display:block;
+  margin-bottom:10px;
+  color:var(--albero);
+  font-weight:900;
+  letter-spacing:.06em;
+}
+
+.sectores-recipe-list h3{
+  color:var(--cream);
+  font-family:var(--font-serif);
+  font-size:clamp(1.6rem,2.8vw,2.55rem);
+}
+
+.sectores-recipe-list p{
+  margin:12px 0 0;
+  color:rgba(246,241,232,.76);
+}
+
+.sectores-fit-section{
+  padding:clamp(72px,9vw,124px) 0;
+  background:var(--paper);
+  border-bottom:1px solid var(--border);
+}
+
+.sectores-fit-card{
+  display:grid;
+  grid-template-columns:minmax(0,.9fr) minmax(320px,1fr);
+  gap:clamp(36px,5vw,68px);
+  align-items:center;
+  padding:clamp(34px,6vw,72px);
+  border-radius:44px;
+  background:linear-gradient(135deg, rgba(221,230,200,.72), rgba(255,253,247,.98));
+  border:1px solid rgba(31,42,36,.12);
+  box-shadow:var(--shadow);
+}
+
+.sectores-fit-card p{
+  margin:24px 0 0;
+  color:var(--soft);
+  font-size:clamp(1.04rem,1.6vw,1.24rem);
+}
+
+.sectores-fit-list{
+  display:grid;
+  gap:12px;
+}
+
+.sectores-fit-list span{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-height:54px;
+  padding:14px 18px;
+  border-radius:18px;
+  background:rgba(255,253,247,.74);
+  border:1px solid rgba(31,42,36,.1);
+  font-weight:850;
+  color:var(--ink);
+}
+
+.sectores-fit-list span:before{
+  content:"";
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:var(--lime);
+  box-shadow:0 0 0 5px rgba(199,244,88,.22);
+  flex:0 0 auto;
+}
+
+.sectores-cta-section{
+  padding:clamp(72px,9vw,124px) 0;
+  background:var(--cream);
+}
+
+.sectores-cta-card{
+  position:relative;
+  overflow:hidden;
+  padding:clamp(42px,7vw,82px);
+  border-radius:44px;
+  background:var(--albero);
+  box-shadow:var(--shadow);
+}
+
+.sectores-cta-card:after{
+  content:"";
+  position:absolute;
+  width:360px;
+  height:360px;
+  right:-130px;
+  top:-130px;
+  border-radius:50%;
+  background:rgba(255,253,247,.26);
+}
+
+.sectores-cta-card > *{
+  position:relative;
+  z-index:1;
+}
+
+.sectores-cta-card p{
+  margin:24px 0 0;
+  max-width:760px;
+  color:rgba(31,42,36,.76);
+  font-size:clamp(1.08rem,1.8vw,1.32rem);
+}
+
+@media(max-width:1120px){
+  .sectores-hero-grid,
+  .sectores-grid-heading,
+  .sectores-recipe-grid,
+  .sectores-fit-card{
+    grid-template-columns:1fr;
+  }
+
+  .sectores-hero-card{
+    max-width:620px;
+  }
+}
+
+@media(max-width:680px){
+  .sectores-page .site-header{
+    background:rgba(246,241,232,.86);
+  }
+
+  .sectores-hero{
+    padding-top:112px;
+  }
+
+  .sectores-hero-actions,
+  .sectores-cta-card .hero-actions{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+
+  .sectores-hero-card,
+  .sectores-dynamic-grid .card,
+  .sectores-fit-card,
+  .sectores-cta-card{
+    border-radius:28px;
+  }
+
+  .sectores-hero-card,
+  .sectores-dynamic-grid .card{
+    padding:28px;
+  }
+
+  .sectores-grid-heading{
+    margin-bottom:28px;
+  }
+
+  .sectores-dynamic-grid .card{
+    min-height:300px;
+  }
+}
