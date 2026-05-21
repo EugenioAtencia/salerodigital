@@ -1,4 +1,4 @@
-/* Sectores | Salero Digital | v3 */
+/* Sectores | Salero Digital | v4 */
 
 .sectores-page{
   background:var(--cream);
@@ -21,7 +21,7 @@
   box-shadow:0 18px 45px rgba(31,42,36,.06);
 }
 
-/* Hero alineado con /el-menu/ */
+/* Hero alineado con Nuestros menús, con degradado inferior a #fffdf7 */
 .sectores-hero{
   position:relative;
   min-height:100vh;
@@ -56,8 +56,8 @@
   display:block;
   object-fit:cover;
   object-position:center center;
-  opacity:.92;
-  filter:saturate(.94) contrast(.96) brightness(1) blur(.25px);
+  opacity:.94;
+  filter:saturate(.96) contrast(.98) brightness(1) blur(.22px);
 }
 
 .sectores-hero::before{
@@ -66,12 +66,20 @@
   inset:0;
   z-index:1;
   pointer-events:none;
-  background:linear-gradient(
-    90deg,
-    rgba(246,241,232,.22) 0%,
-    rgba(246,241,232,.08) 42%,
-    rgba(246,241,232,.16) 100%
-  );
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,253,247,0) 0%,
+      rgba(255,253,247,.08) 34%,
+      rgba(255,253,247,.52) 74%,
+      #fffdf7 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(246,241,232,.18) 0%,
+      rgba(246,241,232,.06) 42%,
+      rgba(246,241,232,.14) 100%
+    );
 }
 
 .sectores-hero::after{
@@ -129,14 +137,53 @@
   justify-content:flex-start;
 }
 
-/* Se oculta la nota lateral para igualar el tratamiento del hero con El Menú */
+/* Tarjeta lateral en la línea visual de Nuestros menús */
 .sectores-hero-card{
+  display:block;
+  align-self:end;
+  justify-self:end;
+  width:min(100%,430px);
+  margin-bottom:clamp(40px,7vh,86px);
+  padding:clamp(28px,3.8vw,42px);
+  border:1px solid rgba(255,253,247,.28);
+  border-radius:28px;
+  background:rgba(31,42,36,.44);
+  box-shadow:0 28px 80px rgba(31,42,36,.18);
+  backdrop-filter:blur(16px) saturate(1.04);
+  -webkit-backdrop-filter:blur(16px) saturate(1.04);
+  color:var(--paper);
+}
+
+.sectores-hero-card:before{
   display:none;
+}
+
+.sectores-hero-card span{
+  display:inline-flex;
+  padding:8px 13px;
+  border-radius:999px;
+  background:rgba(199,244,88,.13);
+  border:1px solid rgba(199,244,88,.32);
+  color:var(--lime);
+  font-size:.72rem;
+  font-weight:900;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+}
+
+.sectores-hero-card p{
+  margin:20px 0 0;
+  color:rgba(255,253,247,.90);
+  font-family:var(--font-serif);
+  font-weight:800;
+  font-size:clamp(1.45rem,2.5vw,2.35rem);
+  line-height:1.08;
+  letter-spacing:-.045em;
 }
 
 .sectores-intro{
   padding:clamp(72px,9vw,124px) 0;
-  background:var(--paper);
+  background:#fffdf7;
   border-block:1px solid var(--border);
 }
 
@@ -435,6 +482,13 @@
   .sectores-hero-grid{
     width:min(100% - 36px,820px);
   }
+
+  .sectores-hero-card{
+    max-width:620px;
+    justify-self:start;
+    align-self:start;
+    margin-bottom:0;
+  }
 }
 
 @media(max-width:880px){
@@ -470,14 +524,23 @@
     grid-template-columns:1fr;
   }
 
+  .sectores-hero-card,
   .sectores-dynamic-grid .card,
   .sectores-fit-card,
   .sectores-cta-card{
     border-radius:28px;
   }
 
+  .sectores-hero-card,
   .sectores-dynamic-grid .card{
     padding:28px;
+  }
+
+  .sectores-hero-card p{
+    font-size:1.45rem;
+  }
+
+  .sectores-dynamic-grid .card{
     min-height:300px;
   }
 
