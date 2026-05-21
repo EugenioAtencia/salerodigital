@@ -1,0 +1,445 @@
+/* Página Nuestros menús - Salero Digital v1 */
+
+.packs-hero{
+  position:relative;
+  min-height:100vh;
+  min-height:100svh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding-top:clamp(110px,12vh,160px);
+  padding-bottom:clamp(56px,8vh,90px);
+  overflow:hidden;
+  isolation:isolate;
+  background:var(--cream);
+}
+
+.packs-hero-media{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  overflow:hidden;
+  background:
+    linear-gradient(90deg,rgba(246,241,232,.66) 0%,rgba(246,241,232,.48) 44%,rgba(31,42,36,.18) 100%),
+    url("/assets/img/foto-moron.webp") center center/cover no-repeat,
+    var(--cream);
+  filter:saturate(.82) contrast(.92) brightness(.92);
+  transform:scale(1.03);
+}
+
+.packs-hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(246,241,232,.18) 0%,rgba(246,241,232,.42) 100%),
+    radial-gradient(circle at 78% 28%,rgba(199,244,88,.18),transparent 28rem);
+}
+
+.packs-hero-grid{
+  width:min(100% - 72px,1320px);
+  min-height:calc(100vh - 170px);
+  min-height:calc(100svh - 170px);
+  display:grid;
+  grid-template-columns:minmax(0,.98fr) minmax(360px,.78fr);
+  gap:clamp(42px,6vw,92px);
+  align-items:center;
+  position:relative;
+  z-index:2;
+  margin:auto;
+}
+
+.packs-hero-copy{
+  width:100%;
+  max-width:790px;
+  display:grid;
+  gap:26px;
+  text-align:left;
+  align-items:start;
+  justify-items:start;
+  text-shadow:0 2px 20px rgba(246,241,232,.86),0 0 44px rgba(246,241,232,.66);
+}
+
+.packs-hero-copy .btn,
+.packs-hero-copy .hero-actions a{
+  text-shadow:none;
+}
+
+.packs-hero-copy h1{
+  max-width:820px;
+}
+
+.packs-hero-copy .lead{
+  max-width:700px;
+}
+
+.packs-hero-quote{
+  justify-self:end;
+  align-self:end;
+  width:min(100%,420px);
+  padding:30px 32px;
+  border-radius:30px;
+  background:rgba(255,253,247,.62);
+  border:1px solid rgba(255,253,247,.72);
+  box-shadow:0 28px 90px rgba(31,42,36,.12);
+  backdrop-filter:blur(14px) saturate(1.02);
+  -webkit-backdrop-filter:blur(14px) saturate(1.02);
+  transform:rotate(1.4deg);
+}
+
+.packs-hero-quote p{
+  margin:0;
+  color:rgba(31,42,36,.82);
+  font-size:clamp(1.15rem,1.7vw,1.45rem);
+  font-weight:900;
+  line-height:1.28;
+  letter-spacing:-.035em;
+}
+
+.packs-manifest{
+  padding:clamp(76px,10vw,140px) 0;
+  background:var(--paper);
+  border-block:1px solid var(--border);
+}
+
+.packs-manifest-inner{
+  max-width:1040px;
+}
+
+.packs-manifest h2{
+  font-size:clamp(2.45rem,5.8vw,5.7rem);
+  line-height:1.03;
+}
+
+.packs-manifest p{
+  margin:30px 0 0;
+  max-width:780px;
+  color:var(--soft);
+  font-size:clamp(1.12rem,1.9vw,1.42rem);
+  line-height:1.58;
+}
+
+.packs-section{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  padding:clamp(86px,10vw,150px) 0;
+  background:var(--ink);
+}
+
+.packs-section::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  background-image:url("/assets/img/foto-moron.webp");
+  background-size:cover;
+  background-position:center center;
+  background-repeat:no-repeat;
+  transform:scale(1.04);
+  filter:saturate(.78) contrast(.92) brightness(.84) blur(.35px);
+}
+
+.packs-section::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(31,42,36,.70) 0%,rgba(31,42,36,.54) 42%,rgba(31,42,36,.74) 100%),
+    linear-gradient(90deg,rgba(246,241,232,.16) 0%,rgba(246,241,232,.04) 52%,rgba(246,241,232,.14) 100%);
+}
+
+.packs-section .container{
+  position:relative;
+  z-index:1;
+}
+
+.packs-section .eyebrow{
+  color:var(--lime);
+}
+
+.packs-section .eyebrow::before,
+.packs-section .centered .eyebrow::after{
+  background:var(--albero);
+}
+
+.packs-section h2{
+  color:var(--paper);
+  text-shadow:0 2px 34px rgba(0,0,0,.22);
+}
+
+.packs-section .lead{
+  color:rgba(255,253,247,.82);
+  text-shadow:0 2px 24px rgba(0,0,0,.18);
+}
+
+.packs-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(24px,3vw,38px);
+  align-items:stretch;
+}
+
+.pack-card{
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  min-height:560px;
+  padding:clamp(34px,3.6vw,54px);
+  border-radius:34px;
+  background:rgba(255,253,247,.88);
+  border:1px solid rgba(255,253,247,.62);
+  box-shadow:0 28px 90px rgba(0,0,0,.14);
+  backdrop-filter:blur(10px) saturate(1.02);
+  -webkit-backdrop-filter:blur(10px) saturate(1.02);
+  transition:transform .28s ease,background .28s ease,box-shadow .28s ease,border-color .28s ease;
+}
+
+.pack-card::after{
+  content:"";
+  position:absolute;
+  width:240px;
+  height:240px;
+  border-radius:50%;
+  top:-78px;
+  right:-78px;
+  background:rgba(199,244,88,.10);
+  pointer-events:none;
+  z-index:0;
+}
+
+.pack-card > *{
+  position:relative;
+  z-index:1;
+}
+
+.pack-card:hover{
+  transform:translateY(-6px);
+  background:rgba(255,253,247,.96);
+  border-color:rgba(255,253,247,.84);
+  box-shadow:0 34px 105px rgba(0,0,0,.20);
+}
+
+.pack-card-featured{
+  background:rgba(221,230,200,.88);
+  border-color:rgba(199,244,88,.18);
+}
+
+.pack-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:max-content;
+  max-width:100%;
+  margin:0 0 clamp(34px,4vw,54px);
+  padding:9px 16px;
+  border-radius:999px;
+  background:rgba(102,117,72,.10);
+  color:var(--olive-dark);
+  font-size:.78rem;
+  font-weight:900;
+  line-height:1;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+}
+
+.pack-card h3{
+  margin:0;
+  color:var(--ink);
+  font-family:var(--font-serif);
+  font-size:clamp(3rem,4.4vw,5.2rem);
+  line-height:.95;
+  letter-spacing:-.06em;
+}
+
+.pack-card p{
+  margin:clamp(34px,4vw,48px) 0 0;
+  color:rgba(31,42,36,.72);
+  font-size:clamp(1.05rem,1.25vw,1.28rem);
+  font-weight:700;
+  line-height:1.58;
+}
+
+.pack-card strong{
+  color:var(--olive-dark);
+  font-weight:900;
+}
+
+.pack-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:10px;
+  width:max-content;
+  margin-top:auto;
+  padding:clamp(34px,4vw,48px) 0 0;
+  color:var(--olive-dark);
+  font-family:var(--font-sans);
+  font-size:1.05rem;
+  font-weight:900;
+  line-height:1.1;
+  text-decoration:none;
+  transition:transform .22s ease,color .22s ease;
+}
+
+.pack-link::after{
+  content:"→";
+  display:inline-block;
+  margin-left:4px;
+  font-size:1.15em;
+  line-height:1;
+  transform:translateY(-1px);
+  transition:transform .22s ease;
+}
+
+.pack-link:hover,
+.pack-link:focus-visible{
+  color:var(--ink);
+  transform:translateX(4px);
+  outline:none;
+}
+
+.pack-link:hover::after,
+.pack-link:focus-visible::after{
+  transform:translate(5px,-1px);
+}
+
+.packs-method-section{
+  padding:clamp(76px,10vw,140px) 0;
+  background:var(--paper);
+  border-block:1px solid var(--border);
+}
+
+.packs-method-grid{
+  display:grid;
+  grid-template-columns:minmax(0,.9fr) minmax(320px,1fr);
+  gap:clamp(46px,7vw,90px);
+  align-items:start;
+}
+
+.packs-method-list{
+  display:grid;
+  border-top:1px solid var(--border-strong);
+}
+
+.packs-method-list article{
+  display:grid;
+  grid-template-columns:54px 1fr;
+  gap:22px;
+  padding:26px 0;
+  border-bottom:1px solid var(--border-strong);
+}
+
+.packs-method-list span{
+  color:var(--albero);
+  font-weight:900;
+}
+
+.packs-method-list h3{
+  margin:0 0 10px;
+  font-family:var(--font-serif);
+  font-size:clamp(1.7rem,3vw,2.8rem);
+}
+
+.packs-method-list p{
+  margin:0;
+  color:var(--soft);
+  font-weight:650;
+}
+
+.packs-comparison-section{
+  padding:clamp(76px,10vw,140px) 0;
+  background:var(--cream);
+}
+
+.packs-comparison-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:22px;
+}
+
+.packs-comparison-grid article{
+  padding:32px;
+  border-radius:30px;
+  background:var(--paper);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+
+.packs-comparison-grid article.is-featured{
+  background:var(--olive-soft);
+  border-color:rgba(102,117,72,.34);
+}
+
+.packs-comparison-grid h3{
+  margin:0 0 18px;
+  font-family:var(--font-serif);
+  font-size:clamp(2rem,3vw,3.25rem);
+}
+
+.packs-comparison-grid p{
+  margin:0;
+  color:var(--soft);
+  font-weight:700;
+}
+
+@media(max-width:1120px){
+  .packs-hero-grid,
+  .packs-method-grid{
+    grid-template-columns:1fr;
+    width:min(100% - 36px,820px);
+  }
+
+  .packs-hero-quote{
+    display:none;
+  }
+
+  .packs-grid,
+  .packs-comparison-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+@media(max-width:680px){
+  .packs-hero{
+    padding-top:105px;
+    padding-bottom:56px;
+  }
+
+  .packs-hero-grid{
+    width:min(100% - 28px,720px);
+    min-height:calc(100svh - 150px);
+  }
+
+  .packs-hero-media{
+    background:
+      linear-gradient(180deg,rgba(246,241,232,.66),rgba(246,241,232,.72)),
+      url("/assets/img/foto-moron.webp") center center/cover no-repeat,
+      var(--cream);
+  }
+
+  .packs-grid,
+  .packs-comparison-grid{
+    grid-template-columns:1fr;
+  }
+
+  .pack-card{
+    min-height:auto;
+    padding:30px;
+    border-radius:28px;
+  }
+
+  .pack-card h3{
+    font-size:clamp(2.7rem,13vw,4.1rem);
+  }
+
+  .packs-method-list article{
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+}
