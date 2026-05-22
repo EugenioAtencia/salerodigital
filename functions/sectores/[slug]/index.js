@@ -1,0 +1,40 @@
+export async function onRequest(context) {
+  const slug = sanitizeSlug(context.params.slug || '');
+
+  if (!slug) {
+    return new Response('Sector no encontrado', {
+      status: 404,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+    });
+  }
+
+  return new Response(renderSectorTemplate(slug), {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store, max-age=0, must-revalidate'
+    }
+  });
+}
+
+function sanitizeSlug(value) {
+  return String(value || '')
+    .trim()
+    .replace(/^\/+|\/+$/g, '')
+    .replace(/[^a-zA-Z0-9-_]/g, '');
+}
+
+function renderSectorTemplate(slug) {
+  const safeSlug = escapeAttr(slug);
+
+  return `<!doctype html><html lang="es"><head><title>Sector | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Marketing digital para sectores reales de la comarca. Estrategia, web, SEO, redes y campañas con Salero Digital."><link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/assets/css/main.css?v=50"><link rel="stylesheet" href="/assets/css/sector-detail.css?v=3"><link rel="stylesheet" href="/assets/css/sector-action-layout.css?v=2"><link rel="stylesheet" href="/assets/css/sector-faq-layout.css?v=2"><link rel="stylesheet" href="/assets/css/sector-final-layout.css?v=1"></head><body class="sector-detail-page"><header class="site-header"><div class="container header-inner"><a class="logo logo-wordmark" href="/" aria-label="Salero Digital"><span>Salero Digital</span></a><nav class="nav" aria-label="Menú principal"><a href="/el-menu/">El Menú</a><a href="/nuestros-menus/">Nuestros menús</a><a href="/sectores/" class="is-active" aria-current="page">Sectores</a><a href="/la-receta/">La Receta</a><a href="/la-rebotica/">La Rebotica</a><a class="nav-mobile-contact" href="/hablamos/">¿Hablamos?</a><a class="nav-mobile-cta" href="/hablamos/">Pide tu cata digital</a></nav><div class="header-actions"><a class="nav-contact" href="/hablamos/">¿Hablamos?</a><a class="btn btn-primary" href="/hablamos/">Pide tu cata digital</a><button class="menu-toggle" type="button" data-menu-toggle aria-label="Abrir menú">☰</button></div></div></header><main id="sector-detail-root" data-detail data-type="sector" data-slug="${safeSlug}"><div class="container section"><div class="loading">Cargando contenido desde el CMS...</div></div></main><footer class="footer"><div class="container"><div class="footer-grid"><div><h2>Salero Digital</h2><p>Agencia de aquí, para los de aquí. Estrategia, web, SEO, redes y campañas para negocios que quieren dejar de estar sosos en internet.</p></div><div><h3>Secciones</h3><nav class="footer-nav"><a href="/nuestros-menus/">Nuestros menús</a><a href="/el-menu/">El Menú</a><a href="/sectores/">Sectores</a><a href="/la-rebotica/">La Rebotica</a></nav></div><div><h3>Contacto</h3><p>Morón de la Frontera, Sierra Sur y Campiña.</p><a href="/hablamos/">Pide tu cata digital</a></div></div><div class="footer-bottom"><span>© 2026 Salero Digital</span><span>Digitalizamos con salero, pero con los pies en la tierra.</span></div></div></footer><a class="whatsapp-float" href="/hablamos/">¿Te hace un café y hablamos?</a><script src="/assets/js/config.js?v=6"></script><script src="/assets/js/api.js?v=6"></script><script src="/assets/js/helpers.js?v=40"></script><script src="/assets/js/detail.js?v=6"></script><script src="/assets/js/sector-faqs.js?v=5"></script></body></html>`;
+}
+
+function escapeAttr(value) {
+  return String(value || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
