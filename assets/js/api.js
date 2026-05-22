@@ -7,20 +7,32 @@ function saleroResolveEndpoint(endpoint) {
 
 function saleroEndpointUrl(endpoint) {
   const resolved = saleroResolveEndpoint(endpoint);
+  const base = SALERO_CONFIG.apiBase || 'https://cms.webagencia360.com/wp-json/wp/v2';
+
   if (resolved.startsWith('http')) return resolved;
+
   if (resolved.startsWith('salero/')) {
-    return `${SALERO_CONFIG.apiBase.replace('/wp/v2', '')}/${resolved}`;
+    const cmsBase = SALERO_CONFIG.cmsApiBase || base;
+    return `${cmsBase.replace('/wp/v2', '')}/${resolved}`;
   }
-  return `${SALERO_CONFIG.apiBase}/${resolved}`;
+
+  return `${base.replace(/\/$/, '')}/${resolved}`;
 }
 
 async function saleroFetch(endpoint, params = {}) {
-  const url = new URL(saleroEndpointUrl(endpoint));
+  const url = new URL(saleroEndpointUrl(endpoint), window.location.origin);
   Object.entries(params).forEach(([k, v]) => {
     if (v !== undefined && v !== null && v !== '') url.searchParams.set(k, v);
   });
 
-  const res = await fetch(url.toString(), { cache: 'no-store' });
+  url.searchParams.set('_t', String(Date.now()));
+
+  const res = await fetch(url.toString(), {
+    cache: 'no-store',
+    headers: {
+      Accept: 'application/json'
+    }
+  });
 
   if (!res.ok) {
     throw new Error(`No se pudo cargar ${endpoint}. Endpoint real: ${saleroResolveEndpoint(endpoint)}. Estado: ${res.status}`);
