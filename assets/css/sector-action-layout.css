@@ -4,36 +4,45 @@
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
   margin-top: clamp(3.5rem, 6vw, 6rem);
-  padding: clamp(3.5rem, 6vw, 6rem) 0;
+  padding: clamp(4.6rem, 7vw, 7rem) 0 clamp(5rem, 7.5vw, 7.5rem);
   background:
-    radial-gradient(circle at 14% 10%, rgba(200, 255, 90, .12), transparent 24rem),
-    linear-gradient(135deg, #fffdf7 0%, #f3ecd9 100%);
-  color: #20251b;
+    linear-gradient(rgba(255, 253, 247, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 253, 247, .035) 1px, transparent 1px),
+    radial-gradient(circle at 15% 12%, rgba(200, 255, 90, .12), transparent 24rem),
+    linear-gradient(135deg, #202f19 0%, #2b3d21 100%);
+  background-size: 72px 72px, 72px 72px, auto, auto;
+  color: #fffdf7;
   overflow: hidden;
 }
 
 .sector-action-container .sector-strategy-section {
-  width: min(calc(100% - 3rem), 1280px);
+  width: min(calc(100% - 3rem), 1480px);
   margin: 0 auto !important;
   display: block !important;
-  border: 1px solid rgba(79, 98, 57, .16) !important;
-  border-radius: 2.4rem !important;
-  background: rgba(255, 253, 247, .72) !important;
-  box-shadow: 0 26px 80px rgba(32, 37, 27, .08) !important;
-  padding: clamp(2.2rem, 4.6vw, 4.2rem) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 
 .sector-action-container .sector-block-heading {
-  max-width: 1020px !important;
-  margin: 0 0 clamp(1.8rem, 3.2vw, 3rem) !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, .78fr) minmax(380px, .7fr) !important;
+  gap: clamp(2rem, 6vw, 6rem) !important;
+  align-items: end !important;
+  max-width: none !important;
+  margin: 0 0 clamp(2.4rem, 4vw, 4rem) !important;
 }
 
 .sector-action-container .sector-block-heading .sector-section-kicker {
-  background: rgba(255, 253, 247, .72) !important;
-  border: 1px solid rgba(79, 98, 57, .16) !important;
+  grid-column: 1 / -1;
+  justify-self: start;
+  background: transparent !important;
+  border: 1px solid rgba(200, 255, 90, .38) !important;
   border-radius: 999px !important;
-  color: #27311f !important;
-  padding: .62rem 1rem !important;
+  color: #c8ff5a !important;
+  padding: .7rem 1.2rem !important;
 }
 
 .sector-action-container .sector-block-heading .sector-section-kicker::before {
@@ -41,43 +50,60 @@
 }
 
 .sector-action-container .sector-block-heading h2 {
-  max-width: 1060px !important;
-  margin: 1.35rem 0 0 !important;
-  color: #20251b !important;
-  font-size: clamp(3rem, 5.2vw, 6.25rem) !important;
-  line-height: .9 !important;
+  max-width: 760px !important;
+  margin: 0 !important;
+  color: #fffdf7 !important;
+  font-size: clamp(3.4rem, 5.4vw, 6.7rem) !important;
+  line-height: .86 !important;
   letter-spacing: -.075em !important;
+}
+
+.sector-action-container .sector-block-heading::after {
+  content: "Ordenamos tu presencia digital, reforzamos los puntos de contacto y activamos acciones orientadas a visibilidad, reservas, llamadas y mensajes.";
+  display: block;
+  max-width: 660px;
+  color: rgba(255, 253, 247, .72);
+  font-size: clamp(1.05rem, 1.45vw, 1.35rem);
+  line-height: 1.72;
+  font-weight: 650;
 }
 
 .sector-action-container .sector-strategy-grid {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: clamp(1rem, 2vw, 1.45rem) !important;
+  gap: clamp(1.2rem, 2.3vw, 2rem) !important;
+  align-items: stretch !important;
 }
 
 .sector-action-container .sector-strategy-card {
   position: relative !important;
   display: block !important;
   min-height: 100% !important;
-  border: 1px solid rgba(79, 98, 57, .13) !important;
-  border-radius: 1.75rem !important;
-  background: rgba(255, 253, 247, .86) !important;
+  border: 1px solid rgba(79, 98, 57, .16) !important;
+  border-radius: 2rem !important;
+  background: #f5eedc !important;
   box-shadow: none !important;
-  padding: clamp(1.55rem, 2.6vw, 2.4rem) !important;
+  padding: clamp(1.75rem, 2.8vw, 2.55rem) !important;
   color: #20251b !important;
   overflow: hidden !important;
+}
+
+.sector-action-container .sector-strategy-card:nth-child(2) {
+  background: #fffdf7 !important;
+  outline: 2px solid rgba(200, 255, 90, .85) !important;
+  outline-offset: 0 !important;
 }
 
 .sector-action-container .sector-strategy-card::after {
   content: "" !important;
   display: block !important;
   position: absolute !important;
-  right: -4rem !important;
-  bottom: -5rem !important;
-  width: 12rem !important;
+  right: -4.5rem !important;
+  bottom: -5.5rem !important;
+  width: 13rem !important;
   aspect-ratio: 1 !important;
   border-radius: 999px !important;
-  background: rgba(200, 255, 90, .18) !important;
+  background: rgba(200, 255, 90, .2) !important;
   pointer-events: none !important;
 }
 
@@ -85,9 +111,9 @@
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 3.1rem !important;
-  height: 3.1rem !important;
-  margin: 0 0 1.45rem !important;
+  width: 3.25rem !important;
+  height: 3.25rem !important;
+  margin: 0 0 1.55rem !important;
   border-radius: 999px !important;
   background: #0f1f15 !important;
   color: #fffdf7 !important;
@@ -99,15 +125,17 @@
   max-width: 92% !important;
   margin: 0 0 1.25rem !important;
   color: #20251b !important;
-  font-size: clamp(1.95rem, 2.6vw, 3.05rem) !important;
-  line-height: .96 !important;
-  letter-spacing: -.055em !important;
+  font-size: clamp(1.7rem, 2.15vw, 2.45rem) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -.052em !important;
 }
 
 .sector-action-container .sector-strategy-card ul {
+  position: relative !important;
+  z-index: 1 !important;
   margin: 0 !important;
   display: grid !important;
-  gap: .85rem !important;
+  gap: .8rem !important;
   padding: 0 !important;
   list-style: none !important;
 }
@@ -116,8 +144,8 @@
   display: flex !important;
   gap: .72rem !important;
   color: #5f6655 !important;
-  font-size: clamp(1rem, 1.15vw, 1.08rem) !important;
-  line-height: 1.58 !important;
+  font-size: clamp(.98rem, 1.05vw, 1.06rem) !important;
+  line-height: 1.56 !important;
 }
 
 .sector-action-container .sector-strategy-card li::before {
@@ -132,25 +160,28 @@
 }
 
 @media (max-width: 1180px) {
-  .sector-action-container .sector-strategy-grid {
+  .sector-action-container .sector-block-heading {
     grid-template-columns: 1fr !important;
+    gap: 1.3rem !important;
   }
 
   .sector-action-container .sector-block-heading h2 {
-    font-size: clamp(3rem, 8vw, 5.6rem) !important;
+    font-size: clamp(3rem, 8vw, 5.7rem) !important;
+  }
+
+  .sector-action-container .sector-strategy-grid {
+    grid-template-columns: 1fr !important;
   }
 }
 
 @media (max-width: 640px) {
   .sector-action-container {
     margin-top: 3rem;
-    padding: 3rem 0;
+    padding: 3.5rem 0 4rem;
   }
 
   .sector-action-container .sector-strategy-section {
     width: calc(100% - 2rem);
-    border-radius: 1.5rem !important;
-    padding: 1.25rem !important;
   }
 
   .sector-action-container .sector-block-heading h2 {
@@ -158,6 +189,11 @@
   }
 
   .sector-action-container .sector-strategy-card {
-    border-radius: 1.25rem !important;
+    border-radius: 1.4rem !important;
+    padding: 1.35rem !important;
+  }
+
+  .sector-action-container .sector-strategy-card h2 {
+    font-size: clamp(1.65rem, 9vw, 2.3rem) !important;
   }
 }
