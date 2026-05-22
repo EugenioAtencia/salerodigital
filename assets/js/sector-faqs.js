@@ -70,20 +70,40 @@ function renderSectorFaqBlock(a){
   return `<section class="sector-faq-block"><div class="sector-faq-copy"><span class="sector-section-kicker">Preguntas frecuentes</span><h2>Primero aclaramos las dudas. Después activamos la estrategia.</h2><p>Resolvemos las preguntas clave antes de proponer una receta digital para tu negocio.</p></div>${renderSectorFaqAccordion(faqData)}</section>`;
 }
 
+function moveSectorStrategySection(root){
+  const contentGrid=root.querySelector('.sector-content-grid');
+  const strategy=root.querySelector('.sector-strategy-section');
+  if(!contentGrid||!strategy||!strategy.closest('.sector-main-content'))return;
+
+  let strategyContainer=root.querySelector('.sector-action-container');
+  if(!strategyContainer){
+    strategyContainer=document.createElement('div');
+    strategyContainer.className='sector-action-container';
+    contentGrid.insertAdjacentElement('afterend',strategyContainer);
+  }
+  strategyContainer.appendChild(strategy);
+}
+
+function moveSectorFaqBlock(root){
+  const contentGrid=root.querySelector('.sector-content-grid');
+  const strategyContainer=root.querySelector('.sector-action-container');
+  const faqBlock=root.querySelector('.sector-faq-block');
+  if(!contentGrid||!faqBlock||!faqBlock.closest('.sector-main-content'))return;
+
+  let faqContainer=root.querySelector('.sector-faq-container');
+  if(!faqContainer){
+    faqContainer=document.createElement('div');
+    faqContainer.className='container sector-faq-container';
+    (strategyContainer||contentGrid).insertAdjacentElement('afterend',faqContainer);
+  }
+  faqContainer.appendChild(faqBlock);
+}
+
 function initSectorFaqAccordions(scope=document){
   const root=scope.querySelector?scope:document;
-  const faqBlock=root.querySelector('.sector-faq-block');
-  const contentGrid=root.querySelector('.sector-content-grid');
 
-  if(faqBlock&&contentGrid&&faqBlock.closest('.sector-main-content')){
-    let faqContainer=root.querySelector('.sector-faq-container');
-    if(!faqContainer){
-      faqContainer=document.createElement('div');
-      faqContainer.className='container sector-faq-container';
-      contentGrid.insertAdjacentElement('afterend',faqContainer);
-    }
-    faqContainer.appendChild(faqBlock);
-  }
+  moveSectorStrategySection(root);
+  moveSectorFaqBlock(root);
 
   root.querySelectorAll('.sector-faq-accordion').forEach(acc=>{
     const items=[...acc.querySelectorAll('details')];
