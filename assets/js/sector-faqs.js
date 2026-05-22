@@ -69,3 +69,30 @@ function renderSectorFaqBlock(a){
   if(!faqData)return '';
   return `<section class="sector-faq-block"><div class="sector-faq-copy"><span class="sector-section-kicker">Preguntas frecuentes</span><h2>Primero aclaramos las dudas. Después activamos la estrategia.</h2><p>Resolvemos las preguntas clave antes de proponer una receta digital para tu negocio.</p></div>${renderSectorFaqAccordion(faqData)}</section>`;
 }
+
+function initSectorFaqAccordions(scope=document){
+  const root=scope.querySelector?scope:document;
+  const faqBlock=root.querySelector('.sector-faq-block');
+  const contentGrid=root.querySelector('.sector-content-grid');
+
+  if(faqBlock&&contentGrid&&faqBlock.closest('.sector-main-content')){
+    let faqContainer=root.querySelector('.sector-faq-container');
+    if(!faqContainer){
+      faqContainer=document.createElement('div');
+      faqContainer.className='container sector-faq-container';
+      contentGrid.insertAdjacentElement('afterend',faqContainer);
+    }
+    faqContainer.appendChild(faqBlock);
+  }
+
+  root.querySelectorAll('.sector-faq-accordion').forEach(acc=>{
+    const items=[...acc.querySelectorAll('details')];
+    items.forEach((item,index)=>{
+      item.open=index===0;
+      item.addEventListener('toggle',()=>{
+        if(!item.open)return;
+        items.forEach(other=>{if(other!==item)other.open=false});
+      });
+    });
+  });
+}
