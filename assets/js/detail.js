@@ -1,5 +1,327 @@
+const DETAIL_CONFIG={
+  menu:{
+    endpoint:SALERO_CONFIG.endpoints.menus,
+    typeLabel:'Nuestros menús',
+    ctaTextKey:'cta_principal_texto',
+    ctaUrlKey:'cta_principal_url',
+    sections:[
+      ['ideal_para','Ideal para','text'],
+      ['que_incluye','Qué incluye','list'],
+      ['beneficios','Beneficios','list'],
+      ['para_quien','Para quién está pensado','text'],
+      ['faqs','Preguntas frecuentes','faqs']
+    ]
+  },
+  servicio:{
+    endpoint:SALERO_CONFIG.endpoints.servicios,
+    typeLabel:'El Menú',
+    ctaTextKey:'cta_final_texto',
+    ctaUrlKey:'cta_final_url',
+    sections:[
+      ['problema_que_resuelve','El problema que resolvemos','text'],
+      ['descripcion_principal','Cómo lo trabajamos','text'],
+      ['que_incluye','Qué incluye','list'],
+      ['beneficios','Beneficios','list'],
+      ['proceso_trabajo','Proceso de trabajo','text'],
+      ['faqs','Preguntas frecuentes','faqs']
+    ]
+  },
+  sector:{
+    endpoint:SALERO_CONFIG.endpoints.sectores,
+    typeLabel:'Sectores',
+    ctaTextKey:'cta_sectorial_texto',
+    ctaUrlKey:'cta_sectorial_url',
+    sections:[
+      ['problema_sector','El reto del sector','text'],
+      ['solucion_salero','La solución de Salero Digital','text'],
+      ['servicios_recomendados','Servicios recomendados','list'],
+      ['beneficios','Beneficios','list'],
+      ['ejemplos_acciones','Ejemplos de acciones','list'],
+      ['faqs','Preguntas frecuentes','faqs']
+    ]
+  },
+  caso:{
+    endpoint:SALERO_CONFIG.endpoints.casos,
+    typeLabel:'Casos de éxito',
+    ctaTextKey:'cta_texto',
+    ctaUrlKey:'cta_url',
+    sections:[
+      ['cliente','Cliente','text'],
+      ['sector_cliente','Sector','text'],
+      ['reto_inicial','Reto inicial','text'],
+      ['servicios_aplicados','Servicios aplicados','list'],
+      ['estrategia_aplicada','Estrategia aplicada','text'],
+      ['acciones_realizadas','Acciones realizadas','list'],
+      ['resultados','Resultados','text'],
+      ['metricas_destacadas','Métricas destacadas','list'],
+      ['testimonio','Testimonio','text']
+    ]
+  }
+};
 
-const DETAIL_CONFIG={menu:{endpoint:SALERO_CONFIG.endpoints.menus,typeLabel:'Nuestros menús',ctaTextKey:'cta_principal_texto',ctaUrlKey:'cta_principal_url',sections:[['ideal_para','Ideal para','text'],['que_incluye','Qué incluye','list'],['beneficios','Beneficios','list'],['para_quien','Para quién está pensado','text'],['faqs','Preguntas frecuentes','faqs']]},servicio:{endpoint:SALERO_CONFIG.endpoints.servicios,typeLabel:'El Menú',ctaTextKey:'cta_final_texto',ctaUrlKey:'cta_final_url',sections:[['problema_que_resuelve','El problema que resolvemos','text'],['descripcion_principal','Cómo lo trabajamos','text'],['que_incluye','Qué incluye','list'],['beneficios','Beneficios','list'],['proceso_trabajo','Proceso de trabajo','text'],['faqs','Preguntas frecuentes','faqs']]},sector:{endpoint:SALERO_CONFIG.endpoints.sectores,typeLabel:'Sectores',ctaTextKey:'cta_sectorial_texto',ctaUrlKey:'cta_sectorial_url',sections:[['problema_sector','El reto del sector','text'],['solucion_salero','La solución de Salero Digital','text'],['servicios_recomendados','Servicios recomendados','list'],['beneficios','Beneficios','list'],['ejemplos_acciones','Ejemplos de acciones','list'],['faqs','Preguntas frecuentes','faqs']]},caso:{endpoint:SALERO_CONFIG.endpoints.casos,typeLabel:'Casos de éxito',ctaTextKey:'cta_texto',ctaUrlKey:'cta_url',sections:[['cliente','Cliente','text'],['sector_cliente','Sector','text'],['reto_inicial','Reto inicial','text'],['servicios_aplicados','Servicios aplicados','list'],['estrategia_aplicada','Estrategia aplicada','text'],['acciones_realizadas','Acciones realizadas','list'],['resultados','Resultados','text'],['metricas_destacadas','Métricas destacadas','list'],['testimonio','Testimonio','text']]}};
-function renderSection(a,key,title,format){const v=a[key];if(!v)return '';let c=format==='list'?formatList(v):format==='faqs'?formatFaqs(v):formatText(v);return c?`<section class="content-block"><h2>${title}</h2>${c}</section>`:''}
-async function renderDetailPage(){const root=document.querySelector('[data-detail]');if(!root)return;const cfg=DETAIL_CONFIG[root.dataset.type];if(!cfg){root.innerHTML='<div class="container section"><div class="error">Configuración no válida.</div></div>';return}try{const item=await getBySlug(cfg.endpoint,root.dataset.slug);if(!item){root.innerHTML='<div class="container section"><div class="empty">Contenido no encontrado en WordPress.</div></div>';return}setSeoFromItem(item);const a=getAcf(item),title=a.nombre_creativo||a.titular_seo||itemTitle(item),tech=a.nombre_tecnico||a.precio_desde||cfg.typeLabel,claim=a.claim||a.subtitulo_comercial||a.titular_seo||a.meta_description||excerpt(item),cta=a[cfg.ctaTextKey]||'Pide tu cata digital',url=normalizeUrl(a[cfg.ctaUrlKey]),img=featuredImage(item);root.innerHTML=`<section class="hero"><div class="container hero-grid"><div class="hero-copy"><span class="eyebrow">${escapeHtml(cfg.typeLabel)}</span><h1>${escapeHtml(stripHtml(title))}</h1>${tech?`<p class="lead"><strong>${escapeHtml(stripHtml(tech))}</strong></p>`:''}${claim?`<p class="lead">${escapeHtml(stripHtml(claim))}</p>`:''}<div class="hero-actions"><a class="btn btn-primary" href="${url}">${escapeHtml(stripHtml(cta))}</a><a class="btn btn-secondary" href="/hablamos/">Pide una cata digital</a></div></div><aside class="hero-card">${img?`<img src="${img}" alt="${escapeHtml(stripHtml(title))}" loading="lazy">`:''}<strong>Digitalizamos con salero, pero con los pies en la tierra.</strong><p>Una estrategia clara, cercana y pensada para que el negocio gane visibilidad, confianza y oportunidades.</p></aside></div></section><section class="section-tight"><div class="container detail-layout"><main class="content-panel">${cfg.sections.map(s=>renderSection(a,s[0],s[1],s[2])).join('')}</main><aside class="sidebar-card"><span class="eyebrow">Cata digital</span><h3>¿Le damos una chispa a tu negocio?</h3><p>Cuéntanos dónde está ahora tu marca y vemos qué punto de sal necesita.</p><a class="btn btn-accent" href="/hablamos/">Hablemos</a></aside></div></section>`}catch(e){console.error(e);root.innerHTML=`<div class="container section"><div class="error">No se pudo cargar el contenido desde WordPress. Revisa el endpoint ${escapeHtml(cfg.endpoint)} y el slug ${escapeHtml(root.dataset.slug)}.</div></div>`}}
+function renderSection(a,key,title,format){
+  const v=a[key];
+  if(!v)return '';
+  let c=format==='list'?formatList(v):format==='faqs'?formatFaqs(v):formatText(v);
+  return c?`<section class="content-block"><h2>${title}</h2>${c}</section>`:'';
+}
+
+function fieldValue(a={},keys=[],fallback=''){
+  for(const key of keys){
+    const v=a[key];
+    if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;
+  }
+  return fallback;
+}
+
+function fieldUrl(v){
+  if(!v)return '';
+  if(typeof v==='string')return v.trim();
+  if(typeof v==='number')return '';
+  if(Array.isArray(v))return fieldUrl(v[0]);
+  if(typeof v==='object'){
+    return v.url||v.source_url||v.guid?.rendered||v.sizes?.large||v.sizes?.full||v.sizes?.medium_large||'';
+  }
+  return '';
+}
+
+function fieldList(v){
+  if(!v)return [];
+  if(Array.isArray(v)){
+    return v.map(item=>{
+      if(typeof item==='string')return stripHtml(item).trim();
+      if(item&&typeof item==='object')return stripHtml(item.text||item.label||item.titulo||item.title||item.nombre||item.value||'').trim();
+      return '';
+    }).filter(Boolean);
+  }
+  const t=stripHtml(String(v)).trim();
+  if(!t)return [];
+  return t
+    .split(/\n+|;|\|/)
+    .map(x=>x.replace(/^[-•–]\s*/,'').trim())
+    .filter(Boolean);
+}
+
+function currentSlugFromPath(){
+  const parts=window.location.pathname.split('/').filter(Boolean);
+  if(parts[0]==='sectores'&&parts[1]&&parts[1]!=='detalle')return parts[1];
+  return '';
+}
+
+function ensureCanonical(url){
+  let link=document.querySelector('link[rel="canonical"]');
+  if(!link){
+    link=document.createElement('link');
+    link.rel='canonical';
+    document.head.appendChild(link);
+  }
+  link.href=url;
+}
+
+function trailingSlashPath(path){
+  if(!path)return '/';
+  return path.endsWith('/')?path:`${path}/`;
+}
+
+function sectorFallback(kind='generico'){
+  const defaults={
+    eyebrow:'Sectores',
+    cardTitle:'Una estrategia con el punto justo para tu sector.',
+    cardItems:['Visibilidad local más clara','Contenido con intención comercial','Medición sencilla y útil'],
+    ctaLabel:'Pide tu cata digital',
+    finalTitle:'Tu negocio ya tiene oficio. Ahora toca que se vea como merece.',
+    finalText:'Revisamos tu presencia digital y te decimos qué acciones pueden ayudarte a ganar visibilidad, confianza y oportunidades reales.'
+  };
+  if(kind==='hosteleria')return {
+    ...defaults,
+    eyebrow:'Hostelería y turismo',
+    heroTitle:'Marketing para negocios que se viven en la mesa, en la reserva y en la experiencia',
+    heroText:'Estrategias digitales para restaurantes, bares, cafeterías, alojamientos rurales y proyectos turísticos que quieren ganar visibilidad, confianza y oportunidades reales sin perder su forma de ser.',
+    cardTitle:'Tu negocio ya tiene encanto. Ahora toca que se encuentre, se entienda y se elija.',
+    cardItems:['Google Maps más trabajado','Redes con intención comercial','Campañas para reservas, llamadas y mensajes'],
+    finalTitle:'Tu negocio ya tiene el sabor. Nosotros hacemos que se note desde fuera.',
+    finalText:'Si tienes un restaurante, bar, cafetería, hotel rural, alojamiento o proyecto turístico, podemos ayudarte a ordenar tu presencia digital y convertirla en visibilidad, confianza y oportunidades reales.',
+    fallbackVideo:'/assets/video/hosteleria-hero.mp4',
+    fallbackPoster:'/assets/img/hosteleria-hero-poster.webp'
+  };
+  if(kind==='comercio')return {
+    ...defaults,
+    eyebrow:'Comercios y pymes',
+    heroTitle:'Marketing para comercios que necesitan más visibilidad local y más ventas',
+    heroText:'Estrategias digitales para tiendas, negocios de barrio y pymes que quieren aparecer mejor, comunicar con más claridad y convertir la cercanía en oportunidades reales.',
+    cardTitle:'Tu comercio ya tiene trato y producto. Ahora toca que te encuentren antes.',
+    cardItems:['Google Maps y búsquedas locales','Redes para activar confianza','Campañas de cercanía y venta']
+  };
+  if(kind==='aceite')return {
+    ...defaults,
+    eyebrow:'Almazaras y aceite',
+    heroTitle:'Marketing para marcas con origen, producto y mucho que contar',
+    heroText:'Estrategias digitales para almazaras, cooperativas y proyectos agroalimentarios que quieren poner en valor su producto, su territorio y su capacidad comercial.',
+    cardTitle:'El origen ya lo tienes. Ahora toca convertirlo en marca y demanda.',
+    cardItems:['SEO para producto y territorio','Contenido de origen y calidad','Campañas para venta y captación']
+  };
+  return defaults;
+}
+
+function renderSectorExtraSections(a,cfg){
+  return cfg.sections.map(s=>renderSection(a,s[0],s[1],s[2])).join('');
+}
+
+function renderSectorContentHtml(item,a,claim){
+  const wpContent=item.content&&item.content.rendered?String(item.content.rendered).trim():'';
+  if(wpContent)return wpContent;
+  if(claim)return formatText(claim);
+  return '<p>Contenido pendiente de ampliar desde WordPress.</p>';
+}
+
+function renderSectorHeroMedia(videoUrl,posterUrl,title){
+  if(videoUrl){
+    return `<video class="sector-detail-hero-video" data-sector-video autoplay muted loop playsinline preload="metadata" ${posterUrl?`poster="${escapeHtml(posterUrl)}"`:''} aria-hidden="true"><source src="${escapeHtml(videoUrl)}" type="video/mp4"></video>`;
+  }
+  if(posterUrl){
+    return `<img class="sector-detail-hero-image" src="${escapeHtml(posterUrl)}" alt="${escapeHtml(stripHtml(title))}" loading="eager">`;
+  }
+  return '';
+}
+
+function renderSectorDetailPage(root,item,cfg){
+  const a=getAcf(item);
+  const slug=root.dataset.slug||item.slug||currentSlugFromPath();
+  const kind=sectorCardKind(item);
+  const fallback=sectorFallback(kind);
+  const rawTitle=fieldValue(a,['hero_title','titulo_hero','titulo_principal','nombre_creativo','titular_seo'],fallback.heroTitle||itemTitle(item));
+  const title=stripHtml(rawTitle||itemTitle(item)||'Sector');
+  const claim=fieldValue(a,['hero_text','texto_hero','subtitulo_hero','claim','subtitulo_comercial','meta_description'],fallback.heroText||excerpt(item));
+  const eyebrow=fieldValue(a,['etiqueta_comercial','sector_label','sector_etiqueta','kicker'],fallback.eyebrow||cfg.typeLabel);
+  const ctaLabel=fieldValue(a,[cfg.ctaTextKey,'cta_label','cta_texto','boton_texto'],fallback.ctaLabel);
+  const ctaUrl=normalizeUrl(fieldValue(a,[cfg.ctaUrlKey,'cta_url','boton_url'],SALERO_CONFIG.contactUrl));
+  const videoUrl=fieldUrl(fieldValue(a,['hero_video','video_hero','sector_hero_video','video_sector'],fallback.fallbackVideo||''));
+  const posterUrl=fieldUrl(fieldValue(a,['hero_poster','poster_hero','sector_hero_poster','imagen_hero','hero_image','imagen_sector'],fallback.fallbackPoster||featuredImage(item)||''));
+  const cardTitle=fieldValue(a,['hero_card_title','destacado_titulo','card_title'],fallback.cardTitle);
+  const cardItems=fieldList(fieldValue(a,['hero_card_items','destacado_items','puntos_hero','card_items'],fallback.cardItems));
+  const sidebarTitle=fieldValue(a,['sidebar_title','cata_titulo'],'Qué miramos en una cata digital');
+  const sidebarItems=fieldList(fieldValue(a,['sidebar_items','cata_items','que_miramos'],[
+    'Cómo apareces en Google y Google Maps',
+    'Qué transmite tu web en los primeros segundos',
+    'Cómo comunicas en redes sociales',
+    'Qué hace tu competencia directa',
+    'Dónde se están perdiendo oportunidades'
+  ]));
+  const bodyHtml=renderSectorContentHtml(item,a,claim);
+  const extraSections=renderSectorExtraSections(a,cfg);
+  const finalTitle=fieldValue(a,['cta_final_titulo','final_title','titulo_cta_final'],fallback.finalTitle);
+  const finalText=fieldValue(a,['cta_final_texto_largo','final_text','texto_cta_final'],fallback.finalText);
+
+  const canonical=`${window.location.origin}${trailingSlashPath(window.location.pathname)}`;
+  ensureCanonical(canonical);
+
+  root.classList.add('sector-detail-root');
+  root.innerHTML=`
+    <section class="sector-detail-hero sector-kind-${escapeHtml(kind)}" aria-labelledby="sector-detail-title">
+      ${renderSectorHeroMedia(videoUrl,posterUrl,title)}
+      <div class="sector-detail-veil" aria-hidden="true"></div>
+      <div class="sector-detail-gradient" aria-hidden="true"></div>
+      <div class="container sector-detail-hero-inner">
+        <div class="sector-detail-copy">
+          <a class="sector-detail-back" href="/sectores/">Sectores</a>
+          <span class="sector-detail-kicker">${escapeHtml(stripHtml(eyebrow))}</span>
+          <h1 id="sector-detail-title">${escapeHtml(title)}</h1>
+          ${claim?`<p>${escapeHtml(stripHtml(claim))}</p>`:''}
+          <div class="sector-detail-actions" aria-label="Acciones principales">
+            <a class="btn btn-primary" href="${escapeHtml(ctaUrl)}">${escapeHtml(stripHtml(ctaLabel))}</a>
+            <a class="btn btn-secondary sector-btn-glass" href="#contenido-sector">Ver estrategia</a>
+          </div>
+        </div>
+        <aside class="sector-detail-hero-card" aria-label="Resumen del sector">
+          <span class="sector-card-label">${escapeHtml(sectorCardLabel(kind))}</span>
+          <h2>${escapeHtml(stripHtml(cardTitle))}</h2>
+          ${cardItems.length?`<ul>${cardItems.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>`:''}
+        </aside>
+      </div>
+    </section>
+
+    <section class="sector-content-section" id="contenido-sector">
+      <div class="container sector-content-grid">
+        <article class="sector-main-content">
+          <span class="sector-section-kicker">Estrategia sectorial</span>
+          <div class="sector-rich-content">${bodyHtml}</div>
+          ${extraSections?`<div class="sector-dynamic-blocks">${extraSections}</div>`:''}
+        </article>
+        <aside class="sector-sidebar">
+          <div class="sector-sidebar-card">
+            <span class="sector-section-kicker">Cata digital</span>
+            <h2>${escapeHtml(stripHtml(sidebarTitle))}</h2>
+            ${sidebarItems.length?`<ul>${sidebarItems.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>`:''}
+            <a class="btn btn-primary" href="${escapeHtml(ctaUrl)}">${escapeHtml(stripHtml(ctaLabel))}</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="sector-final-cta" aria-labelledby="sector-final-title">
+      <div class="container sector-final-card">
+        <span class="sector-section-kicker">Con salero y con método</span>
+        <h2 id="sector-final-title">${escapeHtml(stripHtml(finalTitle))}</h2>
+        ${finalText?`<p>${escapeHtml(stripHtml(finalText))}</p>`:''}
+        <div class="sector-detail-actions">
+          <a class="btn btn-primary" href="${escapeHtml(ctaUrl)}">${escapeHtml(stripHtml(ctaLabel))}</a>
+          <a class="btn btn-secondary" href="${escapeHtml(SALERO_CONFIG.whatsappUrl)}" target="_blank" rel="noopener">Hablar por WhatsApp</a>
+        </div>
+      </div>
+    </section>
+  `;
+
+  const video=root.querySelector('[data-sector-video]');
+  if(video){
+    const tryPlay=()=>video.play().catch(()=>{});
+    if(document.readyState==='complete')tryPlay();
+    else window.addEventListener('load',tryPlay,{once:true});
+  }
+}
+
+async function renderDetailPage(){
+  const root=document.querySelector('[data-detail]');
+  if(!root)return;
+  const cfg=DETAIL_CONFIG[root.dataset.type];
+  if(!cfg){
+    root.innerHTML='<div class="container section"><div class="error">Configuración no válida.</div></div>';
+    return;
+  }
+
+  const slug=root.dataset.slug||currentSlugFromPath();
+
+  if(!slug){
+    root.innerHTML='<div class="container section"><div class="error">No se ha podido detectar el sector solicitado.</div></div>';
+    return;
+  }
+
+  try{
+    const item=await getBySlug(cfg.endpoint,slug);
+    if(!item){
+      root.innerHTML='<div class="container section"><div class="empty">Contenido no encontrado en WordPress.</div></div>';
+      return;
+    }
+
+    setSeoFromItem(item);
+
+    if(root.dataset.type==='sector'){
+      renderSectorDetailPage(root,item,cfg);
+      return;
+    }
+
+    const a=getAcf(item);
+    const title=a.nombre_creativo||a.titular_seo||itemTitle(item);
+    const tech=a.nombre_tecnico||a.precio_desde||cfg.typeLabel;
+    const claim=a.claim||a.subtitulo_comercial||a.titular_seo||a.meta_description||excerpt(item);
+    const cta=a[cfg.ctaTextKey]||'Pide tu cata digital';
+    const url=normalizeUrl(a[cfg.ctaUrlKey]);
+    const img=featuredImage(item);
+
+    root.innerHTML=`<section class="hero"><div class="container hero-grid"><div class="hero-copy"><span class="eyebrow">${escapeHtml(cfg.typeLabel)}</span><h1>${escapeHtml(stripHtml(title))}</h1>${tech?`<p class="lead"><strong>${escapeHtml(stripHtml(tech))}</strong></p>`:''}${claim?`<p class="lead">${escapeHtml(stripHtml(claim))}</p>`:''}<div class="hero-actions"><a class="btn btn-primary" href="${url}">${escapeHtml(stripHtml(cta))}</a><a class="btn btn-secondary" href="/hablamos/">Pide una cata digital</a></div></div><aside class="hero-card">${img?`<img src="${img}" alt="${escapeHtml(stripHtml(title))}" loading="lazy">`:''}<strong>Digitalizamos con salero, pero con los pies en la tierra.</strong><p>Una estrategia clara, cercana y pensada para que el negocio gane visibilidad, confianza y oportunidades.</p></aside></div></section><section class="section-tight"><div class="container detail-layout"><main class="content-panel">${cfg.sections.map(s=>renderSection(a,s[0],s[1],s[2])).join('')}</main><aside class="sidebar-card"><span class="eyebrow">Cata digital</span><h3>¿Le damos una chispa a tu negocio?</h3><p>Cuéntanos dónde está ahora tu marca y vemos qué punto de sal necesita.</p><a class="btn btn-accent" href="/hablamos/">Hablemos</a></aside></div></section>`;
+  }catch(e){
+    console.error(e);
+    root.innerHTML=`<div class="container section"><div class="error">No se pudo cargar el contenido desde WordPress. Revisa el endpoint ${escapeHtml(cfg.endpoint)} y el slug ${escapeHtml(slug)}.</div></div>`;
+  }
+}
+
 document.addEventListener('DOMContentLoaded',renderDetailPage);
