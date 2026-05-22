@@ -1,1 +1,1 @@
-/sectores/:slug/ /sector-detail?slug=:slug 200
+/sectores/:slug/ /sector-detail 200
