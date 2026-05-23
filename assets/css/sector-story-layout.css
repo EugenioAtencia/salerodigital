@@ -168,7 +168,7 @@
   border-radius:1.6rem;
   background:
     linear-gradient(180deg,rgba(32,37,27,.02),rgba(32,37,27,.12)),
-    url('/assets/img/hosteleria-hero-poster.webp') center / cover no-repeat,
+    var(--sector-card-image, url('/assets/img/hosteleria-hero-poster.webp')) center / cover no-repeat,
     #f3eadb;
 }
 
