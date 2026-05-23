@@ -148,8 +148,7 @@
 .sector-editorial-card{
   display:grid !important;
   grid-template-columns:minmax(280px,.55fr) minmax(0,.7fr) !important;
-  grid-template-rows:auto auto 1fr !important;
-  gap:0 clamp(2rem,6vw,6rem) !important;
+  gap:clamp(2rem,6vw,6rem) !important;
   align-items:start !important;
   min-height:auto !important;
   border:0 !important;
@@ -164,7 +163,7 @@
   content:"";
   display:block;
   grid-column:1;
-  grid-row:1 / span 3;
+  grid-row:1;
   min-height:clamp(23rem,34vw,34rem);
   border-radius:1.6rem;
   background:
@@ -183,7 +182,7 @@
 
 .sector-editorial-card:nth-child(even)::before{
   grid-column:2;
-  grid-row:1 / span 3;
+  grid-row:1;
   order:0;
 }
 
@@ -191,36 +190,24 @@
   display:none !important;
 }
 
-.sector-editorial-card h2{
+.sector-editorial-copy{
   grid-column:2;
   grid-row:1;
+  align-self:start;
+  display:block;
+  padding-top:0;
 }
 
-.sector-editorial-card p{
-  grid-column:2;
-  grid-row:2;
-}
-
-.sector-editorial-card .sector-card-more{
-  grid-column:2;
-  grid-row:3;
-}
-
-.sector-editorial-card:nth-child(even) h2{
+.sector-editorial-card:nth-child(even) .sector-editorial-copy{
   grid-column:1;
   grid-row:1;
 }
 
-.sector-editorial-card:nth-child(even) p{
-  grid-column:1;
-  grid-row:2;
+.sector-editorial-copy>span{
+  display:none !important;
 }
 
-.sector-editorial-card:nth-child(even) .sector-card-more{
-  grid-column:1;
-  grid-row:3;
-}
-
+.sector-editorial-copy h2,
 .sector-editorial-card h2{
   max-width:8.5em !important;
   margin:0 0 clamp(1.2rem,2vw,1.8rem) !important;
@@ -233,6 +220,7 @@
   text-wrap:balance !important;
 }
 
+.sector-editorial-copy p,
 .sector-editorial-card p{
   max-width:45rem !important;
   margin:0 !important;
@@ -243,6 +231,10 @@
   letter-spacing:0 !important;
   display:block !important;
   overflow:visible !important;
+}
+
+.sector-editorial-copy .sector-card-more{
+  margin-top:1.2rem;
 }
 
 @media(max-width:1500px){
@@ -269,7 +261,6 @@
   .sector-editorial-card,
   .sector-editorial-card:nth-child(even){
     grid-template-columns:1fr !important;
-    grid-template-rows:auto !important;
     gap:1.6rem !important;
   }
 
@@ -281,12 +272,8 @@
     min-height:18rem;
   }
 
-  .sector-editorial-card h2,
-  .sector-editorial-card p,
-  .sector-editorial-card .sector-card-more,
-  .sector-editorial-card:nth-child(even) h2,
-  .sector-editorial-card:nth-child(even) p,
-  .sector-editorial-card:nth-child(even) .sector-card-more{
+  .sector-editorial-copy,
+  .sector-editorial-card:nth-child(even) .sector-editorial-copy{
     grid-column:1;
     grid-row:auto;
   }
@@ -302,6 +289,7 @@
     line-height:1.04;
   }
 
+  .sector-editorial-copy h2,
   .sector-editorial-card h2{
     font-size:clamp(2.2rem,12vw,3.7rem) !important;
   }
