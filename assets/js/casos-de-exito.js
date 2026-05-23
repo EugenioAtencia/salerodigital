@@ -201,6 +201,125 @@ function renderCasoCard(item = {}) {
   </article>`;
 }
 
+function renderCasosCarousel(items = []) {
+  const cards = items.map(renderCasoCard).join('');
+
+  return `<div class="casos-carousel" data-casos-carousel>
+    <div class="casos-carousel-viewport" data-casos-viewport aria-live="polite">
+      <div class="casos-carousel-track" data-casos-track>
+        ${cards}
+      </div>
+    </div>
+
+    <div class="casos-carousel-controls" aria-label="Controles del carrusel de casos de éxito">
+      <button class="casos-carousel-btn" type="button" data-casos-prev aria-label="Ver caso anterior">‹</button>
+      <div class="casos-carousel-dots" data-casos-dots aria-label="Paginación del carrusel"></div>
+      <button class="casos-carousel-btn" type="button" data-casos-next aria-label="Ver caso siguiente">›</button>
+    </div>
+  </div>`;
+}
+
+function initCasosCarousel(root) {
+  const carousel = root.querySelector('[data-casos-carousel]');
+  if (!carousel) return;
+
+  const viewport = carousel.querySelector('[data-casos-viewport]');
+  const track = carousel.querySelector('[data-casos-track]');
+  const prev = carousel.querySelector('[data-casos-prev]');
+  const next = carousel.querySelector('[data-casos-next]');
+  const dotsRoot = carousel.querySelector('[data-casos-dots]');
+  const cards = [...carousel.querySelectorAll('.caso-card-visual')];
+
+  if (!viewport || !track || !cards.length) return;
+
+  let index = 0;
+  let timer = null;
+  const interval = 6000;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const visibleCount = () => {
+    if (window.matchMedia('(max-width:720px)').matches) return 1;
+    if (window.matchMedia('(max-width:1080px)').matches) return 2;
+    return 3;
+  };
+
+  const maxIndex = () => Math.max(0, cards.length - visibleCount());
+
+  const renderDots = () => {
+    if (!dotsRoot) return;
+    const total = maxIndex() + 1;
+    dotsRoot.innerHTML = Array.from({ length: total }, (_, i) => `<button class="casos-carousel-dot" type="button" data-casos-dot="${i}" aria-label="Ir al grupo de casos ${i + 1}"></button>`).join('');
+  };
+
+  const updateDots = () => {
+    carousel.querySelectorAll('[data-casos-dot]').forEach(dot => {
+      const active = Number(dot.dataset.casosDot) === index;
+      dot.classList.toggle('is-active', active);
+      dot.setAttribute('aria-current', active ? 'true' : 'false');
+    });
+  };
+
+  const goTo = (nextIndex, behavior = 'smooth') => {
+    const max = maxIndex();
+    if (nextIndex > max) nextIndex = 0;
+    if (nextIndex < 0) nextIndex = max;
+
+    index = nextIndex;
+    const target = cards[index];
+    const left = target ? target.offsetLeft - track.offsetLeft : 0;
+
+    viewport.scrollTo({ left, behavior });
+    carousel.classList.toggle('has-single-page', max === 0);
+    updateDots();
+  };
+
+  const stop = () => {
+    if (timer) window.clearInterval(timer);
+    timer = null;
+  };
+
+  const start = () => {
+    if (reduceMotion || maxIndex() === 0) return;
+    stop();
+    timer = window.setInterval(() => goTo(index + 1), interval);
+  };
+
+  renderDots();
+  goTo(0, 'auto');
+  start();
+
+  prev && prev.addEventListener('click', () => {
+    stop();
+    goTo(index - 1);
+    start();
+  });
+
+  next && next.addEventListener('click', () => {
+    stop();
+    goTo(index + 1);
+    start();
+  });
+
+  dotsRoot && dotsRoot.addEventListener('click', event => {
+    const dot = event.target.closest('[data-casos-dot]');
+    if (!dot) return;
+    stop();
+    goTo(Number(dot.dataset.casosDot));
+    start();
+  });
+
+  carousel.addEventListener('mouseenter', stop);
+  carousel.addEventListener('mouseleave', start);
+  carousel.addEventListener('focusin', stop);
+  carousel.addEventListener('focusout', start);
+
+  window.addEventListener('resize', () => {
+    renderDots();
+    goTo(Math.min(index, maxIndex()), 'auto');
+    start();
+  });
+}
+
 async function renderCasosPage() {
   const root = document.querySelector('[data-casos]');
   if (!root) return;
@@ -211,10 +330,12 @@ async function renderCasosPage() {
     const endpoint = (SALERO_CONFIG.endpoints && SALERO_CONFIG.endpoints.casos) ? 'casos' : 'casos-exito';
     const items = await getCollection(endpoint);
     const validItems = Array.isArray(items) ? items.filter(Boolean) : [];
-    root.innerHTML = (validItems.length ? validItems : SALERO_CASOS_FALLBACK).map(renderCasoCard).join('');
+    root.innerHTML = renderCasosCarousel(validItems.length ? validItems : SALERO_CASOS_FALLBACK);
+    initCasosCarousel(root);
   } catch (error) {
     console.warn('No se pudieron cargar los casos desde WordPress. Se usa contenido provisional.', error);
-    root.innerHTML = SALERO_CASOS_FALLBACK.map(renderCasoCard).join('');
+    root.innerHTML = renderCasosCarousel(SALERO_CASOS_FALLBACK);
+    initCasosCarousel(root);
   }
 }
 
