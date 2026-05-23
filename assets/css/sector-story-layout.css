@@ -1,205 +1,324 @@
-/* Grid editorial definitivo para el bloque privilegiado de estrategia sectorial */
+/* Composición sutil y humana para el bloque privilegiado de estrategia sectorial */
 .sector-content-section{
   padding:clamp(5rem,8vw,8rem) 0 clamp(4rem,7vw,7rem) !important;
-  background:radial-gradient(circle at 12% 18%,rgba(200,255,90,.075),transparent 28rem),linear-gradient(180deg,#fffdf7 0%,#faf6eb 52%,#fffdf7 100%) !important;
+  background:#fffdf7 !important;
 }
 
-.sector-content-grid{
+.sector-content-section::before{
+  opacity:.28 !important;
+}
+
+.sector-content-grid,
+.sector-story-container{
   grid-template-columns:1fr !important;
-  gap:clamp(1.8rem,3.5vw,3rem) !important;
+  gap:0 !important;
+}
+
+.sector-main-content{
+  width:100%;
 }
 
 .sector-main-content>.sector-section-kicker{
-  margin-bottom:clamp(1.2rem,2vw,1.8rem) !important;
-}
-
-.sector-story-quote{
-  margin:0 0 clamp(1.6rem,3vw,2.6rem) !important;
-  border:1px solid rgba(39,49,31,.11);
-  border-radius:clamp(1.65rem,3vw,2.7rem);
-  background:linear-gradient(145deg,rgba(255,253,247,.97),rgba(249,244,230,.76));
-  box-shadow:0 26px 80px rgba(32,37,27,.055);
-  padding:clamp(2rem,5vw,4.8rem);
-}
-
-.sector-story-quote cite{
-  display:block;
-  max-width:13.4em;
-  color:#263020;
-  font-family:"Playfair Display",Georgia,serif;
-  font-size:clamp(2.7rem,5.4vw,7rem);
-  font-style:italic;
-  font-weight:800;
-  line-height:.9;
-  letter-spacing:-.078em;
-  text-wrap:balance;
+  margin-bottom:clamp(1.5rem,2.5vw,2.2rem) !important;
 }
 
 .sector-lead-content{
   display:none !important;
 }
 
+.sector-story-top{
+  display:grid;
+  grid-template-columns:minmax(0,.88fr) minmax(260px,.42fr);
+  grid-template-areas:
+    "quote sidebar"
+    "photos photos";
+  gap:clamp(1.3rem,3vw,2.6rem);
+  align-items:start;
+  margin-bottom:clamp(4.5rem,7vw,7rem);
+}
+
+.sector-story-quote{
+  grid-area:quote;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+
+.sector-story-quote cite{
+  display:block;
+  max-width:17.5em;
+  color:#243520;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:clamp(2rem,3.4vw,4.1rem);
+  font-style:italic;
+  font-weight:500;
+  line-height:1.04;
+  letter-spacing:-.045em;
+  text-wrap:balance;
+}
+
+.sector-story-top .sector-sidebar{
+  grid-area:sidebar;
+  position:static !important;
+}
+
+.sector-story-top .sector-sidebar-card{
+  display:block !important;
+  min-height:auto !important;
+  border:1px solid rgba(39,49,31,.12) !important;
+  border-radius:1.6rem !important;
+  background:rgba(255,253,247,.78) !important;
+  box-shadow:none !important;
+  padding:clamp(1.2rem,2.2vw,1.7rem) !important;
+}
+
+.sector-story-top .sector-sidebar-card .sector-section-kicker{
+  margin-bottom:1rem !important;
+  font-size:.68rem !important;
+  padding:.52rem .72rem !important;
+}
+
+.sector-story-top .sector-sidebar-card h2{
+  max-width:12em !important;
+  margin:0 0 1.1rem !important;
+  color:#243520 !important;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:clamp(1.55rem,2vw,2.25rem) !important;
+  font-style:italic;
+  font-weight:500 !important;
+  line-height:1.04 !important;
+  letter-spacing:-.04em !important;
+}
+
+.sector-story-top .sector-sidebar-card ul{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:.55rem !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+.sector-story-top .sector-sidebar-card li{
+  display:flex !important;
+  gap:.62rem !important;
+  color:#4f5d4a !important;
+  font-size:.94rem !important;
+  line-height:1.38 !important;
+  font-weight:400 !important;
+}
+
+.sector-story-top .sector-sidebar-card li::before{
+  flex:0 0 .42rem !important;
+  width:.42rem !important;
+  height:.42rem !important;
+  margin-top:.44rem !important;
+  background:#c8ff5a !important;
+  box-shadow:0 0 0 4px rgba(200,255,90,.14) !important;
+}
+
+.sector-story-top .sector-sidebar-card .btn{
+  width:100% !important;
+  justify-content:center !important;
+  margin-top:1.15rem !important;
+  padding:.86rem 1rem !important;
+  border-radius:.35rem !important;
+  background:transparent !important;
+  color:#243520 !important;
+  border:1.5px solid #243520 !important;
+  font-size:.95rem !important;
+  line-height:1.15 !important;
+}
+
+.sector-photo-grid{
+  grid-area:photos;
+  display:grid;
+  grid-template-columns:minmax(150px,.45fr) minmax(0,1fr);
+  grid-template-rows:repeat(2,minmax(10rem,1fr));
+  gap:clamp(.8rem,1.7vw,1.2rem);
+  max-width:780px;
+  margin-left:auto;
+}
+
+.sector-photo-tile{
+  position:relative;
+  overflow:hidden;
+  margin:0;
+  border-radius:1.4rem;
+  background:#f3eadb;
+}
+
+.sector-photo-tile img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  filter:saturate(.96) contrast(.96);
+}
+
+.sector-photo-small{
+  min-height:12.5rem;
+}
+
+.sector-photo-large{
+  grid-column:2;
+  grid-row:1 / span 2;
+  min-height:26rem;
+}
+
+.sector-photo-offset img{
+  object-position:center 62%;
+}
+
 .sector-editorial-split{
   display:grid !important;
-  grid-template-columns:1.12fr .88fr !important;
-  gap:clamp(1rem,2vw,1.55rem) !important;
-  margin-top:0 !important;
+  grid-template-columns:1fr !important;
+  gap:clamp(4rem,7vw,7rem) !important;
+  margin:0 !important;
 }
 
 .sector-editorial-card{
-  display:flex !important;
-  min-height:clamp(21rem,28vw,31rem) !important;
-  flex-direction:column !important;
-  border:1px solid rgba(39,49,31,.105) !important;
-  border-radius:clamp(1.4rem,2.3vw,2rem) !important;
-  background:linear-gradient(145deg,rgba(255,253,247,.96),rgba(248,244,232,.78)) !important;
-  box-shadow:0 1px 0 rgba(255,255,255,.82) inset,0 18px 62px rgba(32,37,27,.045) !important;
-  padding:clamp(1.55rem,3vw,2.7rem) !important;
+  display:grid !important;
+  grid-template-columns:minmax(280px,.55fr) minmax(0,.7fr) !important;
+  gap:clamp(2rem,6vw,6rem) !important;
+  align-items:center !important;
+  min-height:auto !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  overflow:visible !important;
+}
+
+.sector-editorial-card::before{
+  content:"";
+  display:block;
+  min-height:clamp(23rem,34vw,34rem);
+  border-radius:1.6rem;
+  background:
+    linear-gradient(180deg,rgba(32,37,27,.02),rgba(32,37,27,.12)),
+    url('/assets/img/hosteleria-hero-poster.webp') center / cover no-repeat,
+    #f3eadb;
 }
 
 .sector-editorial-card::after{
-  right:-5.8rem !important;
-  bottom:-6.2rem !important;
-  width:14rem !important;
-  background:rgba(200,255,90,.11) !important;
+  display:none !important;
+}
+
+.sector-editorial-card:nth-child(even){
+  grid-template-columns:minmax(0,.7fr) minmax(280px,.55fr) !important;
+}
+
+.sector-editorial-card:nth-child(even)::before{
+  order:2;
 }
 
 .sector-editorial-card>span{
   display:none !important;
 }
 
+.sector-editorial-card h2,
+.sector-editorial-card p,
+.sector-editorial-card .sector-card-more{
+  grid-column:2;
+}
+
+.sector-editorial-card:nth-child(even) h2,
+.sector-editorial-card:nth-child(even) p,
+.sector-editorial-card:nth-child(even) .sector-card-more{
+  grid-column:1;
+}
+
 .sector-editorial-card h2{
-  max-width:10em !important;
-  margin:clamp(4.2rem,7vw,7rem) 0 1.1rem !important;
-  color:#20251b !important;
-  font-size:clamp(2.25rem,3.5vw,4.25rem) !important;
-  line-height:.92 !important;
-  letter-spacing:-.072em !important;
+  max-width:8.5em !important;
+  margin:0 0 clamp(1.2rem,2vw,1.8rem) !important;
+  color:#243520 !important;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:clamp(2.4rem,4.4vw,5.4rem) !important;
+  font-weight:500 !important;
+  line-height:1.02 !important;
+  letter-spacing:-.055em !important;
   text-wrap:balance !important;
 }
 
 .sector-editorial-card p{
-  max-width:46rem !important;
-  color:#5a6254 !important;
-  font-size:clamp(.98rem,1.06vw,1.08rem) !important;
-  line-height:1.5 !important;
-  font-weight:430 !important;
+  max-width:45rem !important;
+  color:#243520 !important;
+  font-size:clamp(1rem,1.18vw,1.2rem) !important;
+  line-height:1.72 !important;
+  font-weight:350 !important;
   letter-spacing:0 !important;
-}
-
-.sector-sidebar{
-  position:static !important;
-}
-
-.sector-sidebar-card{
-  display:grid !important;
-  grid-template-columns:minmax(0,.9fr) minmax(360px,1.1fr) !important;
-  gap:clamp(1.4rem,3.5vw,3.5rem) !important;
-  align-items:end !important;
-  border:1px solid rgba(39,49,31,.105) !important;
-  border-radius:clamp(1.4rem,2.3vw,2rem) !important;
-  background:radial-gradient(circle at 100% 100%,rgba(200,255,90,.16),transparent 16rem),linear-gradient(145deg,rgba(255,253,247,.98),rgba(250,245,232,.8)) !important;
-  box-shadow:0 1px 0 rgba(255,255,255,.82) inset,0 18px 62px rgba(32,37,27,.045) !important;
-  padding:clamp(1.55rem,3vw,2.7rem) !important;
-}
-
-.sector-sidebar-card .sector-section-kicker{
-  grid-column:1;
-  margin-bottom:auto !important;
-}
-
-.sector-sidebar-card h2{
-  grid-column:1;
-  max-width:10em !important;
-  margin:clamp(4.2rem,7vw,7rem) 0 0 !important;
-  color:#20251b !important;
-  font-size:clamp(2.25rem,3.5vw,4.25rem) !important;
-  line-height:.92 !important;
-  letter-spacing:-.072em !important;
-  text-wrap:balance !important;
-}
-
-.sector-sidebar-card ul{
-  grid-column:2;
-  grid-row:1 / span 3;
-  align-self:center;
-  display:grid !important;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:.8rem 1rem !important;
-  margin:0 !important;
-}
-
-.sector-sidebar-card li{
-  display:flex !important;
-  gap:.72rem !important;
-  color:#5a6254 !important;
-  font-size:clamp(.95rem,1vw,1.02rem) !important;
-  line-height:1.42 !important;
-  font-weight:430 !important;
-}
-
-.sector-sidebar-card .btn{
-  grid-column:1;
-  width:fit-content !important;
-  margin-top:1.4rem !important;
-  padding:.9rem 1.18rem !important;
-  font-size:.9rem !important;
-  line-height:1.05 !important;
+  display:block !important;
+  overflow:visible !important;
 }
 
 @media(max-width:1180px){
-  .sector-editorial-split{
-    grid-template-columns:1fr !important;
+  .sector-story-top{
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "quote"
+      "sidebar"
+      "photos";
   }
 
-  .sector-sidebar-card{
-    grid-template-columns:1fr !important;
-    align-items:start !important;
-  }
-
-  .sector-sidebar-card .sector-section-kicker,
-  .sector-sidebar-card h2,
-  .sector-sidebar-card ul,
-  .sector-sidebar-card .btn{
-    grid-column:auto !important;
-    grid-row:auto !important;
-  }
-
-  .sector-sidebar-card ul{
-    grid-template-columns:repeat(2,minmax(0,1fr));
+  .sector-photo-grid{
+    margin-left:0;
+    max-width:none;
   }
 }
 
-@media(max-width:760px){
-  .sector-story-quote,
-  .sector-editorial-card,
-  .sector-sidebar-card{
-    border-radius:1.35rem !important;
-    padding:1.25rem !important;
+@media(max-width:860px){
+  .sector-photo-grid{
+    grid-template-columns:1fr 1fr;
+    grid-template-rows:auto;
   }
 
-  .sector-story-quote cite{
-    font-size:clamp(2.25rem,13vw,4.1rem);
-    line-height:.92;
+  .sector-photo-large{
+    grid-column:1 / -1;
+    grid-row:auto;
+    min-height:18rem;
   }
 
   .sector-editorial-card,
-  .sector-sidebar-card{
-    min-height:auto !important;
+  .sector-editorial-card:nth-child(even){
+    grid-template-columns:1fr !important;
+    gap:1.6rem !important;
+  }
+
+  .sector-editorial-card::before,
+  .sector-editorial-card:nth-child(even)::before{
+    order:0;
+    min-height:18rem;
   }
 
   .sector-editorial-card h2,
-  .sector-sidebar-card h2{
-    margin-top:4rem !important;
-    font-size:clamp(2rem,11vw,3.15rem) !important;
+  .sector-editorial-card p,
+  .sector-editorial-card .sector-card-more,
+  .sector-editorial-card:nth-child(even) h2,
+  .sector-editorial-card:nth-child(even) p,
+  .sector-editorial-card:nth-child(even) .sector-card-more{
+    grid-column:1;
+  }
+}
+
+@media(max-width:640px){
+  .sector-story-quote cite{
+    font-size:clamp(1.9rem,10vw,3.3rem);
+    line-height:1.04;
   }
 
-  .sector-sidebar-card ul{
-    grid-template-columns:1fr !important;
+  .sector-photo-grid{
+    grid-template-columns:1fr;
   }
 
-  .sector-sidebar-card .btn{
-    width:100% !important;
-    justify-content:center !important;
+  .sector-photo-small,
+  .sector-photo-large{
+    min-height:14rem;
+  }
+
+  .sector-editorial-card h2{
+    font-size:clamp(2.2rem,12vw,3.7rem) !important;
   }
 }
