@@ -182,8 +182,9 @@ function renderCasoCard(item = {}) {
 
     <div class="caso-content">
       <div class="caso-card-top">
+        <span class="caso-content-kicker">${escapeHtml(visualLabel)}<br>${escapeHtml(sector)}</span>
         <h3>${escapeHtml(title)}</h3>
-        <p class="caso-excerpt">${escapeHtml(excerpt).slice(0,190)}</p>
+        <p class="caso-excerpt">${escapeHtml(excerpt).slice(0,220)}</p>
       </div>
 
       <div class="caso-meta">
@@ -204,7 +205,7 @@ function renderCasoCard(item = {}) {
 function renderCasosCarousel(items = []) {
   const cards = items.map(renderCasoCard).join('');
 
-  return `<div class="casos-carousel" data-casos-carousel>
+  return `<div class="casos-carousel casos-carousel-featured" data-casos-carousel>
     <div class="casos-carousel-viewport" data-casos-viewport aria-live="polite">
       <div class="casos-carousel-track" data-casos-track>
         ${cards}
@@ -237,18 +238,12 @@ function initCasosCarousel(root) {
   const interval = 6000;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const visibleCount = () => {
-    if (window.matchMedia('(max-width:720px)').matches) return 1;
-    if (window.matchMedia('(max-width:1080px)').matches) return 2;
-    return 3;
-  };
-
-  const maxIndex = () => Math.max(0, cards.length - visibleCount());
+  const maxIndex = () => Math.max(0, cards.length - 1);
 
   const renderDots = () => {
     if (!dotsRoot) return;
     const total = maxIndex() + 1;
-    dotsRoot.innerHTML = Array.from({ length: total }, (_, i) => `<button class="casos-carousel-dot" type="button" data-casos-dot="${i}" aria-label="Ir al grupo de casos ${i + 1}"></button>`).join('');
+    dotsRoot.innerHTML = Array.from({ length: total }, (_, i) => `<button class="casos-carousel-dot" type="button" data-casos-dot="${i}" aria-label="Ir al caso ${i + 1}"></button>`).join('');
   };
 
   const updateDots = () => {
@@ -257,6 +252,10 @@ function initCasosCarousel(root) {
       dot.classList.toggle('is-active', active);
       dot.setAttribute('aria-current', active ? 'true' : 'false');
     });
+  };
+
+  const updateActiveCard = () => {
+    cards.forEach((card, i) => card.classList.toggle('is-active', i === index));
   };
 
   const goTo = (nextIndex, behavior = 'smooth') => {
@@ -270,6 +269,7 @@ function initCasosCarousel(root) {
 
     viewport.scrollTo({ left, behavior });
     carousel.classList.toggle('has-single-page', max === 0);
+    updateActiveCard();
     updateDots();
   };
 
