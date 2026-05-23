@@ -197,3 +197,147 @@
     font-size: clamp(1.65rem, 9vw, 2.3rem) !important;
   }
 }
+
+/* Capa de afinado visual para el bloque privilegiado de estrategia */
+.sector-content-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, .31fr) !important;
+  gap: clamp(2.2rem, 5.2vw, 4.2rem) !important;
+}
+
+.sector-lead-content {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, .42fr) !important;
+  gap: clamp(1.2rem, 3vw, 2.2rem) !important;
+  align-items: stretch !important;
+  min-height: clamp(15rem, 23vw, 22rem) !important;
+  border-left: 0 !important;
+  border: 1px solid rgba(39, 49, 31, .105) !important;
+  border-radius: 2rem !important;
+  background: linear-gradient(145deg, rgba(255,253,247,.96), rgba(247,242,226,.74)) !important;
+  padding: clamp(1.35rem, 3vw, 2.6rem) !important;
+}
+
+.sector-lead-content::before {
+  display: none !important;
+}
+
+.sector-lead-content::after {
+  content: "";
+  min-height: 100%;
+  border-radius: 1.45rem;
+  background:
+    linear-gradient(180deg, rgba(32,37,27,.02), rgba(32,37,27,.46)),
+    url('/assets/img/hosteleria-hero-poster.webp') center / cover no-repeat,
+    radial-gradient(circle at 70% 80%, rgba(200,255,90,.32), transparent 11rem),
+    #eef3df;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
+}
+
+.sector-lead-content p {
+  max-width: 820px !important;
+  color: #34402e !important;
+  font-size: clamp(1.35rem, 2.05vw, 2rem) !important;
+  line-height: 1.18 !important;
+  font-weight: 780 !important;
+  letter-spacing: -.055em !important;
+  text-wrap: balance !important;
+  align-self: center !important;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 4 !important;
+  overflow: hidden !important;
+}
+
+.sector-editorial-split {
+  gap: clamp(1rem, 2.2vw, 1.6rem) !important;
+}
+
+.sector-editorial-card {
+  min-height: clamp(26rem, 33vw, 34rem) !important;
+  padding: clamp(1.8rem, 3.4vw, 3rem) !important;
+}
+
+.sector-editorial-card h2 {
+  max-width: 8.2em !important;
+  font-size: clamp(2.25rem, 3.35vw, 3.9rem) !important;
+  line-height: .92 !important;
+  margin-bottom: 1.15rem !important;
+}
+
+.sector-editorial-card p {
+  max-width: 29rem !important;
+  color: #4f594b !important;
+  font-size: clamp(1rem, 1.08vw, 1.13rem) !important;
+  line-height: 1.48 !important;
+  font-weight: 440 !important;
+  letter-spacing: -.006em !important;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 9 !important;
+  overflow: hidden !important;
+}
+
+.sector-sidebar-card h2 {
+  font-size: clamp(1.9rem, 2.35vw, 2.75rem) !important;
+  line-height: .94 !important;
+}
+
+.sector-sidebar-card ul {
+  gap: .62rem !important;
+}
+
+.sector-sidebar-card li {
+  color: #545e50 !important;
+  font-size: .92rem !important;
+  line-height: 1.35 !important;
+  font-weight: 440 !important;
+}
+
+.sector-sidebar-card .btn {
+  width: auto !important;
+  min-width: 0 !important;
+  padding: .95rem 1.25rem !important;
+  font-size: .9rem !important;
+  line-height: 1.05 !important;
+}
+
+@media (max-width: 1180px) {
+  .sector-content-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .sector-lead-content {
+    grid-template-columns: 1fr !important;
+  }
+
+  .sector-lead-content::after {
+    min-height: 20rem;
+    order: -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .sector-lead-content {
+    border-radius: 1.35rem !important;
+    padding: 1.15rem !important;
+  }
+
+  .sector-lead-content::after {
+    min-height: 15rem;
+    border-radius: 1.05rem;
+  }
+
+  .sector-lead-content p {
+    font-size: clamp(1.2rem, 6vw, 1.55rem) !important;
+    line-height: 1.24 !important;
+    -webkit-line-clamp: 5 !important;
+  }
+
+  .sector-editorial-card {
+    min-height: auto !important;
+  }
+
+  .sector-editorial-card p {
+    -webkit-line-clamp: 10 !important;
+  }
+}
