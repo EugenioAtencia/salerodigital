@@ -429,17 +429,40 @@ function fieldUrl(value) {
 
 function fieldList(value) {
   if (!value) return [];
+
   if (Array.isArray(value)) {
     return value.map(item => {
       if (typeof item === 'string') return stripHtml(item).trim();
-      if (item && typeof item === 'object') return stripHtml(item.text || item.label || item.titulo || item.title || item.nombre || item.value || '').trim();
+
+      if (item && typeof item === 'object') {
+        return stripHtml(
+          item.punto ||
+          item.punto_cata ||
+          item.punto_cata_digital ||
+          item.texto ||
+          item.text ||
+          item.label ||
+          item.titulo ||
+          item.title ||
+          item.nombre ||
+          item.value ||
+          item.descripcion ||
+          item.description ||
+          ''
+        ).trim();
+      }
+
       return '';
     }).filter(Boolean);
   }
 
   const text = stripHtml(String(value)).trim();
   if (!text) return [];
-  return text.split(/\n+|;|\|/).map(item => item.replace(/^[-•–]\s*/, '').trim()).filter(Boolean);
+
+  return text
+    .split(/\n+|;|\|/)
+    .map(item => item.replace(/^[-•–]\s*/, '').trim())
+    .filter(Boolean);
 }
 
 function normalizeUrl(value = '') {
