@@ -104,7 +104,7 @@ function renderSectorPage(slug, item) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
-  <link rel="stylesheet" href="/assets/css/sector-detail.css?v=3">
+  <link rel="stylesheet" href="/assets/css/sector-detail.css?v=4">
   <link rel="stylesheet" href="/assets/css/sector-action-layout.css?v=2">
   <link rel="stylesheet" href="/assets/css/sector-faq-layout.css?v=2">
   <link rel="stylesheet" href="/assets/css/sector-final-layout.css?v=1">
