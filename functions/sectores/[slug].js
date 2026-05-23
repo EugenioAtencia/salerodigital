@@ -1,5 +1,5 @@
-import { handleSectorRequest } from '../_shared/sector-renderer.js';
+import { handleSectorStoryRequest } from '../_shared/sector-story-transformer.js';
 
 export async function onRequest(context) {
-  return handleSectorRequest(context);
+  return handleSectorStoryRequest(context);
 }
