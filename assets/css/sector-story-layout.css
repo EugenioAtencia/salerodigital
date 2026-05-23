@@ -17,10 +17,13 @@
 .sector-story-container{
   max-width:none !important;
   width:calc(100% - 500px) !important;
+  margin-inline:auto !important;
 }
 
 .sector-main-content{
   width:100%;
+  max-width:1380px;
+  margin-inline:auto !important;
 }
 
 .sector-main-content>.sector-section-kicker{
