@@ -1,4 +1,4 @@
-/* Casos de éxito | Salero Digital | v3 */
+/* Casos de éxito | Salero Digital | v4 */
 
 .casos-page{
   background:#fffdf7;
@@ -219,7 +219,87 @@
   margin:0;
 }
 
-.casos-dynamic-grid{
+.casos-carousel{
+  position:relative;
+  display:grid;
+  gap:24px;
+}
+
+.casos-carousel-viewport{
+  overflow:hidden;
+  width:100%;
+  scroll-behavior:smooth;
+}
+
+.casos-carousel-track{
+  display:flex;
+  gap:22px;
+  align-items:stretch;
+}
+
+.casos-carousel-track .caso-card-visual{
+  flex:0 0 calc((100% - 44px) / 3);
+}
+
+.casos-carousel-controls{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  margin-top:4px;
+}
+
+.casos-carousel-btn{
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(31,42,36,.14);
+  border-radius:50%;
+  background:rgba(255,253,247,.86);
+  color:var(--ink);
+  font-size:1.8rem;
+  font-weight:900;
+  line-height:1;
+  cursor:pointer;
+  box-shadow:0 12px 28px rgba(31,42,36,.07);
+  transition:transform .2s ease, background .2s ease, border-color .2s ease;
+}
+
+.casos-carousel-btn:hover{
+  transform:translateY(-2px);
+  background:rgba(199,244,88,.35);
+  border-color:rgba(31,42,36,.20);
+}
+
+.casos-carousel-dots{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.casos-carousel-dot{
+  width:10px;
+  height:10px;
+  padding:0;
+  border:0;
+  border-radius:999px;
+  background:rgba(31,42,36,.24);
+  cursor:pointer;
+  transition:width .22s ease, background .22s ease;
+}
+
+.casos-carousel-dot.is-active{
+  width:32px;
+  background:var(--ink);
+}
+
+.casos-carousel.has-single-page .casos-carousel-controls{
+  display:none;
+}
+
+.casos-dynamic-grid:not(:has(.casos-carousel)){
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:22px;
@@ -637,8 +717,8 @@
     margin-bottom:0;
   }
 
-  .casos-dynamic-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr));
+  .casos-carousel-track .caso-card-visual{
+    flex-basis:calc((100% - 22px) / 2);
   }
 
   .casos-method-copy h2{
@@ -656,8 +736,12 @@
     width:min(100% - 36px,1320px);
   }
 
-  .casos-dynamic-grid{
-    grid-template-columns:1fr;
+  .casos-carousel-track .caso-card-visual{
+    flex-basis:100%;
+  }
+
+  .casos-carousel-controls{
+    justify-content:space-between;
   }
 
   .caso-card-visual{
