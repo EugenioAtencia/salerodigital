@@ -233,18 +233,22 @@ function renderSectorContentHtml(item, claim) {
 
 function renderEditorialBlocks(acf) {
   const blocks = [
-    renderEditorialCard(acf, 'problema_sector', 'El reto del sector', '01'),
-    renderEditorialCard(acf, 'solucion_salero', 'La solución de Salero Digital', '02')
+    renderEditorialCard(acf, 'problema_sector', fieldValue(acf, ['problema_sector_titulo', 'titulo_problema_sector'], 'El reto del sector'), '01', fieldValue(acf, ['problema_sector_imagen', 'imagen_problema_sector'], '')),
+    renderEditorialCard(acf, 'solucion_salero', fieldValue(acf, ['solucion_salero_titulo', 'titulo_solucion_salero'], 'La solución de Salero Digital'), '02', fieldValue(acf, ['solucion_salero_imagen', 'imagen_solucion_salero'], ''))
   ].filter(Boolean).join('');
 
   return blocks ? `<div class="sector-editorial-split">${blocks}</div>` : '';
 }
 
-function renderEditorialCard(acf, key, title, number) {
+function renderEditorialCard(acf, key, title, number, image = '') {
   const value = acf[key];
   if (!value) return '';
 
-  return `<article class="sector-editorial-card sector-editorial-${escapeAttr(key)}"><span>${number}</span><h2>${escapeHtml(title)}</h2>${formatText(value)}</article>`;
+  const imageUrl = fieldUrl(image);
+  const style = imageUrl ? ` style="--sector-card-image:url('${escapeCssUrl(imageUrl)}')"` : '';
+  const imageAttr = imageUrl ? ` data-sector-image="true"` : '';
+
+  return `<article class="sector-editorial-card sector-editorial-${escapeAttr(key)}"${imageAttr}${style}><span>${number}</span><h2>${escapeHtml(stripHtml(title))}</h2>${formatText(value)}</article>`;
 }
 
 function renderStrategySection(acf) {
@@ -431,11 +435,11 @@ function fieldList(value) {
   if (!value) return [];
 
   if (Array.isArray(value)) {
-    return value.map(item => {
-      if (typeof item === 'string') return stripHtml(item).trim();
+    return value.flatMap(item => {
+      if (typeof item === 'string') return splitListText(stripHtml(item).trim());
 
       if (item && typeof item === 'object') {
-        return stripHtml(
+        const text = stripHtml(
           item.punto ||
           item.punto_cata ||
           item.punto_cata_digital ||
@@ -450,19 +454,34 @@ function fieldList(value) {
           item.description ||
           ''
         ).trim();
+
+        return splitListText(text);
       }
 
-      return '';
+      return [];
     }).filter(Boolean);
   }
 
-  const text = stripHtml(String(value)).trim();
-  if (!text) return [];
+  return splitListText(stripHtml(String(value)).trim());
+}
 
-  return text
+function splitListText(text = '') {
+  const clean = String(text || '').trim();
+  if (!clean) return [];
+
+  const primary = clean
     .split(/\n+|;|\|/)
     .map(item => item.replace(/^[-•–]\s*/, '').trim())
     .filter(Boolean);
+
+  if (primary.length > 1) return primary;
+
+  const sentenceSplit = clean
+    .split(/(?<=\.)\s+(?=[A-ZÁÉÍÓÚÑ])/)
+    .map(item => item.replace(/^[-•–]\s*/, '').trim())
+    .filter(Boolean);
+
+  return sentenceSplit.length > 1 ? sentenceSplit : primary;
 }
 
 function normalizeUrl(value = '') {
@@ -503,4 +522,8 @@ function escapeHtml(value = '') {
 
 function escapeAttr(value = '') {
   return escapeHtml(value);
+}
+
+function escapeCssUrl(value = '') {
+  return String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\)/g, '\\)');
 }
