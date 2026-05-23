@@ -36,7 +36,9 @@
 
 .sector-story-top{
   display:grid;
-  grid-template-columns:minmax(0,.88fr) minmax(260px,.42fr);
+  width:min(100%,1320px);
+  margin-inline:auto !important;
+  grid-template-columns:minmax(0,.88fr) minmax(300px,.42fr);
   grid-template-areas:
     "quote sidebar"
     "photos photos";
@@ -183,7 +185,8 @@
   display:grid !important;
   grid-template-columns:1fr !important;
   gap:clamp(4rem,7vw,7rem) !important;
-  margin:0 !important;
+  width:min(100%,1320px);
+  margin-inline:auto !important;
 }
 
 .sector-editorial-card{
