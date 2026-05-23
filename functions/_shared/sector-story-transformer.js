@@ -25,27 +25,32 @@ function transformSectorStoryHtml(html) {
 
   output = output.replace(
     '<link rel="stylesheet" href="/assets/css/sector-detail.css?v=4">',
-    '<link rel="stylesheet" href="/assets/css/sector-detail.css?v=6">\n  <link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=6">'
+    '<link rel="stylesheet" href="/assets/css/sector-detail.css?v=6">\n  <link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=7">'
   );
 
   output = output.replace(
     '<link rel="stylesheet" href="/assets/css/sector-detail.css?v=5">',
-    '<link rel="stylesheet" href="/assets/css/sector-detail.css?v=6">\n  <link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=6">'
+    '<link rel="stylesheet" href="/assets/css/sector-detail.css?v=6">\n  <link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=7">'
   );
 
   output = output.replace(
     '<link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=3">',
-    '<link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=6">'
+    '<link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=7">'
   );
 
   output = output.replace(
     '<link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=4">',
-    '<link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=6">'
+    '<link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=7">'
   );
 
   output = output.replace(
     '<link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=5">',
-    '<link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=6">'
+    '<link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=7">'
+  );
+
+  output = output.replace(
+    '<link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=6">',
+    '<link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=7">'
   );
 
   output = output.replace(
@@ -75,8 +80,8 @@ function renderStorySection({ kickerHtml, leadHtml, editorialHtml, sidebarHtml }
 
 function transformEditorialCards(editorialHtml = '') {
   return String(editorialHtml).replace(
-    /<article class="sector-editorial-card ([^"]+)">\s*<span>([\s\S]*?)<\/span>\s*<h2>([\s\S]*?)<\/h2>\s*([\s\S]*?)\s*<\/article>/g,
-    (_, cardClass, numberHtml, titleHtml, bodyHtml) => `<article class="sector-editorial-card ${cardClass}">
+    /<article class="sector-editorial-card ([^"]+)"([^>]*)>\s*<span>([\s\S]*?)<\/span>\s*<h2>([\s\S]*?)<\/h2>\s*([\s\S]*?)\s*<\/article>/g,
+    (_, cardClass, attrs, numberHtml, titleHtml, bodyHtml) => `<article class="sector-editorial-card ${cardClass}"${attrs || ''}>
               <div class="sector-editorial-copy">
                 <span>${numberHtml}</span>
                 <h2>${titleHtml}</h2>
