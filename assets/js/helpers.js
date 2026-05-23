@@ -123,7 +123,7 @@ function injectGlobalNavStyles(){
     .nav-dropdown{position:relative;display:flex;align-items:center;padding-bottom:16px;margin-bottom:-16px}
     .nav-dropdown-toggle{position:relative;display:inline-flex;align-items:center;gap:6px;padding:8px 0;border:0;background:transparent;color:var(--soft);font:inherit;font-weight:700;line-height:1;text-shadow:0 1px 16px rgba(246,241,232,.55);cursor:inherit}
     .site-header.is-scrolled .nav-dropdown-toggle{text-shadow:none}
-    .nav-caret{font-size:.72em;line-height:1;transition:transform .22s ease}
+    .nav-caret{display:inline-grid;place-items:center;font-size:.72em;line-height:1;transition:transform .22s ease}
     .nav-dropdown-toggle:after{content:"";position:absolute;left:0;bottom:0;width:0;height:2px;background:var(--albero);border-radius:999px;transition:.22s}
     .nav-dropdown:hover .nav-dropdown-toggle:after,.nav-dropdown:focus-within .nav-dropdown-toggle:after,.nav-dropdown.is-active .nav-dropdown-toggle:after{width:100%}
     .nav-dropdown:hover .nav-caret,.nav-dropdown:focus-within .nav-caret,.nav-dropdown.is-open .nav-caret{transform:rotate(180deg)}
@@ -134,19 +134,99 @@ function injectGlobalNavStyles(){
     .nav .nav-submenu a:hover,.nav .nav-submenu a.is-active{background:rgba(199,244,88,.24);color:var(--ink)}
     .nav-dropdown.is-active .nav-dropdown-toggle{color:var(--ink)}
     @media(max-width:880px){
-      .nav{justify-content:flex-start !important;gap:clamp(16px,3vh,26px) !important;padding-top:118px !important}
+      .site-header .menu-toggle{display:inline-grid !important;place-items:center !important;position:relative !important;z-index:153 !important;width:58px !important;height:58px !important;min-width:58px !important;min-height:58px !important;border:0 !important;border-radius:50% !important;background:var(--ink) !important;color:var(--paper) !important;font-family:var(--font-sans) !important;font-size:1.55rem !important;font-weight:900 !important;line-height:1 !important;box-shadow:none !important}
+      body.menu-open .site-header{background:transparent !important;border-bottom-color:transparent !important;box-shadow:none !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
+      body.menu-open .logo{position:relative;z-index:152;color:var(--ink) !important;opacity:1 !important;text-shadow:none !important}
+      body.menu-open .whatsapp-float{opacity:0;visibility:hidden;pointer-events:none}
+      .nav{justify-content:flex-start !important;align-items:flex-start !important;gap:clamp(18px,3.2vh,28px) !important;padding:118px 28px 44px !important;overflow-y:auto !important}
+      .nav a,.nav-dropdown-toggle{font-family:var(--font-serif) !important;font-size:clamp(2.22rem,11.4vw,4.8rem) !important;font-weight:800 !important;line-height:.9 !important;letter-spacing:-.06em !important;color:var(--ink) !important;text-align:left !important;text-shadow:none !important}
       .nav-dropdown{display:block;width:100%;padding-bottom:0;margin-bottom:0}
-      .nav-dropdown-toggle{width:100%;justify-content:flex-start;padding:0;border:0;background:transparent !important;font-family:var(--font-serif);font-size:clamp(2.45rem,13vw,5.6rem);font-weight:800;line-height:.9;letter-spacing:-.06em;color:var(--ink) !important;text-align:left;text-shadow:none !important}
+      .nav-dropdown-toggle{width:100%;display:flex !important;align-items:center;justify-content:space-between;gap:18px;padding:0;border:0;background:transparent !important}
       .nav-dropdown-toggle:after{display:none}
-      .nav-caret{font-family:var(--font-sans);font-size:.24em;margin-left:.06em;transform:none}
-      .nav-dropdown.is-open .nav-caret{transform:rotate(180deg)}
-      .nav-submenu,.nav-dropdown:hover .nav-submenu,.nav-dropdown:focus-within .nav-submenu{position:static;min-width:0;width:100%;max-height:0;overflow:hidden;padding:0 0 0 18px;background:transparent;border:0;border-left:2px solid rgba(31,42,36,.16);border-radius:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;opacity:1;visibility:visible;pointer-events:auto;transform:none;transition:max-height .28s ease,padding .28s ease}
-      .nav-dropdown.is-open .nav-submenu{max-height:320px;padding-top:10px;padding-bottom:2px}
-      .nav .nav-submenu a{width:100%;padding:8px 0;border-radius:0;background:transparent !important;font-family:var(--font-sans) !important;font-size:.94rem !important;font-weight:900;line-height:1.2;letter-spacing:.035em;text-transform:uppercase;color:var(--soft) !important;text-align:left;white-space:normal}
-      .nav .nav-submenu a:hover,.nav .nav-submenu a:focus-visible,.nav .nav-submenu a.is-active{color:var(--ink) !important}
+      .nav-caret{flex:0 0 42px;width:42px;height:42px;border:1px solid rgba(31,42,36,.18);border-radius:50%;background:rgba(255,253,247,.45);font-size:0 !important;margin-left:8px;transform:none !important}
+      .nav-caret:before{content:"+";font-family:var(--font-sans);font-size:1.05rem;font-weight:900;line-height:1;color:var(--ink)}
+      .nav-dropdown.is-open .nav-caret:before{content:"−"}
+      .nav-submenu,.nav-dropdown:hover .nav-submenu,.nav-dropdown:focus-within .nav-submenu{position:static;display:grid;gap:8px;min-width:0;width:100%;max-height:0;overflow:hidden;margin-top:0;padding:0;background:transparent;border:0;border-left:2px solid rgba(31,42,36,.16);border-radius:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;opacity:1;visibility:visible;pointer-events:auto;transform:none;transition:max-height .28s ease,margin .28s ease,padding .28s ease}
+      .nav-dropdown.is-open .nav-submenu{max-height:260px;margin-top:12px;padding:0 0 2px 18px}
+      .nav .nav-submenu a{width:100%;padding:13px 15px;border-radius:18px;background:rgba(255,253,247,.5) !important;font-family:var(--font-sans) !important;font-size:.98rem !important;font-weight:900 !important;line-height:1.15 !important;letter-spacing:.025em !important;text-transform:none !important;color:var(--ink) !important;text-align:left;white-space:normal}
+      .nav .nav-submenu a:hover,.nav .nav-submenu a:focus-visible,.nav .nav-submenu a.is-active{background:rgba(199,244,88,.25) !important;color:var(--ink) !important}
+      .nav-mobile-contact{display:block !important;margin-top:4px}
+      .nav-mobile-cta{display:inline-flex !important;align-items:center;justify-content:center;width:100%;min-height:58px;margin-top:4px;padding:17px 24px;border-radius:999px;background:var(--ink);color:var(--paper) !important;font-family:var(--font-sans) !important;font-size:1rem !important;font-weight:900 !important;letter-spacing:0 !important;line-height:1.1;text-align:center !important}
     }
   `;
   document.head.appendChild(style);
+}
+
+function ensureHeaderShell(){
+  const header=document.querySelector('.site-header');
+  if(!header)return;
+  let inner=header.querySelector('.header-inner');
+  if(!inner){
+    inner=document.createElement('div');
+    inner.className='container header-inner';
+    while(header.firstChild)inner.appendChild(header.firstChild);
+    header.appendChild(inner);
+  }
+
+  let logo=inner.querySelector('.logo');
+  if(!logo){
+    logo=document.createElement('a');
+    logo.className='logo logo-wordmark';
+    logo.href='/';
+    logo.setAttribute('aria-label','Salero Digital');
+    logo.innerHTML='<span>Salero Digital</span>';
+    inner.insertBefore(logo,inner.firstChild);
+  }else{
+    logo.href='/';
+    logo.classList.add('logo-wordmark');
+    const mark=logo.querySelector('.logo-mark');
+    if(mark)mark.remove();
+    if(!logo.textContent.trim())logo.innerHTML='<span>Salero Digital</span>';
+  }
+
+  let nav=inner.querySelector('.nav');
+  if(!nav){
+    nav=document.createElement('nav');
+    nav.className='nav';
+    nav.setAttribute('aria-label','Menú principal');
+    inner.appendChild(nav);
+  }
+
+  let actions=inner.querySelector('.header-actions');
+  if(!actions){
+    actions=document.createElement('div');
+    actions.className='header-actions';
+    inner.appendChild(actions);
+  }
+
+  let contact=actions.querySelector('.nav-contact');
+  if(!contact){
+    contact=document.createElement('a');
+    contact.className='nav-contact';
+    actions.insertBefore(contact,actions.firstChild);
+  }
+  contact.href='/hablamos/';
+  contact.textContent='¿Hablamos?';
+
+  let cta=actions.querySelector('.btn-primary');
+  if(!cta){
+    cta=document.createElement('a');
+    cta.className='btn btn-primary';
+    actions.appendChild(cta);
+  }
+  cta.href='/hablamos/';
+  cta.textContent='Pide tu cata digital';
+
+  let toggle=actions.querySelector('[data-menu-toggle]');
+  if(!toggle){
+    toggle=document.createElement('button');
+    toggle.type='button';
+    actions.appendChild(toggle);
+  }
+  toggle.className='menu-toggle';
+  toggle.setAttribute('data-menu-toggle','');
+  toggle.setAttribute('aria-label','Abrir menú');
+  toggle.textContent='☰';
 }
 
 function renderGlobalNav(){
@@ -157,7 +237,7 @@ function renderGlobalNav(){
     <a href="/nuestros-menus/">Nuestros menús</a>
     <div class="nav-dropdown" data-nav-dropdown data-nav-section="sectores">
       <a class="nav-dropdown-toggle" href="/sectores/" aria-expanded="false">
-        Sectores <span class="nav-caret" aria-hidden="true">▾</span>
+        <span>Sectores</span><span class="nav-caret" aria-hidden="true">▾</span>
       </a>
       <div class="nav-submenu" aria-label="Sectores">
         <a href="/sectores/marketing-para-hosteleria-turismo/">Hostelería y turismo</a>
@@ -169,21 +249,6 @@ function renderGlobalNav(){
     <a href="/la-rebotica/">La Rebotica</a>
     <a class="nav-mobile-contact" href="/hablamos/">¿Hablamos?</a>
     <a class="nav-mobile-cta" href="/hablamos/">Pide tu cata digital</a>`;
-
-  const actions=document.querySelector('.header-actions');
-  if(actions){
-    let contact=actions.querySelector('.nav-contact');
-    const toggle=actions.querySelector('[data-menu-toggle]');
-    const primary=actions.querySelector('.btn-primary');
-    if(!contact){
-      contact=document.createElement('a');
-      contact.className='nav-contact';
-      contact.href='/hablamos/';
-      contact.textContent='¿Hablamos?';
-      actions.insertBefore(contact, primary||toggle||null);
-    }
-    if(primary){primary.href='/hablamos/';primary.textContent='Pide tu cata digital'}
-  }
 }
 
 function setActiveNav(){
@@ -220,17 +285,17 @@ function initNavDropdowns(){
       closeAll(drop);
     });
   });
-  document.addEventListener('click',event=>{if(!event.target.closest('[data-nav-dropdown]'))closeAll()});
-  window.addEventListener('keydown',event=>{if(event.key==='Escape')closeAll()});
-  window.addEventListener('resize',()=>{if(!isMobile())closeAll()});
+  document.addEventListener('click',event=>{if(!event.target.closest('[data-nav-dropdown]'))closeAll();});
+  window.addEventListener('keydown',event=>{if(event.key==='Escape')closeAll();});
+  window.addEventListener('resize',()=>{if(!isMobile())closeAll();});
 }
 
 function initHeaderScroll(){
   const header=document.querySelector('.site-header');
   if(!header)return;
-  const update=()=>header.classList.toggle('is-scrolled', window.scrollY>24);
+  const update=()=>header.classList.toggle('is-scrolled',window.scrollY>24);
   update();
-  window.addEventListener('scroll', update, {passive:true});
+  window.addEventListener('scroll',update,{passive:true});
 }
 
 function initMenuToggle(){
@@ -240,6 +305,7 @@ function initMenuToggle(){
   const close=()=>{
     document.body.classList.remove('menu-open');
     b.setAttribute('aria-expanded','false');
+    b.setAttribute('aria-label','Abrir menú');
     b.textContent='☰';
     document.querySelectorAll('[data-nav-dropdown]').forEach(drop=>{
       drop.classList.remove('is-open');
@@ -250,12 +316,13 @@ function initMenuToggle(){
   const open=()=>{
     document.body.classList.add('menu-open');
     b.setAttribute('aria-expanded','true');
+    b.setAttribute('aria-label','Cerrar menú');
     b.textContent='×';
   };
   b.setAttribute('aria-expanded','false');
   b.addEventListener('click',()=>document.body.classList.contains('menu-open')?close():open());
   if(nav)nav.querySelectorAll('a:not(.nav-dropdown-toggle)').forEach(link=>link.addEventListener('click',close));
-  window.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+  window.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
 }
 
 function initHeroVideo(){
@@ -279,7 +346,7 @@ function initHeroVideo(){
     video.innerHTML=`<source src="${src}" type="video/mp4">`;
     media.appendChild(video);
   };
-  window.addEventListener('load',()=>{'requestIdleCallback' in window?requestIdleCallback(load,{timeout:1800}):setTimeout(load,600)},{once:true});
+  window.addEventListener('load',()=>{'requestIdleCallback' in window?requestIdleCallback(load,{timeout:1800}):setTimeout(load,600);},{once:true});
 }
 
 function initHeroNotesMotion(){
@@ -299,7 +366,7 @@ function initHeroNotesMotion(){
     });
     ticking=false;
   };
-  const onScroll=()=>{if(!ticking){window.requestAnimationFrame(update);ticking=true}};
+  const onScroll=()=>{if(!ticking){window.requestAnimationFrame(update);ticking=true;}};
   update();
   window.addEventListener('scroll',onScroll,{passive:true});
   window.addEventListener('resize',update);
@@ -343,18 +410,19 @@ function initLazySectionVideos(){
     videoBlocks.forEach(loadVideo);
     return;
   }
-  const observer=new IntersectionObserver((entries)=>{
-    entries.forEach((entry)=>{
+  const observer=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
       if(!entry.isIntersecting)return;
       loadVideo(entry.target);
       observer.unobserve(entry.target);
     });
   },{rootMargin:'450px 0px'});
-  videoBlocks.forEach((block)=>observer.observe(block));
+  videoBlocks.forEach(block=>observer.observe(block));
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
   injectGlobalNavStyles();
+  ensureHeaderShell();
   renderGlobalNav();
   setActiveNav();
   initNavDropdowns();
