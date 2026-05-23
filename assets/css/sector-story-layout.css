@@ -8,9 +8,9 @@
   opacity:.28 !important;
 }
 
-.sector-content-grid,
-.sector-story-container{
-  grid-template-columns:1fr !important;
+.sector-content-grid.sector-story-container{
+  display:block !important;
+  grid-template-columns:none !important;
   gap:0 !important;
 }
 
