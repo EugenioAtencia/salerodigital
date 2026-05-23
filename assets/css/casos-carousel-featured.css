@@ -1,4 +1,4 @@
-/* Casos de éxito | Carrusel escenario | v2 */
+/* Casos de éxito | Carrusel escenario | v3 */
 
 .casos-grid-section{
   overflow:hidden;
@@ -34,7 +34,7 @@
 .casos-carousel-stage .casos-carousel-viewport{
   position:relative;
   width:100vw;
-  height:clamp(520px,43vw,690px);
+  height:clamp(560px,45vw,720px);
   overflow:visible;
 }
 
@@ -80,6 +80,8 @@
   height:clamp(520px,42vw,710px);
   opacity:1;
   pointer-events:auto;
+  z-index:40 !important;
+  transform:translate(calc(-50% - min(13.5vw,245px)),-50%) scale(1);
 }
 
 .casos-carousel-stage .caso-card-visual.is-hidden{
@@ -205,16 +207,21 @@
 
 .casos-carousel-stage .caso-content{
   position:absolute;
-  left:calc(100% + clamp(36px,4.2vw,74px));
+  left:calc(100% + clamp(22px,2.6vw,44px));
   top:50%;
-  width:min(410px,28vw);
+  width:min(440px,30vw);
   transform:translateY(-50%);
   display:flex;
   flex-direction:column;
   justify-content:center;
   gap:clamp(22px,2.2vw,42px);
-  padding:0;
-  background:transparent;
+  padding:clamp(24px,2.6vw,42px);
+  border:1px solid rgba(31,42,36,.10);
+  border-radius:clamp(26px,2.2vw,38px);
+  background:linear-gradient(135deg, rgba(255,253,247,.96), rgba(246,241,232,.94));
+  box-shadow:0 26px 70px rgba(31,42,36,.10);
+  backdrop-filter:blur(16px) saturate(1.04);
+  -webkit-backdrop-filter:blur(16px) saturate(1.04);
   transition:opacity .38s ease .12s, transform .5s cubic-bezier(.22,.85,.22,1) .08s;
 }
 
@@ -309,7 +316,7 @@
 
 @media(max-width:1180px){
   .casos-carousel-stage .casos-carousel-viewport{
-    height:clamp(520px,58vw,680px);
+    height:clamp(560px,62vw,720px);
   }
 
   .casos-carousel-stage .caso-card-visual{
@@ -319,13 +326,15 @@
   }
 
   .casos-carousel-stage .caso-card-visual.is-active{
-    width:min(680px,58vw);
+    width:min(650px,55vw);
     height:clamp(480px,54vw,650px);
+    transform:translate(calc(-50% - min(11vw,175px)),-50%) scale(1);
   }
 
   .casos-carousel-stage .caso-content{
-    left:calc(100% + 32px);
-    width:min(360px,32vw);
+    left:calc(100% + 24px);
+    width:min(360px,34vw);
+    padding:28px;
   }
 }
 
@@ -380,7 +389,9 @@
     width:auto;
     transform:none;
     opacity:1;
-    padding:22px 4px 8px;
+    margin-top:18px;
+    padding:24px;
+    border-radius:28px;
   }
 
   .casos-carousel-stage .caso-card-visual:not(.is-active) .caso-content{
