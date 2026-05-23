@@ -99,52 +99,26 @@ function saleroMediaUrl(media) {
 
 function saleroCasoImage(item = {}) {
   const acf = getAcf(item);
-  const candidates = [
-    acf.imagen_caso,
-    acf.imagen_principal,
-    acf.imagen_destacada,
-    acf.imagen_campana,
-    acf.captura_campana,
-    acf.hero_image,
-    acf.cover_image,
-    item.image,
-    item.imagen,
-    featuredImage(item)
-  ];
-
+  const candidates = [acf.imagen_caso, acf.imagen_principal, acf.imagen_destacada, acf.imagen_campana, acf.captura_campana, acf.hero_image, acf.cover_image, item.image, item.imagen, featuredImage(item)];
   for (const candidate of candidates) {
     const url = saleroMediaUrl(candidate);
     if (url) return url;
   }
-
   return '';
 }
 
 function saleroCasoLogo(item = {}) {
   const acf = getAcf(item);
-  const candidates = [
-    acf.logo_cliente,
-    acf.logo_marca,
-    acf.logo,
-    item.logo
-  ];
-
+  const candidates = [acf.logo_cliente, acf.logo_marca, acf.logo, item.logo];
   for (const candidate of candidates) {
     const url = saleroMediaUrl(candidate);
     if (url) return url;
   }
-
   return '';
 }
 
 function saleroCasoInitials(title = '') {
-  return title
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map(word => word[0])
-    .join('')
-    .toUpperCase();
+  return title.split(/\s+/).filter(Boolean).slice(0, 2).map(word => word[0]).join('').toUpperCase();
 }
 
 function saleroCasoAccent(item = {}, slug = '') {
@@ -179,23 +153,15 @@ function renderCasoCard(item = {}) {
       <div class="caso-media-overlay" aria-hidden="true"></div>
       ${logo ? `<span class="caso-logo"><img src="${escapeHtml(logo)}" alt="Logo de ${escapeHtml(title)}" loading="lazy" decoding="async"></span>` : `<span class="caso-logo caso-logo-text" aria-hidden="true">${escapeHtml(saleroCasoInitials(title))}</span>`}
     </a>
-
     <div class="caso-content">
       <div class="caso-card-top">
         <span class="caso-content-kicker">${escapeHtml(visualLabel)}<br>${escapeHtml(sector)}</span>
         <h3>${escapeHtml(title)}</h3>
         <p class="caso-excerpt">${escapeHtml(excerpt).slice(0,220)}</p>
       </div>
-
       <div class="caso-meta">
-        <div class="caso-service">
-          <small>Servicio principal</small>
-          <strong>${escapeHtml(service)}</strong>
-        </div>
-        <div class="caso-proof">
-          <small>Qué demuestra</small>
-          <strong>${escapeHtml(proof)}</strong>
-        </div>
+        <div class="caso-service"><small>Servicio principal</small><strong>${escapeHtml(service)}</strong></div>
+        <div class="caso-proof"><small>Qué demuestra</small><strong>${escapeHtml(proof)}</strong></div>
         <a class="caso-link" href="${url}" aria-label="Ver caso de éxito de ${escapeHtml(title)}">Ver caso</a>
       </div>
     </div>
@@ -203,15 +169,10 @@ function renderCasoCard(item = {}) {
 }
 
 function renderCasosCarousel(items = []) {
-  const cards = items.map(renderCasoCard).join('');
-
-  return `<div class="casos-carousel casos-carousel-featured" data-casos-carousel>
+  return `<div class="casos-carousel casos-carousel-stage" data-casos-carousel>
     <div class="casos-carousel-viewport" data-casos-viewport aria-live="polite">
-      <div class="casos-carousel-track" data-casos-track>
-        ${cards}
-      </div>
+      <div class="casos-carousel-track" data-casos-track>${items.map(renderCasoCard).join('')}</div>
     </div>
-
     <div class="casos-carousel-controls" aria-label="Controles del carrusel de casos de éxito">
       <button class="casos-carousel-btn" type="button" data-casos-prev aria-label="Ver caso anterior">‹</button>
       <div class="casos-carousel-dots" data-casos-dots aria-label="Paginación del carrusel"></div>
@@ -220,30 +181,33 @@ function renderCasosCarousel(items = []) {
   </div>`;
 }
 
+function getCircularOffset(itemIndex, activeIndex, total) {
+  let offset = itemIndex - activeIndex;
+  const half = Math.floor(total / 2);
+  if (offset > half) offset -= total;
+  if (offset < -half) offset += total;
+  return offset;
+}
+
 function initCasosCarousel(root) {
   const carousel = root.querySelector('[data-casos-carousel]');
   if (!carousel) return;
 
-  const viewport = carousel.querySelector('[data-casos-viewport]');
-  const track = carousel.querySelector('[data-casos-track]');
   const prev = carousel.querySelector('[data-casos-prev]');
   const next = carousel.querySelector('[data-casos-next]');
   const dotsRoot = carousel.querySelector('[data-casos-dots]');
   const cards = [...carousel.querySelectorAll('.caso-card-visual')];
-
-  if (!viewport || !track || !cards.length) return;
+  if (!cards.length) return;
 
   let index = 0;
   let timer = null;
   const interval = 6000;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   const maxIndex = () => Math.max(0, cards.length - 1);
 
   const renderDots = () => {
     if (!dotsRoot) return;
-    const total = maxIndex() + 1;
-    dotsRoot.innerHTML = Array.from({ length: total }, (_, i) => `<button class="casos-carousel-dot" type="button" data-casos-dot="${i}" aria-label="Ir al caso ${i + 1}"></button>`).join('');
+    dotsRoot.innerHTML = cards.map((_, i) => `<button class="casos-carousel-dot" type="button" data-casos-dot="${i}" aria-label="Ir al caso ${i + 1}"></button>`).join('');
   };
 
   const updateDots = () => {
@@ -254,23 +218,31 @@ function initCasosCarousel(root) {
     });
   };
 
-  const updateActiveCard = () => {
-    cards.forEach((card, i) => card.classList.toggle('is-active', i === index));
+  const updateCards = () => {
+    const total = cards.length;
+    cards.forEach((card, i) => {
+      const offset = getCircularOffset(i, index, total);
+      const abs = Math.abs(offset);
+      const clamped = Math.max(-3, Math.min(3, offset));
+      card.classList.toggle('is-active', offset === 0);
+      card.classList.toggle('is-near', abs === 1);
+      card.classList.toggle('is-far', abs === 2);
+      card.classList.toggle('is-hidden', abs > 2);
+      card.dataset.offset = String(clamped);
+      card.style.setProperty('--offset', clamped);
+      card.style.setProperty('--abs-offset', Math.min(abs, 3));
+      card.style.zIndex = String(20 - abs);
+    });
+    carousel.classList.toggle('has-single-page', maxIndex() === 0);
+    updateDots();
   };
 
-  const goTo = (nextIndex, behavior = 'smooth') => {
+  const goTo = nextIndex => {
     const max = maxIndex();
     if (nextIndex > max) nextIndex = 0;
     if (nextIndex < 0) nextIndex = max;
-
     index = nextIndex;
-    const target = cards[index];
-    const left = target ? target.offsetLeft - track.offsetLeft : 0;
-
-    viewport.scrollTo({ left, behavior });
-    carousel.classList.toggle('has-single-page', max === 0);
-    updateActiveCard();
-    updateDots();
+    updateCards();
   };
 
   const stop = () => {
@@ -285,21 +257,11 @@ function initCasosCarousel(root) {
   };
 
   renderDots();
-  goTo(0, 'auto');
+  goTo(0);
   start();
 
-  prev && prev.addEventListener('click', () => {
-    stop();
-    goTo(index - 1);
-    start();
-  });
-
-  next && next.addEventListener('click', () => {
-    stop();
-    goTo(index + 1);
-    start();
-  });
-
+  prev && prev.addEventListener('click', () => { stop(); goTo(index - 1); start(); });
+  next && next.addEventListener('click', () => { stop(); goTo(index + 1); start(); });
   dotsRoot && dotsRoot.addEventListener('click', event => {
     const dot = event.target.closest('[data-casos-dot]');
     if (!dot) return;
@@ -307,25 +269,16 @@ function initCasosCarousel(root) {
     goTo(Number(dot.dataset.casosDot));
     start();
   });
-
   carousel.addEventListener('mouseenter', stop);
   carousel.addEventListener('mouseleave', start);
   carousel.addEventListener('focusin', stop);
   carousel.addEventListener('focusout', start);
-
-  window.addEventListener('resize', () => {
-    renderDots();
-    goTo(Math.min(index, maxIndex()), 'auto');
-    start();
-  });
 }
 
 async function renderCasosPage() {
   const root = document.querySelector('[data-casos]');
   if (!root) return;
-
   root.innerHTML = '<div class="loading">Cargando casos de éxito desde el CMS...</div>';
-
   try {
     const endpoint = (SALERO_CONFIG.endpoints && SALERO_CONFIG.endpoints.casos) ? 'casos' : 'casos-exito';
     const items = await getCollection(endpoint);
