@@ -25,12 +25,17 @@ function transformSectorStoryHtml(html) {
 
   output = output.replace(
     '<link rel="stylesheet" href="/assets/css/sector-detail.css?v=4">',
-    '<link rel="stylesheet" href="/assets/css/sector-detail.css?v=6">\n  <link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=3">'
+    '<link rel="stylesheet" href="/assets/css/sector-detail.css?v=6">\n  <link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=4">'
   );
 
   output = output.replace(
     '<link rel="stylesheet" href="/assets/css/sector-detail.css?v=5">',
-    '<link rel="stylesheet" href="/assets/css/sector-detail.css?v=6">\n  <link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=3">'
+    '<link rel="stylesheet" href="/assets/css/sector-detail.css?v=6">\n  <link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=4">'
+  );
+
+  output = output.replace(
+    '<link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=3">',
+    '<link rel="stylesheet" href="/assets/css/sector-story-layout.css?v=4">'
   );
 
   const imageUrl = extractHeroImage(output);
@@ -48,7 +53,7 @@ function renderStorySection({ kickerHtml, leadHtml, editorialHtml, sidebarHtml, 
   const safeImage = escapeAttr(imageUrl || '/assets/img/hosteleria-hero-poster.webp');
   const photoGrid = renderPhotoGrid(safeImage);
 
-  return `<div class="container sector-content-grid sector-story-container">
+  return `<div class="container sector-story-container">
         <article class="sector-main-content">
           ${kickerHtml}
           <div class="sector-story-top">
@@ -83,8 +88,6 @@ function extractHeroImage(html = '') {
 
 function stripHtml(value = '') {
   return String(value || '')
-    .replace(/<script[\s\S]*?<\/script>/gi, '')
-    .replace(/<style[\s\S]*?<\/style>/gi, '')
     .replace(/<[^>]*>/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
