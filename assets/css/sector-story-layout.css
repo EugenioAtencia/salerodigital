@@ -8,12 +8,6 @@
   opacity:.28 !important;
 }
 
-.sector-content-grid.sector-story-container{
-  display:block !important;
-  grid-template-columns:none !important;
-  gap:0 !important;
-}
-
 .sector-story-container{
   max-width:1320px !important;
   width:calc(100% - 500px) !important;
@@ -39,9 +33,7 @@
   width:100% !important;
   margin-inline:auto !important;
   grid-template-columns:minmax(0,.88fr) minmax(300px,.42fr);
-  grid-template-areas:
-    "quote sidebar"
-    "photos photos";
+  grid-template-areas:"quote sidebar";
   gap:clamp(1.3rem,3vw,2.6rem);
   align-items:start;
   margin-bottom:clamp(4.5rem,7vw,7rem);
@@ -142,43 +134,7 @@
 }
 
 .sector-photo-grid{
-  grid-area:photos;
-  display:grid;
-  grid-template-columns:minmax(150px,.45fr) minmax(0,1fr);
-  grid-template-rows:repeat(2,minmax(10rem,1fr));
-  gap:clamp(.8rem,1.7vw,1.2rem);
-  max-width:780px;
-  margin-left:auto;
-}
-
-.sector-photo-tile{
-  position:relative;
-  overflow:hidden;
-  margin:0;
-  border-radius:1.4rem;
-  background:#f3eadb;
-}
-
-.sector-photo-tile img{
-  width:100%;
-  height:100%;
-  display:block;
-  object-fit:cover;
-  filter:saturate(.96) contrast(.96);
-}
-
-.sector-photo-small{
-  min-height:12.5rem;
-}
-
-.sector-photo-large{
-  grid-column:2;
-  grid-row:1 / span 2;
-  min-height:26rem;
-}
-
-.sector-photo-offset img{
-  object-position:center 62%;
+  display:none !important;
 }
 
 .sector-editorial-split{
@@ -193,7 +149,7 @@
   display:grid !important;
   grid-template-columns:minmax(280px,.55fr) minmax(0,.7fr) !important;
   gap:clamp(2rem,6vw,6rem) !important;
-  align-items:center !important;
+  align-items:start !important;
   min-height:auto !important;
   border:0 !important;
   border-radius:0 !important;
@@ -281,28 +237,11 @@
     grid-template-columns:1fr;
     grid-template-areas:
       "quote"
-      "sidebar"
-      "photos";
-  }
-
-  .sector-photo-grid{
-    margin-left:0;
-    max-width:none;
+      "sidebar";
   }
 }
 
 @media(max-width:860px){
-  .sector-photo-grid{
-    grid-template-columns:1fr 1fr;
-    grid-template-rows:auto;
-  }
-
-  .sector-photo-large{
-    grid-column:1 / -1;
-    grid-row:auto;
-    min-height:18rem;
-  }
-
   .sector-editorial-card,
   .sector-editorial-card:nth-child(even){
     grid-template-columns:1fr !important;
@@ -333,15 +272,6 @@
   .sector-story-quote cite{
     font-size:clamp(1.9rem,10vw,3.3rem);
     line-height:1.04;
-  }
-
-  .sector-photo-grid{
-    grid-template-columns:1fr;
-  }
-
-  .sector-photo-small,
-  .sector-photo-large{
-    min-height:14rem;
   }
 
   .sector-editorial-card h2{
