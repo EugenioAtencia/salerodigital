@@ -14,6 +14,11 @@
   gap:0 !important;
 }
 
+.sector-story-container{
+  max-width:none !important;
+  width:calc(100% - 500px) !important;
+}
+
 .sector-main-content{
   width:100%;
 }
@@ -254,7 +259,17 @@
   overflow:visible !important;
 }
 
+@media(max-width:1500px){
+  .sector-story-container{
+    width:calc(100% - 160px) !important;
+  }
+}
+
 @media(max-width:1180px){
+  .sector-story-container{
+    width:calc(100% - 3rem) !important;
+  }
+
   .sector-story-top{
     grid-template-columns:1fr;
     grid-template-areas:
@@ -304,6 +319,10 @@
 }
 
 @media(max-width:640px){
+  .sector-story-container{
+    width:calc(100% - 2rem) !important;
+  }
+
   .sector-story-quote cite{
     font-size:clamp(1.9rem,10vw,3.3rem);
     line-height:1.04;
