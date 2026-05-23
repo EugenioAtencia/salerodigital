@@ -5,7 +5,9 @@ const SALERO_CASOS_FALLBACK = [
     sector: 'Industria y formación corporativa',
     service: 'Desarrollo web, evento digital y experiencia privada',
     proof: 'Tecnología para un evento corporativo de alta exigencia',
-    excerpt: 'Desarrollo de una experiencia digital para centralizar información, acceso a sesiones, contenidos y recursos de un evento corporativo de alta exigencia.'
+    excerpt: 'Desarrollo de una experiencia digital para centralizar información, acceso a sesiones, contenidos y recursos de un evento corporativo de alta exigencia.',
+    visual: 'Evento corporativo',
+    accent: 'summit'
   },
   {
     title: 'Fundación ONCE',
@@ -13,7 +15,9 @@ const SALERO_CASOS_FALLBACK = [
     sector: 'Formación, eventos e impacto social',
     service: 'Campañas digitales multicanal',
     proof: 'Campañas nacionales con estrategia y segmentación por plataforma',
-    excerpt: 'Estrategia y ejecución de campañas para dar visibilidad a eventos, cursos e iniciativas formativas, adaptando mensaje, público y canal según cada objetivo.'
+    excerpt: 'Estrategia y ejecución de campañas para dar visibilidad a eventos, cursos e iniciativas formativas, adaptando mensaje, público y canal según cada objetivo.',
+    visual: 'Campañas nacionales',
+    accent: 'social'
   },
   {
     title: 'Muebles Sarria',
@@ -21,7 +25,9 @@ const SALERO_CASOS_FALLBACK = [
     sector: 'Retail, decoración y climatización',
     service: 'Google Ads, email, SMS, WhatsApp, contenidos y landings',
     proof: 'Sistema de captación multicanal para retail local',
-    excerpt: 'Activación de campañas y contenidos para diferentes líneas de negocio, combinando buscadores, redes sociales, email, SMS, WhatsApp y páginas orientadas a conversión.'
+    excerpt: 'Activación de campañas y contenidos para diferentes líneas de negocio, combinando buscadores, redes sociales, email, SMS, WhatsApp y páginas orientadas a conversión.',
+    visual: 'Retail local',
+    accent: 'retail'
   },
   {
     title: 'Comercial Vázquez',
@@ -29,7 +35,9 @@ const SALERO_CASOS_FALLBACK = [
     sector: 'Electrodomésticos, cocinas y comercio local',
     service: 'Contenidos, campañas, estrategia social y posicionamiento',
     proof: 'Comunicación digital para productos y servicios de alto valor',
-    excerpt: 'Estrategia de contenidos y comunicación para acercar productos, proyectos de cocina y campañas comerciales a una audiencia local con alta intención de compra.'
+    excerpt: 'Estrategia de contenidos y comunicación para acercar productos, proyectos de cocina y campañas comerciales a una audiencia local con alta intención de compra.',
+    visual: 'Comercio y cocinas',
+    accent: 'commerce'
   },
   {
     title: 'Enoro',
@@ -37,7 +45,9 @@ const SALERO_CASOS_FALLBACK = [
     sector: 'Aceite de oliva virgen extra y agroalimentación',
     service: 'Web, ecommerce, soporte digital y marca',
     proof: 'Presencia digital para una marca agroalimentaria con producto de origen',
-    excerpt: 'Trabajo digital orientado a reforzar la marca, mejorar su presencia online y acompañar el canal comercial de una empresa agroalimentaria con producto propio.'
+    excerpt: 'Trabajo digital orientado a reforzar la marca, mejorar su presencia online y acompañar el canal comercial de una empresa agroalimentaria con producto propio.',
+    visual: 'AOVE y origen',
+    accent: 'agro'
   },
   {
     title: 'Museo de la Cal de Morón',
@@ -45,7 +55,9 @@ const SALERO_CASOS_FALLBACK = [
     sector: 'Cultura, turismo y patrimonio',
     service: 'Web, ecommerce y experiencia digital',
     proof: 'Digitalización de un proyecto cultural con raíz local',
-    excerpt: 'Mejora de la presencia digital de un espacio cultural y patrimonial, con una estructura preparada para informar, vender, captar visitas y reforzar su valor turístico.'
+    excerpt: 'Mejora de la presencia digital de un espacio cultural y patrimonial, con una estructura preparada para informar, vender, captar visitas y reforzar su valor turístico.',
+    visual: 'Cultura y patrimonio',
+    accent: 'culture'
   }
 ];
 
@@ -68,31 +80,123 @@ function saleroCasoExcerpt(item = {}) {
   return item.excerpt || saleroCasoField(item, ['resumen', 'resumen_del_reto', 'descripcion_corta', 'descripcion'], '');
 }
 
+function saleroMediaUrl(media) {
+  if (!media) return '';
+  if (typeof media === 'string') return media;
+  if (media.url) return media.url;
+  if (media.source_url) return media.source_url;
+  if (media.sizes && media.sizes.large) return media.sizes.large;
+  if (media.sizes && media.sizes.medium_large) return media.sizes.medium_large;
+  if (media.sizes && media.sizes.full) return media.sizes.full;
+  if (media.media_details && media.media_details.sizes) {
+    const sizes = media.media_details.sizes;
+    if (sizes.large && sizes.large.source_url) return sizes.large.source_url;
+    if (sizes.medium_large && sizes.medium_large.source_url) return sizes.medium_large.source_url;
+    if (sizes.full && sizes.full.source_url) return sizes.full.source_url;
+  }
+  return '';
+}
+
+function saleroCasoImage(item = {}) {
+  const acf = getAcf(item);
+  const candidates = [
+    acf.imagen_caso,
+    acf.imagen_principal,
+    acf.imagen_destacada,
+    acf.imagen_campana,
+    acf.captura_campana,
+    acf.hero_image,
+    acf.cover_image,
+    item.image,
+    item.imagen,
+    featuredImage(item)
+  ];
+
+  for (const candidate of candidates) {
+    const url = saleroMediaUrl(candidate);
+    if (url) return url;
+  }
+
+  return '';
+}
+
+function saleroCasoLogo(item = {}) {
+  const acf = getAcf(item);
+  const candidates = [
+    acf.logo_cliente,
+    acf.logo_marca,
+    acf.logo,
+    item.logo
+  ];
+
+  for (const candidate of candidates) {
+    const url = saleroMediaUrl(candidate);
+    if (url) return url;
+  }
+
+  return '';
+}
+
+function saleroCasoInitials(title = '') {
+  return title
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(word => word[0])
+    .join('')
+    .toUpperCase();
+}
+
+function saleroCasoAccent(item = {}, slug = '') {
+  if (item.accent) return item.accent;
+  const text = `${slug} ${saleroCasoTitle(item)} ${saleroCasoField(item, ['sector'], '')}`.toLowerCase();
+  if (text.includes('gestamp') || text.includes('summit') || text.includes('industria')) return 'summit';
+  if (text.includes('once') || text.includes('fundacion') || text.includes('fundación')) return 'social';
+  if (text.includes('sarria') || text.includes('mueble') || text.includes('decor')) return 'retail';
+  if (text.includes('vazquez') || text.includes('vázquez') || text.includes('electro')) return 'commerce';
+  if (text.includes('enoro') || text.includes('aceite') || text.includes('agro')) return 'agro';
+  if (text.includes('museo') || text.includes('cal') || text.includes('patrimonio')) return 'culture';
+  return 'default';
+}
+
 function renderCasoCard(item = {}) {
   const title = saleroCasoTitle(item);
   const slug = item.slug || title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  const sector = saleroCasoField(item, ['sector', 'sector_cliente', 'tipo_de_cliente'], 'Caso de éxito');
-  const service = saleroCasoField(item, ['servicio_principal', 'servicios', 'servicio'], 'Estrategia digital');
-  const proof = saleroCasoField(item, ['resultado', 'dato_destacado', 'mejora_conseguida'], 'Proyecto real de Salero Digital');
-  const excerpt = saleroCasoExcerpt(item);
+  const sector = saleroCasoField(item, ['sector', 'sector_cliente', 'tipo_de_cliente'], item.sector || 'Caso de éxito');
+  const service = saleroCasoField(item, ['servicio_principal', 'servicios', 'servicio'], item.service || 'Estrategia digital');
+  const proof = saleroCasoField(item, ['resultado', 'dato_destacado', 'mejora_conseguida'], item.proof || 'Proyecto real de Salero Digital');
+  const excerpt = saleroCasoExcerpt(item) || item.excerpt || '';
+  const cover = saleroCasoImage(item);
+  const logo = saleroCasoLogo(item);
+  const accent = saleroCasoAccent(item, slug);
+  const visualLabel = item.visual || saleroCasoField(item, ['visual_label', 'etiqueta_visual', 'cliente'], title);
   const url = `/casos-de-exito/${slug}/`;
 
-  return `<article class="caso-card">
-    <div class="caso-card-top">
-      <span class="caso-sector">${escapeHtml(sector)}</span>
-      <h3>${escapeHtml(title)}</h3>
-      <p>${escapeHtml(excerpt).slice(0,230)}</p>
-    </div>
-    <div class="caso-meta">
-      <div class="caso-service">
-        <small>Servicio principal</small>
-        <strong>${escapeHtml(service)}</strong>
+  return `<article class="caso-card caso-card-visual caso-accent-${escapeHtml(accent)}">
+    <a class="caso-media" href="${url}" aria-label="Ver caso de éxito de ${escapeHtml(title)}">
+      ${cover ? `<img src="${escapeHtml(cover)}" alt="Imagen del caso ${escapeHtml(title)}" loading="lazy" decoding="async">` : `<div class="caso-media-fallback" aria-hidden="true"><span>${escapeHtml(visualLabel)}</span></div>`}
+      <span class="caso-sector-badge">${escapeHtml(sector)}</span>
+      <div class="caso-media-overlay" aria-hidden="true"></div>
+      ${logo ? `<span class="caso-logo"><img src="${escapeHtml(logo)}" alt="Logo de ${escapeHtml(title)}" loading="lazy" decoding="async"></span>` : `<span class="caso-logo caso-logo-text" aria-hidden="true">${escapeHtml(saleroCasoInitials(title))}</span>`}
+    </a>
+
+    <div class="caso-content">
+      <div class="caso-card-top">
+        <h3>${escapeHtml(title)}</h3>
+        <p class="caso-excerpt">${escapeHtml(excerpt).slice(0,190)}</p>
       </div>
-      <div class="caso-proof">
-        <small>Qué demuestra</small>
-        <strong>${escapeHtml(proof)}</strong>
+
+      <div class="caso-meta">
+        <div class="caso-service">
+          <small>Servicio principal</small>
+          <strong>${escapeHtml(service)}</strong>
+        </div>
+        <div class="caso-proof">
+          <small>Qué demuestra</small>
+          <strong>${escapeHtml(proof)}</strong>
+        </div>
+        <a class="caso-link" href="${url}" aria-label="Ver caso de éxito de ${escapeHtml(title)}">Ver caso</a>
       </div>
-      <a class="caso-link" href="${url}" aria-label="Ver caso de éxito de ${escapeHtml(title)}">Ver caso</a>
     </div>
   </article>`;
 }
