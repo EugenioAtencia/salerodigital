@@ -1,4 +1,4 @@
-/* Casos de éxito | Refinado de ficha informativa | v2 */
+/* Casos de éxito | Refinado de ficha informativa | v3 */
 
 .casos-carousel-stage .caso-content{
   width:min(330px,23vw);
@@ -93,6 +93,95 @@
   font-weight:650;
 }
 
+/* Profundidad visual del carrusel */
+.casos-carousel-stage .casos-carousel-viewport{
+  height:clamp(520px,38vw,650px);
+}
+
+.casos-carousel-stage .caso-card-visual{
+  width:min(680px,40vw);
+  height:clamp(350px,29vw,500px);
+  opacity:calc(1 - (var(--abs-offset) * .30));
+  filter:saturate(calc(1 - (var(--abs-offset) * .16))) contrast(calc(1 - (var(--abs-offset) * .08))) brightness(calc(1 - (var(--abs-offset) * .13))) blur(calc(var(--abs-offset) * .45px));
+  transform:
+    translate(-50%,-50%)
+    translateX(calc(var(--offset) * min(22vw,395px)))
+    translateY(calc(var(--abs-offset) * 18px))
+    scale(calc(1 - (var(--abs-offset) * .18)));
+}
+
+.casos-carousel-stage .caso-card-visual.is-active{
+  width:min(920px,54vw);
+  height:auto;
+  aspect-ratio:16 / 9;
+  opacity:1;
+  filter:none;
+  transform:translate(calc(-50% - min(16vw,300px)),-50%) scale(1);
+}
+
+.casos-carousel-stage .caso-card-visual.is-near{
+  opacity:.34;
+}
+
+.casos-carousel-stage .caso-card-visual.is-far{
+  opacity:.16;
+}
+
+.casos-carousel-stage .caso-card-visual:not(.is-active) .caso-media{
+  box-shadow:none;
+}
+
+.casos-carousel-stage .caso-card-visual:not(.is-active) .caso-media:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:3;
+  pointer-events:none;
+  background:rgba(255,253,247,.42);
+  backdrop-filter:blur(1.6px) saturate(.72);
+  -webkit-backdrop-filter:blur(1.6px) saturate(.72);
+}
+
+.casos-carousel-stage .caso-card-visual.is-active .caso-media{
+  border-radius:clamp(32px,3vw,56px);
+}
+
+.casos-carousel-stage .caso-card-visual.is-active .caso-media img,
+.casos-carousel-stage .caso-card-visual.is-active .caso-media video,
+.casos-carousel-stage .caso-card-visual.is-active .caso-media-video{
+  object-position:center center;
+}
+
+.casos-carousel-stage .caso-media-video,
+.casos-carousel-stage .caso-video-poster-layer{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center center;
+}
+
+.casos-carousel-stage .caso-video-poster-layer{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  opacity:0;
+  transition:opacity .28s ease;
+  pointer-events:none;
+}
+
+.casos-carousel-stage .caso-card-visual:not(.is-active) .caso-video-poster-layer{
+  opacity:1;
+}
+
+.casos-carousel-stage .caso-card-visual:not(.is-active) .caso-media-video.has-poster-layer{
+  opacity:0;
+}
+
+.casos-carousel-stage .caso-content{
+  left:calc(100% + clamp(18px,2vw,34px));
+}
+
 @media(max-width:1180px){
   .casos-carousel-stage .caso-content{
     width:min(290px,31vw);
@@ -102,6 +191,11 @@
   .casos-carousel-stage .caso-card-top h3,
   .casos-carousel-stage .caso-card h3{
     font-size:clamp(1.5rem,2.7vw,2.35rem);
+  }
+
+  .casos-carousel-stage .caso-card-visual.is-active{
+    width:min(720px,58vw);
+    transform:translate(calc(-50% - min(12vw,180px)),-50%) scale(1);
   }
 }
 
@@ -121,5 +215,23 @@
   .casos-carousel-stage .caso-card p,
   .casos-carousel-stage .caso-meta{
     max-width:none;
+  }
+
+  .casos-carousel-stage .casos-carousel-viewport{
+    height:auto;
+  }
+
+  .casos-carousel-stage .caso-card-visual,
+  .casos-carousel-stage .caso-card-visual.is-active{
+    aspect-ratio:auto;
+    width:auto;
+    height:auto;
+    filter:none;
+    opacity:1;
+    transform:none;
+  }
+
+  .casos-carousel-stage .caso-card-visual:not(.is-active) .caso-media:after{
+    display:none;
   }
 }
