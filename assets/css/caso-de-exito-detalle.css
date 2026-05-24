@@ -1,4 +1,4 @@
-/* Caso de éxito detalle | Salero Digital | v6 */
+/* Caso de éxito detalle | Salero Digital | v7 */
 
 .caso-detalle-page{
   background:#fffdf7;
@@ -131,8 +131,8 @@
 
 .caso-hero-layout{
   display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(290px,360px);
-  gap:clamp(34px,5vw,78px);
+  grid-template-columns:minmax(0,1fr) minmax(320px,410px);
+  gap:clamp(34px,5vw,82px);
   align-items:end;
 }
 
@@ -206,11 +206,11 @@
 .caso-hero-card{
   position:relative;
   overflow:hidden;
-  padding:clamp(22px,2.4vw,32px);
-  border:1px solid rgba(31,42,36,.10);
-  border-radius:32px;
-  background:linear-gradient(145deg, rgba(255,253,247,.84), rgba(248,242,230,.78));
-  box-shadow:0 22px 70px rgba(31,42,36,.10);
+  padding:clamp(28px,3vw,42px);
+  border:1px solid rgba(31,42,36,.08);
+  border-radius:34px;
+  background:linear-gradient(145deg, rgba(255,253,247,.90), rgba(248,242,230,.86));
+  box-shadow:0 22px 70px rgba(31,42,36,.08);
   backdrop-filter:blur(12px) saturate(1.04);
   -webkit-backdrop-filter:blur(12px) saturate(1.04);
 }
@@ -220,11 +220,11 @@
   position:absolute;
   right:-30%;
   bottom:-30%;
-  width:70%;
+  width:72%;
   aspect-ratio:1;
   border-radius:999px;
-  background:rgba(199,244,88,.24);
-  filter:blur(6px);
+  background:rgba(199,244,88,.16);
+  filter:blur(7px);
   pointer-events:none;
 }
 
@@ -233,57 +233,71 @@
   z-index:1;
 }
 
+.caso-hero-card-kicker,
 .caso-hero-card span{
   display:inline-flex;
   width:max-content;
   max-width:100%;
-  padding:7px 11px;
-  border:1px solid rgba(31,42,36,.10);
+  margin:0 auto 18px;
+  padding:7px 15px;
+  border:1px solid rgba(31,42,36,.16);
   border-radius:999px;
-  background:rgba(248,242,230,.72);
+  background:rgba(248,242,230,.76);
   color:rgba(31,42,36,.74);
-  font-size:.66rem;
-  font-weight:850;
-  letter-spacing:.04em;
-  text-transform:uppercase;
+  font-size:.72rem;
+  font-weight:650;
+  letter-spacing:.01em;
+  text-transform:none;
 }
 
 .caso-hero-card h2{
-  margin:18px 0 18px;
+  margin:0 0 22px;
   color:var(--ink);
   font-family:var(--font-serif);
-  font-size:clamp(1.8rem,2.7vw,2.8rem);
-  line-height:1;
-  letter-spacing:-.06em;
+  font-size:clamp(2.15rem,3.25vw,3.55rem);
+  line-height:.96;
+  letter-spacing:-.065em;
+}
+
+.caso-hero-card p{
+  max-width:30ch;
+  margin:0 0 22px;
+  color:rgba(31,42,36,.78);
+  font-size:clamp(.94rem,1vw,1.05rem);
+  font-weight:520;
+  line-height:1.42;
 }
 
 .caso-hero-card ul{
+  display:none;
+}
+
+.caso-hero-card-meta{
   display:grid;
-  gap:12px;
-  padding:0;
-  margin:0;
-  list-style:none;
+  gap:0;
+  margin-top:20px;
 }
 
-.caso-hero-card li{
-  position:relative;
-  padding-left:22px;
-  color:rgba(31,42,36,.72);
-  font-size:.92rem;
-  font-weight:760;
-  line-height:1.38;
+.caso-hero-card-meta div{
+  padding:18px 0;
+  border-top:1px dotted rgba(31,42,36,.42);
 }
 
-.caso-hero-card li:before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:.45em;
-  width:9px;
-  height:9px;
-  border-radius:50%;
-  background:#c8ff3d;
-  box-shadow:0 0 0 5px rgba(199,244,88,.18);
+.caso-hero-card-meta small{
+  display:block;
+  margin-bottom:8px;
+  color:rgba(31,42,36,.34);
+  font-size:.84rem;
+  font-weight:800;
+  letter-spacing:.03em;
+}
+
+.caso-hero-card-meta strong{
+  display:block;
+  color:rgba(31,42,36,.86);
+  font-size:clamp(.98rem,1.08vw,1.12rem);
+  font-weight:520;
+  line-height:1.32;
 }
 
 .caso-detail-media,
@@ -675,6 +689,10 @@
   .caso-hero-card{
     padding:22px;
     border-radius:28px;
+  }
+
+  .caso-hero-card h2{
+    font-size:clamp(2rem,10vw,3rem);
   }
 
   .caso-detail-actions{
