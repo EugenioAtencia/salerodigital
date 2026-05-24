@@ -1,4 +1,4 @@
-/* Caso de éxito detalle | Salero Digital | v9 */
+/* Caso de éxito detalle | Salero Digital | v10 */
 
 .caso-detalle-page{
   background:#fffdf7;
@@ -25,7 +25,7 @@
   min-height:100vh;
   display:flex;
   align-items:center;
-  padding:clamp(120px,13vh,170px) 0 clamp(70px,8vw,120px);
+  padding:clamp(132px,14vh,188px) 0 clamp(84px,9vh,132px);
   overflow:hidden;
   isolation:isolate;
   background:#f8f2e6;
@@ -92,7 +92,8 @@
   position:relative;
   z-index:3;
   display:grid;
-  gap:clamp(28px,3.4vw,48px);
+  gap:clamp(24px,2.8vw,40px);
+  transform:translateY(clamp(12px,2vh,30px));
 }
 
 .caso-breadcrumb{
@@ -135,8 +136,9 @@
 
 .caso-detail-copy{
   display:grid;
-  gap:clamp(18px,1.8vw,26px);
-  max-width:min(900px,72vw);
+  gap:clamp(16px,1.55vw,23px);
+  max-width:min(820px,64vw);
+  margin-left:clamp(0px,1.8vw,34px);
 }
 
 .caso-detail-copy .sector-detail-back{
@@ -144,16 +146,16 @@
 }
 
 .caso-detail-copy h1{
-  max-width:900px;
-  font-size:clamp(4rem,9.8vw,10.4rem);
-  line-height:.86;
+  max-width:820px;
+  font-size:clamp(3.8rem,8.65vw,9.25rem);
+  line-height:.88;
   letter-spacing:-.082em;
 }
 
 .caso-detail-copy .lead{
-  max-width:650px;
+  max-width:610px;
   color:rgba(31,42,36,.82);
-  font-size:clamp(1.05rem,1.36vw,1.28rem);
+  font-size:clamp(1.02rem,1.28vw,1.22rem);
   font-weight:700;
   line-height:1.58;
 }
@@ -170,7 +172,7 @@
   flex-wrap:wrap;
   align-items:center;
   gap:8px;
-  margin:0 0 clamp(4px,.8vw,10px);
+  margin:0 0 clamp(2px,.65vw,8px);
   max-width:760px;
 }
 
@@ -530,6 +532,7 @@
 @media(max-width:1080px){
   .caso-detail-copy{
     max-width:100%;
+    margin-left:0;
   }
 
   .caso-detail-body-grid{
@@ -552,6 +555,10 @@
   .caso-detail-hero{
     min-height:auto;
     padding-top:122px;
+  }
+
+  .caso-detail-hero-inner{
+    transform:none;
   }
 
   .caso-hero-backdrop:after{
