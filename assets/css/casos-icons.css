@@ -1,0 +1,75 @@
+/* Set de iconos para servicios trabajados en casos de éxito */
+.case-services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+  margin-top: clamp(2rem, 4vw, 3.25rem);
+}
+
+.case-service-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.1rem;
+  text-align: center;
+}
+
+.case-service-icon {
+  width: clamp(86px, 8vw, 128px);
+  height: clamp(86px, 8vw, 128px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1d2119;
+}
+
+.case-service-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.case-service-label {
+  min-width: 150px;
+  max-width: 220px;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid rgba(29, 33, 25, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 253, 247, 0.72);
+  color: #1d2119;
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+  font-weight: 500;
+  line-height: 1.1;
+  text-transform: lowercase;
+}
+
+@media (max-width: 720px) {
+  .case-services-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1.25rem;
+  }
+
+  .case-service-icon {
+    width: 82px;
+    height: 82px;
+  }
+
+  .case-service-label {
+    width: 100%;
+    min-width: 0;
+    padding-inline: 1rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .case-services-grid {
+    grid-template-columns: 1fr;
+  }
+}
