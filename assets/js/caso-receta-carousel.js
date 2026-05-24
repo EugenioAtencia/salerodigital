@@ -11,6 +11,10 @@
       .filter((card) => !card.classList.contains('caso-detail-list-section') && !card.classList.contains('caso-detail-section-metricas'))
       .slice(0, 4);
 
+    const detailBody = carousel.closest('.caso-detail-body');
+    const gallerySection = document.querySelector('.caso-gallery-section');
+    let servicesBlock = null;
+
     const servicesSection = allSections.find((section) => section.classList.contains('caso-detail-section-servicios'));
     if (servicesSection) {
       const labels = Array.from(servicesSection.querySelectorAll('li'))
@@ -18,10 +22,9 @@
         .filter(Boolean);
 
       if (labels.length) {
-        const servicesBlock = createServicesBlock(labels);
-        const detailBody = carousel.closest('.caso-detail-body');
-        if (detailBody) detailBody.insertAdjacentElement('afterend', servicesBlock);
-        else carousel.insertAdjacentElement('afterend', servicesBlock);
+        servicesBlock = createServicesBlock(labels);
+        const servicesAnchor = gallerySection || detailBody || carousel;
+        servicesAnchor.insertAdjacentElement('afterend', servicesBlock);
       }
 
       servicesSection.remove();
@@ -33,9 +36,8 @@
       const extraBlock = createExtraTextBlock(extraSections);
       extraSections.forEach((section) => section.remove());
       if (extraBlock) {
-        const servicesBlock = document.querySelector('.caso-services-section');
-        if (servicesBlock) servicesBlock.insertAdjacentElement('afterend', extraBlock);
-        else carousel.closest('.caso-detail-body')?.insertAdjacentElement('afterend', extraBlock);
+        const extraAnchor = servicesBlock || gallerySection || detailBody || carousel;
+        extraAnchor.insertAdjacentElement('afterend', extraBlock);
       }
     }
 
@@ -116,12 +118,12 @@
 
   function ensureCaseEnhancementStyles() {
     const styles = [
-      ['/assets/css/caso-servicios.css?v=2', 'casoServicesCss'],
-      ['/assets/css/caso-extra-gallery.css?v=1', 'casoExtraGalleryCss']
+      ['/assets/css/caso-servicios.css?v=3', 'casoServicesCss'],
+      ['/assets/css/caso-extra-gallery.css?v=2', 'casoExtraGalleryCss']
     ];
 
     styles.forEach(([href, key]) => {
-      if (document.querySelector(`link[data-${key}]`)) return;
+      if (document.querySelector(`link[data-${key}]`) || document.querySelector(`link[href="${href}"]`)) return;
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.href = href;
