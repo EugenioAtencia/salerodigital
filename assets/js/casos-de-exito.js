@@ -107,6 +107,26 @@ function saleroCasoImage(item = {}) {
   return '';
 }
 
+function saleroCasoVideo(item = {}) {
+  const acf = getAcf(item);
+  const candidates = [acf.video_principal, acf.video_principal_url, acf.video_caso, acf.video_campana, acf.video, item.video_principal, item.video];
+  for (const candidate of candidates) {
+    const url = saleroMediaUrl(candidate);
+    if (url) return url;
+  }
+  return '';
+}
+
+function saleroCasoPoster(item = {}) {
+  const acf = getAcf(item);
+  const candidates = [acf.video_poster, acf.poster_video, acf.poster, acf.imagen_principal, acf.imagen_caso, item.video_poster, item.poster, featuredImage(item)];
+  for (const candidate of candidates) {
+    const url = saleroMediaUrl(candidate);
+    if (url) return url;
+  }
+  return '';
+}
+
 function saleroCasoLogo(item = {}) {
   const acf = getAcf(item);
   const candidates = [acf.logo_cliente, acf.logo_marca, acf.logo, item.logo];
@@ -133,6 +153,28 @@ function saleroCasoAccent(item = {}, slug = '') {
   return 'default';
 }
 
+function renderCasoMedia(item = {}, title = '', visualLabel = '') {
+  const video = saleroCasoVideo(item);
+  const poster = saleroCasoPoster(item);
+  const cover = saleroCasoImage(item);
+
+  if (video) {
+    return `<video class="caso-media-video" autoplay muted loop playsinline preload="metadata"${poster ? ` poster="${escapeHtml(poster)}"` : ''} aria-label="Vídeo del caso ${escapeHtml(title)}"><source src="${escapeHtml(video)}" type="video/mp4"></video>`;
+  }
+
+  if (cover) {
+    return `<img src="${escapeHtml(cover)}" alt="Imagen del caso ${escapeHtml(title)}" loading="lazy" decoding="async">`;
+  }
+
+  return `<div class="caso-media-fallback" aria-hidden="true"><span>${escapeHtml(visualLabel)}</span></div>`;
+}
+
+function renderCasoLogo(item = {}, title = '') {
+  const logo = saleroCasoLogo(item);
+  if (!logo) return '';
+  return `<span class="caso-logo"><img src="${escapeHtml(logo)}" alt="Logo de ${escapeHtml(title)}" loading="lazy" decoding="async"></span>`;
+}
+
 function renderCasoCard(item = {}) {
   const title = saleroCasoTitle(item);
   const slug = item.slug || title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -140,18 +182,16 @@ function renderCasoCard(item = {}) {
   const service = saleroCasoField(item, ['servicio_principal', 'servicios', 'servicio'], item.service || 'Estrategia digital');
   const proof = saleroCasoField(item, ['resultado', 'dato_destacado', 'mejora_conseguida'], item.proof || 'Proyecto real de Salero Digital');
   const excerpt = saleroCasoExcerpt(item) || item.excerpt || '';
-  const cover = saleroCasoImage(item);
-  const logo = saleroCasoLogo(item);
   const accent = saleroCasoAccent(item, slug);
   const visualLabel = item.visual || saleroCasoField(item, ['visual_label', 'etiqueta_visual', 'cliente'], title);
   const url = `/casos-de-exito/${slug}/`;
 
   return `<article class="caso-card caso-card-visual caso-accent-${escapeHtml(accent)}">
     <a class="caso-media" href="${url}" aria-label="Ver caso de éxito de ${escapeHtml(title)}">
-      ${cover ? `<img src="${escapeHtml(cover)}" alt="Imagen del caso ${escapeHtml(title)}" loading="lazy" decoding="async">` : `<div class="caso-media-fallback" aria-hidden="true"><span>${escapeHtml(visualLabel)}</span></div>`}
+      ${renderCasoMedia(item, title, visualLabel)}
       <span class="caso-sector-badge">${escapeHtml(sector)}</span>
       <div class="caso-media-overlay" aria-hidden="true"></div>
-      ${logo ? `<span class="caso-logo"><img src="${escapeHtml(logo)}" alt="Logo de ${escapeHtml(title)}" loading="lazy" decoding="async"></span>` : `<span class="caso-logo caso-logo-text" aria-hidden="true">${escapeHtml(saleroCasoInitials(title))}</span>`}
+      ${renderCasoLogo(item, title)}
     </a>
     <div class="caso-content">
       <div class="caso-card-top">
