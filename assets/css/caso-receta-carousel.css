@@ -1,0 +1,229 @@
+/* Caso de éxito | carrusel de receta | v1 */
+
+.caso-detail-content{
+  --recipe-card-small: clamp(250px, 22vw, 360px);
+  --recipe-card-large: min(68vw, 760px);
+  position:relative;
+  display:flex !important;
+  grid-template-columns:none !important;
+  gap:clamp(14px,1.6vw,22px);
+  width:100vw;
+  max-width:none;
+  margin-left:calc(50% - 50vw);
+  margin-right:calc(50% - 50vw);
+  padding:clamp(8px,1vw,18px) clamp(22px,5vw,92px) clamp(34px,4vw,56px);
+  overflow-x:auto;
+  overflow-y:visible;
+  scroll-snap-type:x mandatory;
+  scroll-padding-inline:50vw;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(31,36,24,.62) rgba(246,241,232,.78);
+}
+
+.caso-detail-content::-webkit-scrollbar{
+  height:12px;
+}
+
+.caso-detail-content::-webkit-scrollbar-track{
+  margin-inline:42vw;
+  border-radius:999px;
+  background:rgba(246,241,232,.82);
+  box-shadow:inset 0 0 0 1px rgba(31,36,24,.08);
+}
+
+.caso-detail-content::-webkit-scrollbar-thumb{
+  border:3px solid rgba(246,241,232,.82);
+  border-radius:999px;
+  background:rgba(31,36,24,.72);
+}
+
+.caso-detail-content::before,
+.caso-detail-content::after{
+  content:"";
+  flex:0 0 clamp(8px,9vw,150px);
+}
+
+.caso-detail-content > .caso-detail-section{
+  flex:0 0 var(--recipe-card-small);
+  min-height:clamp(390px,45vw,520px);
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  scroll-snap-align:center;
+  cursor:pointer;
+  transform:translateY(18px) scale(.94);
+  opacity:.72;
+  transition:
+    flex-basis .55s cubic-bezier(.2,.8,.2,1),
+    transform .55s cubic-bezier(.2,.8,.2,1),
+    opacity .35s ease,
+    box-shadow .35s ease,
+    background .35s ease;
+}
+
+.caso-detail-content > .caso-detail-section:first-of-type,
+.caso-detail-content > .caso-detail-section.is-active,
+.caso-detail-content > .caso-detail-section:hover,
+.caso-detail-content > .caso-detail-section:focus-within{
+  flex-basis:var(--recipe-card-large);
+  min-height:clamp(500px,58vw,680px);
+  transform:translateY(0) scale(1);
+  opacity:1;
+  background:
+    radial-gradient(circle at 100% 100%,rgba(200,255,90,.18),transparent 16rem),
+    linear-gradient(145deg,rgba(255,253,247,.98) 0%,rgba(249,244,231,.78) 100%);
+  box-shadow:0 1px 0 rgba(255,255,255,.86) inset,0 38px 110px rgba(32,37,27,.14);
+}
+
+.caso-detail-content > .caso-detail-section:not(:hover):not(.is-active):first-of-type ~ .caso-detail-section{
+  opacity:.74;
+}
+
+.caso-detail-content > .caso-detail-section .caso-section-number{
+  position:absolute;
+  right:clamp(22px,2.6vw,38px);
+  top:clamp(22px,2.4vw,36px);
+  margin:0;
+  color:rgba(31,42,36,.07);
+  font-size:clamp(5rem,10vw,11rem);
+  z-index:0;
+}
+
+.caso-detail-content > .caso-detail-section h3,
+.caso-detail-content > .caso-detail-section p,
+.caso-detail-content > .caso-detail-section ul{
+  position:relative;
+  z-index:1;
+}
+
+.caso-detail-content > .caso-detail-section h3{
+  max-width:620px;
+  font-size:clamp(2.4rem,4.6vw,5.4rem);
+}
+
+.caso-detail-content > .caso-detail-section:not(.is-active):not(:hover):not(:focus-within) h3{
+  font-size:clamp(2rem,3vw,3.6rem);
+}
+
+.caso-detail-content > .caso-detail-section p,
+.caso-detail-content > .caso-detail-section li{
+  max-width:660px;
+  font-size:clamp(.98rem,1.1vw,1.12rem);
+}
+
+.caso-detail-content > .caso-detail-section:not(.is-active):not(:hover):not(:focus-within) p{
+  display:-webkit-box;
+  -webkit-line-clamp:4;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+.caso-detail-content > .caso-detail-list-section,
+.caso-detail-content > .caso-detail-section-metricas{
+  flex-basis:var(--recipe-card-large);
+}
+
+.caso-recipe-controls{
+  position:relative;
+  z-index:3;
+  width:fit-content;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin:clamp(18px,2.4vw,32px) auto 0;
+  padding:12px 18px;
+  border:1px solid rgba(31,36,24,.08);
+  border-radius:999px;
+  background:rgba(246,241,232,.72);
+  box-shadow:0 18px 44px rgba(31,36,24,.08);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+
+.caso-recipe-control{
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(31,36,24,.08);
+  border-radius:999px;
+  background:rgba(255,253,247,.92);
+  color:var(--sector-ink,#20251b);
+  font-size:1.35rem;
+  font-weight:900;
+  cursor:pointer;
+  transition:transform .25s ease, background .25s ease;
+}
+
+.caso-recipe-control:hover,
+.caso-recipe-control:focus-visible{
+  transform:translateY(-2px);
+  background:rgba(200,255,90,.38);
+}
+
+.caso-recipe-dots{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.caso-recipe-dot{
+  width:9px;
+  height:9px;
+  border:0;
+  border-radius:999px;
+  background:rgba(31,36,24,.18);
+  cursor:pointer;
+  transition:width .25s ease, background .25s ease;
+}
+
+.caso-recipe-dot.is-active{
+  width:34px;
+  background:rgba(31,36,24,.82);
+}
+
+@media(max-width:1080px){
+  .caso-detail-content{
+    padding-inline:clamp(18px,4vw,42px);
+  }
+
+  .caso-detail-content::before,
+  .caso-detail-content::after{
+    flex-basis:1px;
+  }
+
+  .caso-detail-content > .caso-detail-section,
+  .caso-detail-content > .caso-detail-section.is-active,
+  .caso-detail-content > .caso-detail-section:hover,
+  .caso-detail-content > .caso-detail-section:focus-within{
+    flex-basis:min(86vw,620px);
+    min-height:auto;
+    transform:none;
+    opacity:1;
+  }
+}
+
+@media(max-width:720px){
+  .caso-detail-content{
+    gap:14px;
+    padding-bottom:28px;
+  }
+
+  .caso-detail-content > .caso-detail-section,
+  .caso-detail-content > .caso-detail-section.is-active{
+    flex-basis:88vw;
+    padding:1.55rem;
+  }
+
+  .caso-recipe-controls{
+    margin-top:12px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .caso-detail-content > .caso-detail-section,
+  .caso-recipe-dot,
+  .caso-recipe-control{
+    transition:none;
+  }
+}
