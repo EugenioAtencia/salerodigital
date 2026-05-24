@@ -1,4 +1,4 @@
-/* Casos de éxito | Medios e interacción del carrusel | v3 */
+/* Casos de éxito | Medios e interacción del carrusel | v4 */
 (function(){
   const AUTOPLAY_DELAY = 6200;
   const DRAG_THRESHOLD = 58;
@@ -15,6 +15,11 @@
         user-select:none;
         -webkit-user-select:none;
         touch-action:pan-y;
+      }
+
+      .casos-carousel-stage .caso-media,
+      .casos-carousel-stage .caso-link{
+        cursor:pointer;
       }
 
       .casos-carousel-stage.is-dragging .casos-carousel-viewport,
@@ -114,44 +119,33 @@
     viewport.dataset.dragReady = 'true';
 
     let isDown = false;
-    let pointerId = null;
     let startX = 0;
     let startY = 0;
     let lastX = 0;
-    let dragged = false;
     let locked = false;
-    let preventClickUntil = 0;
+    let suppressClickUntil = 0;
 
     const clearDrag = () => {
       isDown = false;
-      pointerId = null;
-      dragged = false;
       locked = false;
       carousel.classList.remove('is-dragging');
       carousel.dataset.userInteracting = 'false';
     };
 
-    viewport.addEventListener('pointerdown', event => {
+    const startDrag = event => {
       if (event.pointerType === 'mouse' && event.button !== 0) return;
       if (event.target.closest('button')) return;
 
       isDown = true;
-      pointerId = event.pointerId;
       startX = event.clientX;
       startY = event.clientY;
       lastX = event.clientX;
-      dragged = false;
       locked = false;
       carousel.dataset.userInteracting = 'true';
-      carousel.classList.add('is-dragging');
+    };
 
-      if (viewport.setPointerCapture) {
-        try { viewport.setPointerCapture(pointerId); } catch (error) {}
-      }
-    });
-
-    viewport.addEventListener('pointermove', event => {
-      if (!isDown || event.pointerId !== pointerId) return;
+    const moveDrag = event => {
+      if (!isDown) return;
 
       const deltaX = event.clientX - startX;
       const deltaY = event.clientY - startY;
@@ -159,40 +153,34 @@
 
       if (!locked && Math.abs(deltaX) > DRAG_LOCK_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY)) {
         locked = true;
-        dragged = true;
+        carousel.classList.add('is-dragging');
       }
 
       if (locked) event.preventDefault();
-    }, { passive:false });
+    };
 
-    const finishDrag = event => {
-      if (!isDown || event.pointerId !== pointerId) return;
+    const finishDrag = () => {
+      if (!isDown) return;
 
       const deltaX = lastX - startX;
       const shouldMove = Math.abs(deltaX) >= DRAG_THRESHOLD;
 
       if (shouldMove) {
-        preventClickUntil = Date.now() + 450;
+        suppressClickUntil = Date.now() + 500;
         if (deltaX < 0) next.click();
         else prev.click();
-      }
-
-      if (viewport.releasePointerCapture) {
-        try { viewport.releasePointerCapture(pointerId); } catch (error) {}
       }
 
       clearDrag();
     };
 
-    viewport.addEventListener('pointerup', finishDrag);
-    viewport.addEventListener('pointercancel', clearDrag);
-    viewport.addEventListener('pointerleave', event => {
-      if (!isDown || event.pointerId !== pointerId) return;
-      finishDrag(event);
-    });
+    viewport.addEventListener('pointerdown', startDrag);
+    window.addEventListener('pointermove', moveDrag, { passive:false });
+    window.addEventListener('pointerup', finishDrag);
+    window.addEventListener('pointercancel', clearDrag);
 
     viewport.addEventListener('click', event => {
-      if (dragged || Date.now() < preventClickUntil) {
+      if (Date.now() < suppressClickUntil) {
         event.preventDefault();
         event.stopPropagation();
       }
