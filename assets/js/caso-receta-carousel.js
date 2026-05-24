@@ -1,5 +1,5 @@
 (() => {
-  ensureServicesStyles();
+  ensureCaseEnhancementStyles();
 
   const carousels = document.querySelectorAll('.caso-detail-content');
 
@@ -30,11 +30,13 @@
     const extraSections = allSections.filter((section) => !cards.includes(section) && section !== servicesSection && section.isConnected);
 
     if (extraSections.length) {
-      const extraWrap = document.createElement('div');
-      extraWrap.className = 'caso-detail-extra';
-      extraWrap.setAttribute('aria-label', 'Información complementaria del caso');
-      extraSections.forEach((section) => extraWrap.appendChild(section));
-      carousel.insertAdjacentElement('afterend', extraWrap);
+      const extraBlock = createExtraTextBlock(extraSections);
+      extraSections.forEach((section) => section.remove());
+      if (extraBlock) {
+        const servicesBlock = document.querySelector('.caso-services-section');
+        if (servicesBlock) servicesBlock.insertAdjacentElement('afterend', extraBlock);
+        else carousel.closest('.caso-detail-body')?.insertAdjacentElement('afterend', extraBlock);
+      }
     }
 
     if (cards.length < 2) return;
@@ -112,13 +114,20 @@
     reset();
   });
 
-  function ensureServicesStyles() {
-    if (document.querySelector('link[data-caso-services-css]')) return;
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = '/assets/css/caso-servicios.css?v=1';
-    link.dataset.casoServicesCss = 'true';
-    document.head.appendChild(link);
+  function ensureCaseEnhancementStyles() {
+    const styles = [
+      ['/assets/css/caso-servicios.css?v=2', 'casoServicesCss'],
+      ['/assets/css/caso-extra-gallery.css?v=1', 'casoExtraGalleryCss']
+    ];
+
+    styles.forEach(([href, key]) => {
+      if (document.querySelector(`link[data-${key}]`)) return;
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      link.dataset[key] = 'true';
+      document.head.appendChild(link);
+    });
   }
 
   function createServicesBlock(labels) {
@@ -140,6 +149,53 @@
       </div>
     `;
 
+    return section;
+  }
+
+  function createExtraTextBlock(sections) {
+    const groups = sections.map((section) => {
+      const title = section.querySelector('h3')?.textContent.trim() || '';
+      const metricArticles = Array.from(section.querySelectorAll('.caso-metric'));
+      let items = [];
+
+      if (section.classList.contains('caso-detail-section-metricas') && metricArticles.length) {
+        items = metricArticles.map((metric) => Array.from(metric.querySelectorAll('strong, span, p'))
+          .map((node) => node.textContent.trim())
+          .filter(Boolean)
+          .join('. ')
+          .replace(/\.+/g, '.')
+          .trim()
+        ).filter(Boolean);
+      } else {
+        items = Array.from(section.querySelectorAll('li'))
+          .map((item) => item.textContent.trim())
+          .filter(Boolean);
+
+        if (!items.length) {
+          items = Array.from(section.querySelectorAll('p'))
+            .map((item) => item.textContent.trim())
+            .filter(Boolean);
+        }
+      }
+
+      return { title, items };
+    }).filter((group) => group.title && group.items.length);
+
+    if (!groups.length) return null;
+
+    const section = document.createElement('section');
+    section.className = 'caso-extra-text-section';
+    section.setAttribute('aria-label', 'Información técnica del caso');
+    section.innerHTML = `
+      <div class="container caso-extra-text-inner">
+        ${groups.map((group) => `
+          <div class="caso-extra-text-group">
+            <h2>${escapeHtml(group.title)}</h2>
+            <p>${group.items.map((item) => `<span>${escapeHtml(item)}</span>`).join('')}</p>
+          </div>
+        `).join('')}
+      </div>
+    `;
     return section;
   }
 
