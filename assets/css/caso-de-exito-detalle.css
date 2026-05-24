@@ -1,4 +1,4 @@
-/* Caso de éxito detalle | Salero Digital | v7 */
+/* Caso de éxito detalle | Salero Digital | v8 */
 
 .caso-detalle-page{
   background:#fffdf7;
@@ -251,21 +251,22 @@
 }
 
 .caso-hero-card h2{
-  margin:0 0 22px;
+  margin:0 0 18px;
   color:var(--ink);
   font-family:var(--font-serif);
-  font-size:clamp(2.15rem,3.25vw,3.55rem);
-  line-height:.96;
-  letter-spacing:-.065em;
+  font-size:clamp(1.42rem, 2.1vw, 2rem);
+  font-weight:700;
+  line-height:1.02;
+  letter-spacing:-.045em;
 }
 
 .caso-hero-card p{
-  max-width:30ch;
-  margin:0 0 22px;
-  color:rgba(31,42,36,.78);
-  font-size:clamp(.94rem,1vw,1.05rem);
-  font-weight:520;
-  line-height:1.42;
+  max-width:32ch;
+  margin:0 0 18px;
+  color:var(--sector-muted);
+  font-size:clamp(.82rem,.88vw,.94rem);
+  font-weight:400;
+  line-height:1.48;
 }
 
 .caso-hero-card ul{
@@ -275,29 +276,29 @@
 .caso-hero-card-meta{
   display:grid;
   gap:0;
-  margin-top:20px;
+  margin-top:18px;
 }
 
 .caso-hero-card-meta div{
-  padding:18px 0;
-  border-top:1px dotted rgba(31,42,36,.42);
+  padding:16px 0;
+  border-top:1px dotted rgba(31,42,36,.34);
 }
 
 .caso-hero-card-meta small{
   display:block;
   margin-bottom:8px;
   color:rgba(31,42,36,.34);
-  font-size:.84rem;
-  font-weight:800;
-  letter-spacing:.03em;
+  font-size:.8rem;
+  font-weight:760;
+  letter-spacing:.025em;
 }
 
 .caso-hero-card-meta strong{
   display:block;
-  color:rgba(31,42,36,.86);
-  font-size:clamp(.98rem,1.08vw,1.12rem);
-  font-weight:520;
-  line-height:1.32;
+  color:rgba(31,42,36,.82);
+  font-size:clamp(.9rem,.98vw,1.02rem);
+  font-weight:430;
+  line-height:1.34;
 }
 
 .caso-detail-media,
@@ -692,7 +693,7 @@
   }
 
   .caso-hero-card h2{
-    font-size:clamp(2rem,10vw,3rem);
+    font-size:clamp(1.42rem, 2.1vw, 2rem);
   }
 
   .caso-detail-actions{
