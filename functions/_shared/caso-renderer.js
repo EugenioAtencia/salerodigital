@@ -195,7 +195,7 @@ function renderCasoPage(slug, item) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
-  <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=5">
+  <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=6">
 </head>
 <body class="caso-detalle-page caso-${escapeAttr(slug)}">
 ${renderHeader()}
@@ -210,18 +210,30 @@ ${renderHeader()}
           <span aria-hidden="true">/</span>
           <a href="/casos-de-exito/">Casos de éxito</a>
           <span aria-hidden="true">/</span>
-          <strong>${escapeHtml(title)}</strong>
+          <a href="${escapeAttr(canonical)}" aria-current="page">${escapeHtml(title)}</a>
         </nav>
 
-        <div class="caso-detail-copy">
-          <div class="caso-detail-tags caso-detail-tags-hero" aria-label="Resumen del caso">
-            <span class="is-sal">${escapeHtml(visualLabel)}</span>
-            <span class="is-lima">${escapeHtml(sector)}</span>
-            <span class="is-lima">${escapeHtml(service)}</span>
+        <div class="caso-hero-layout">
+          <div class="caso-detail-copy">
+            <div class="caso-detail-tags caso-detail-tags-hero" aria-label="Resumen del caso">
+              <span class="is-sal">${escapeHtml(visualLabel)}</span>
+              <span class="is-lima">${escapeHtml(sector)}</span>
+              <span class="is-lima">${escapeHtml(service)}</span>
+            </div>
+            <h1>${escapeHtml(title)}</h1>
+            ${summary ? `<p class="lead">${escapeHtml(summary)}</p>` : ''}
+            <div class="caso-detail-actions"><a class="btn btn-primary" href="${escapeAttr(ctaUrl)}">${escapeHtml(ctaText)}</a><a class="btn btn-secondary" href="#caso-receta">Ver la receta</a></div>
           </div>
-          <h1>${escapeHtml(title)}</h1>
-          ${summary ? `<p class="lead">${escapeHtml(summary)}</p>` : ''}
-          <div class="caso-detail-actions"><a class="btn btn-primary" href="${escapeAttr(ctaUrl)}">${escapeHtml(ctaText)}</a><a class="btn btn-secondary" href="#caso-receta">Ver la receta</a></div>
+
+          <aside class="caso-hero-card" aria-label="Argumento principal del caso">
+            <span>${escapeHtml(visualLabel)}</span>
+            <h2>${escapeHtml(proof)}</h2>
+            <ul>
+              <li>${escapeHtml(service)}</li>
+              <li>${escapeHtml(sector)}</li>
+              <li>Proyecto real de Salero Digital</li>
+            </ul>
+          </aside>
         </div>
       </div>
     </section>
