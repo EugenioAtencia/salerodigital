@@ -344,7 +344,7 @@ function renderGallery(galeria, primary = {}) {
     return '';
   }).filter(Boolean).join('');
 
-  return html ? `<section class="caso-gallery-section"><div class="container"><div class="caso-gallery-heading"><span class="eyebrow">Material visual</span><h2>Imágenes del proyecto</h2></div><div class="caso-gallery-grid">${html}</div></div></section>` : '';
+  return html ? `<section class="caso-gallery-section"><div class="container"><div class="caso-gallery-heading"><span class="eyebrow">Material visual</span><h2>Píldoras de Sal</h2></div><div class="caso-gallery-grid">${html}</div></div></section>` : '';
 }
 
 function renderHeader() {
