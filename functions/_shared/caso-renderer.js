@@ -113,24 +113,35 @@ function renderCasoPage(slug, item) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
-  <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=3">
+  <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=4">
 </head>
 <body class="caso-detalle-page caso-${escapeAttr(slug)}">
 ${renderHeader()}
   <main id="caso-detalle-root" class="caso-detalle-root" data-caso-slug="${escapeAttr(slug)}">
-    <section class="caso-detail-hero">
+    <section class="caso-detail-hero caso-detail-hero-media">
+      ${renderHeroBackdrop({ videoUrl, posterUrl, imageUrl, title })}
       <div class="caso-detail-grain" aria-hidden="true"></div>
-      <div class="caso-detail-background-word" aria-hidden="true">caso real</div>
-      <div class="container caso-detail-hero-grid">
+      <div class="caso-detail-hero-overlay" aria-hidden="true"></div>
+      <div class="container caso-detail-hero-inner">
+        <nav class="caso-breadcrumb" aria-label="Migas de pan">
+          <a href="/">Inicio</a>
+          <span aria-hidden="true">/</span>
+          <a href="/casos-de-exito/">Casos de éxito</a>
+          <span aria-hidden="true">/</span>
+          <strong>${escapeHtml(title)}</strong>
+        </nav>
+
         <div class="caso-detail-copy">
-          <a class="sector-detail-back" href="/casos-de-exito/">Casos de éxito</a>
-          <span class="eyebrow">${escapeHtml(visualLabel)}</span>
+          <span class="eyebrow">Caso de éxito</span>
           <h1>${escapeHtml(title)}</h1>
           ${summary ? `<p class="lead">${escapeHtml(summary)}</p>` : ''}
-          <div class="caso-detail-tags"><span>${escapeHtml(sector)}</span><span>${escapeHtml(service)}</span></div>
+          <div class="caso-detail-tags caso-detail-tags-hero" aria-label="Resumen del caso">
+            <span class="is-sal">${escapeHtml(visualLabel)}</span>
+            <span class="is-lima">${escapeHtml(sector)}</span>
+            <span class="is-lima">${escapeHtml(service)}</span>
+          </div>
           <div class="caso-detail-actions"><a class="btn btn-primary" href="${escapeAttr(ctaUrl)}">${escapeHtml(ctaText)}</a><a class="btn btn-secondary" href="#caso-receta">Ver la receta</a></div>
         </div>
-        ${renderHeroMedia({ videoUrl, posterUrl, imageUrl, logoUrl, title })}
       </div>
     </section>
 
@@ -184,6 +195,16 @@ ${renderFooter()}
   <script src="/assets/js/helpers.js?v=41"></script>
 </body>
 </html>`;
+}
+
+function renderHeroBackdrop({ videoUrl, posterUrl, imageUrl, title }) {
+  const media = videoUrl
+    ? `<video autoplay muted loop playsinline preload="metadata" ${posterUrl ? `poster="${escapeAttr(posterUrl)}"` : ''}><source src="${escapeAttr(videoUrl)}" type="video/mp4"></video>`
+    : imageUrl
+      ? `<img src="${escapeAttr(imageUrl)}" alt="${escapeAttr(title)}" loading="eager">`
+      : '';
+
+  return `<div class="caso-hero-backdrop" aria-hidden="true">${media}</div>`;
 }
 
 function renderHeroMedia({ videoUrl, posterUrl, imageUrl, logoUrl, title }) {
