@@ -113,12 +113,14 @@ function renderCasoPage(slug, item) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
-  <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=2">
+  <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=3">
 </head>
-<body class="caso-detalle-page">
+<body class="caso-detalle-page caso-${escapeAttr(slug)}">
 ${renderHeader()}
   <main id="caso-detalle-root" class="caso-detalle-root" data-caso-slug="${escapeAttr(slug)}">
     <section class="caso-detail-hero">
+      <div class="caso-detail-grain" aria-hidden="true"></div>
+      <div class="caso-detail-background-word" aria-hidden="true">caso real</div>
       <div class="container caso-detail-hero-grid">
         <div class="caso-detail-copy">
           <a class="sector-detail-back" href="/casos-de-exito/">Casos de éxito</a>
@@ -126,31 +128,40 @@ ${renderHeader()}
           <h1>${escapeHtml(title)}</h1>
           ${summary ? `<p class="lead">${escapeHtml(summary)}</p>` : ''}
           <div class="caso-detail-tags"><span>${escapeHtml(sector)}</span><span>${escapeHtml(service)}</span></div>
+          <div class="caso-detail-actions"><a class="btn btn-primary" href="${escapeAttr(ctaUrl)}">${escapeHtml(ctaText)}</a><a class="btn btn-secondary" href="#caso-receta">Ver la receta</a></div>
         </div>
         ${renderHeroMedia({ videoUrl, posterUrl, imageUrl, logoUrl, title })}
       </div>
     </section>
 
-    <section class="caso-detail-body">
+    <section class="caso-proof-band" aria-label="Resumen del caso">
+      <div class="container caso-proof-grid">
+        <article><span>Sector</span><strong>${escapeHtml(sector)}</strong></article>
+        <article><span>Servicio principal</span><strong>${escapeHtml(service)}</strong></article>
+        <article><span>Qué demuestra</span><strong>${escapeHtml(proof)}</strong></article>
+      </div>
+    </section>
+
+    <section class="caso-detail-body" id="caso-receta">
       <div class="container caso-detail-body-grid">
         <aside class="caso-detail-sticky">
           <span class="eyebrow">La receta</span>
-          <h2>Qué hicimos y por qué importa</h2>
+          <h2>Menos escaparate y más argumento.</h2>
           <div class="caso-detail-summary-card">
+            <p>Este caso no va solo de enseñar una web bonita. Va de explicar el contexto, la decisión estratégica y la solución digital que había detrás.</p>
             <dl>
-              <div><dt>Sector</dt><dd>${escapeHtml(sector)}</dd></div>
-              <div><dt>Servicio principal</dt><dd>${escapeHtml(service)}</dd></div>
-              <div><dt>Qué demuestra</dt><dd>${escapeHtml(proof)}</dd></div>
+              <div><dt>Proyecto</dt><dd>${escapeHtml(title)}</dd></div>
+              <div><dt>Prueba</dt><dd>${escapeHtml(proof)}</dd></div>
             </dl>
           </div>
         </aside>
         <div class="caso-detail-content">
-          ${renderSection('El reto', reto)}
-          ${renderSection('La receta aplicada', solucion)}
-          ${renderSection('El resultado', resultado)}
-          ${renderSection('Qué demuestra este caso', aprendizaje)}
-          ${renderListSection('Servicios trabajados', servicios)}
-          ${renderListSection('Herramientas usadas', herramientas)}
+          ${renderSection('El reto', reto, 'reto', '01')}
+          ${renderSection('La receta aplicada', solucion, 'solucion', '02')}
+          ${renderSection('El resultado', resultado, 'resultado', '03')}
+          ${renderSection('Qué demuestra este caso', aprendizaje, 'aprendizaje', '04')}
+          ${renderListSection('Servicios trabajados', servicios, 'servicios')}
+          ${renderListSection('Herramientas usadas', herramientas, 'herramientas')}
           ${renderMetrics(metricas)}
         </div>
       </div>
@@ -185,14 +196,17 @@ function renderHeroMedia({ videoUrl, posterUrl, imageUrl, logoUrl, title }) {
   return `<div class="caso-detail-media">${media}${logoUrl ? `<span class="caso-detail-logo"><img src="${escapeAttr(logoUrl)}" alt="Logo de ${escapeAttr(title)}"></span>` : ''}</div>`;
 }
 
-function renderSection(title, html) {
+function renderSection(title, html, modifier = '', number = '') {
   if (!html) return '';
-  return `<section class="caso-detail-section"><h3>${escapeHtml(title)}</h3>${html}</section>`;
+  const mod = modifier ? ` caso-detail-section-${escapeAttr(modifier)}` : '';
+  const numberHtml = number ? `<span class="caso-section-number">${escapeHtml(number)}</span>` : '';
+  return `<section class="caso-detail-section${mod}">${numberHtml}<h3>${escapeHtml(title)}</h3>${html}</section>`;
 }
 
-function renderListSection(title, list) {
+function renderListSection(title, list, modifier = '') {
   if (!Array.isArray(list) || !list.length) return '';
-  return `<section class="caso-detail-section"><h3>${escapeHtml(title)}</h3><ul>${list.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></section>`;
+  const mod = modifier ? ` caso-detail-section-${escapeAttr(modifier)}` : '';
+  return `<section class="caso-detail-section caso-detail-list-section${mod}"><h3>${escapeHtml(title)}</h3><ul>${list.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></section>`;
 }
 
 function renderMetrics(metricas) {
@@ -204,7 +218,7 @@ function renderMetrics(metricas) {
     if (!label && !value && !desc) return '';
     return `<article class="caso-metric"><strong>${escapeHtml(value || label)}</strong>${label && value ? `<span>${escapeHtml(label)}</span>` : ''}${desc ? `<p>${escapeHtml(desc)}</p>` : ''}</article>`;
   }).filter(Boolean).join('');
-  return html ? `<section class="caso-detail-section"><h3>Métricas destacadas</h3><div class="caso-metrics">${html}</div></section>` : '';
+  return html ? `<section class="caso-detail-section caso-detail-section-metricas"><h3>Métricas destacadas</h3><div class="caso-metrics">${html}</div></section>` : '';
 }
 
 function renderGallery(galeria) {
