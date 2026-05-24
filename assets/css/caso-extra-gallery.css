@@ -1,0 +1,145 @@
+/* Caso de éxito | herramientas, métricas y galería masonry | v1 */
+
+.caso-extra-text-section{
+  position:relative;
+  padding:clamp(46px,6vw,86px) 0 clamp(34px,5vw,70px);
+  background:var(--sector-cream,#fffdf7);
+}
+
+.caso-extra-text-inner{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:clamp(22px,4vw,72px);
+  align-items:start;
+  border-top:1px solid rgba(31,36,24,.12);
+  border-bottom:1px solid rgba(31,36,24,.1);
+  padding:clamp(24px,3vw,42px) 0;
+}
+
+.caso-extra-text-group h2{
+  margin:0 0 1rem;
+  color:rgba(31,36,24,.9);
+  font-family:var(--font-serif,'Playfair Display',serif);
+  font-size:clamp(1.55rem,2.4vw,2.8rem);
+  line-height:1;
+  letter-spacing:-.055em;
+}
+
+.caso-extra-text-group p{
+  max-width:760px;
+  margin:0;
+  color:rgba(31,42,36,.58);
+  font-size:clamp(.92rem,1vw,1.05rem);
+  font-weight:650;
+  line-height:1.75;
+}
+
+.caso-extra-text-group p span{
+  display:inline;
+}
+
+.caso-extra-text-group p span:not(:last-child)::after{
+  content:' · ';
+  color:rgba(31,42,36,.34);
+  font-weight:500;
+}
+
+.caso-gallery-section{
+  padding:clamp(46px,6vw,96px) 0 clamp(78px,8vw,128px) !important;
+  background:var(--sector-cream,#fffdf7);
+}
+
+.caso-gallery-heading{
+  max-width:980px;
+  margin:0 auto clamp(30px,4vw,60px) !important;
+  text-align:center;
+}
+
+.caso-gallery-heading .eyebrow{
+  display:inline-flex;
+}
+
+.caso-gallery-heading h2{
+  max-width:900px;
+  margin:1rem auto 0;
+  color:var(--sector-ink,#20251b);
+  font-family:var(--font-serif,'Playfair Display',serif);
+  font-size:clamp(2.45rem,5vw,5.2rem);
+  line-height:.98;
+  letter-spacing:-.06em;
+}
+
+.caso-gallery-grid{
+  display:block !important;
+  columns:3 280px;
+  column-gap:clamp(16px,1.8vw,26px);
+}
+
+.caso-gallery-item{
+  display:block;
+  break-inside:avoid;
+  margin:0 0 clamp(16px,1.8vw,26px);
+  overflow:hidden;
+  border:0 !important;
+  border-radius:clamp(22px,2.2vw,38px) !important;
+  background:rgba(246,241,232,.42);
+  box-shadow:0 24px 70px rgba(31,36,24,.08);
+}
+
+.caso-gallery-item img,
+.caso-gallery-item video{
+  width:100%;
+  height:auto;
+  min-height:220px;
+  display:block;
+  object-fit:cover;
+  border-radius:inherit;
+  filter:saturate(.96) contrast(1.02);
+  transition:transform .6s cubic-bezier(.2,.8,.2,1), filter .4s ease;
+}
+
+.caso-gallery-item:nth-child(3n + 1) img,
+.caso-gallery-item:nth-child(3n + 1) video{
+  aspect-ratio:4/5;
+}
+
+.caso-gallery-item:nth-child(3n + 2) img,
+.caso-gallery-item:nth-child(3n + 2) video{
+  aspect-ratio:16/10;
+}
+
+.caso-gallery-item:nth-child(3n + 3) img,
+.caso-gallery-item:nth-child(3n + 3) video{
+  aspect-ratio:1/1;
+}
+
+.caso-gallery-item:hover img,
+.caso-gallery-item:hover video{
+  transform:scale(1.035);
+  filter:saturate(1.04) contrast(1.04);
+}
+
+.caso-gallery-caption,
+.caso-gallery-link{
+  display:none !important;
+}
+
+@media(max-width:900px){
+  .caso-extra-text-inner{
+    grid-template-columns:1fr;
+  }
+
+  .caso-gallery-grid{
+    columns:2 240px;
+  }
+}
+
+@media(max-width:560px){
+  .caso-gallery-heading{
+    text-align:left;
+  }
+
+  .caso-gallery-grid{
+    columns:1;
+  }
+}
