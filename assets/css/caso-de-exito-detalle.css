@@ -1,4 +1,4 @@
-/* Caso de éxito detalle | Salero Digital | v10 */
+/* Caso de éxito detalle | Salero Digital | v11 */
 
 .caso-detalle-page{
   background:#fffdf7;
@@ -25,10 +25,22 @@
   min-height:100vh;
   display:flex;
   align-items:center;
-  padding:clamp(132px,14vh,188px) 0 clamp(84px,9vh,132px);
+  padding:clamp(132px,14vh,188px) 0 clamp(118px,14vh,190px);
   overflow:hidden;
   isolation:isolate;
-  background:#f8f2e6;
+  background:#fffdf7;
+}
+
+.caso-detail-hero:after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:-1px;
+  z-index:2;
+  height:clamp(180px,24vh,310px);
+  pointer-events:none;
+  background:linear-gradient(180deg, rgba(255,253,247,0) 0%, rgba(255,253,247,.72) 58%, #fffdf7 100%);
 }
 
 .caso-detail-hero-media{
@@ -59,7 +71,7 @@
   inset:0;
   background:
     linear-gradient(90deg, rgba(248,242,230,.97) 0%, rgba(248,242,230,.91) 32%, rgba(248,242,230,.62) 54%, rgba(248,242,230,.22) 76%, rgba(248,242,230,.08) 100%),
-    linear-gradient(180deg, rgba(248,242,230,.82) 0%, rgba(248,242,230,.18) 44%, rgba(31,42,36,.24) 100%);
+    linear-gradient(180deg, rgba(248,242,230,.82) 0%, rgba(248,242,230,.18) 44%, rgba(255,253,247,.50) 78%, #fffdf7 100%);
 }
 
 .caso-detail-hero-overlay{
@@ -93,7 +105,7 @@
   z-index:3;
   display:grid;
   gap:clamp(24px,2.8vw,40px);
-  transform:translateY(clamp(12px,2vh,30px));
+  transform:translateY(clamp(8px,1.5vh,22px));
 }
 
 .caso-breadcrumb{
@@ -138,7 +150,7 @@
   display:grid;
   gap:clamp(16px,1.55vw,23px);
   max-width:min(820px,64vw);
-  margin-left:clamp(0px,1.8vw,34px);
+  margin-inline:auto;
 }
 
 .caso-detail-copy .sector-detail-back{
@@ -532,7 +544,7 @@
 @media(max-width:1080px){
   .caso-detail-copy{
     max-width:100%;
-    margin-left:0;
+    margin-inline:0;
   }
 
   .caso-detail-body-grid{
@@ -555,15 +567,20 @@
   .caso-detail-hero{
     min-height:auto;
     padding-top:122px;
+    padding-bottom:150px;
   }
 
   .caso-detail-hero-inner{
     transform:none;
   }
 
+  .caso-detail-hero:after{
+    height:190px;
+  }
+
   .caso-hero-backdrop:after{
     background:
-      linear-gradient(180deg, rgba(248,242,230,.96) 0%, rgba(248,242,230,.82) 48%, rgba(248,242,230,.42) 100%),
+      linear-gradient(180deg, rgba(248,242,230,.96) 0%, rgba(248,242,230,.82) 48%, rgba(255,253,247,.72) 82%, #fffdf7 100%),
       linear-gradient(90deg, rgba(248,242,230,.98) 0%, rgba(248,242,230,.62) 100%);
   }
 
