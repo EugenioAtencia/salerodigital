@@ -1,94 +1,114 @@
-/* Casos de éxito | Refinado de ficha informativa | v1 */
+/* Casos de éxito | Refinado de ficha informativa | v2 */
 
 .casos-carousel-stage .caso-content{
-  width:min(350px,24vw);
-  gap:clamp(14px,1.3vw,22px);
-  padding:clamp(20px,2vw,30px);
+  width:min(330px,23vw);
+  max-height:clamp(430px,38vw,600px);
+  overflow:hidden;
+  gap:clamp(12px,1vw,18px);
+  padding:clamp(18px,1.7vw,26px);
   border-color:rgba(31,42,36,.075);
   background:linear-gradient(135deg, rgba(255,253,247,.92), rgba(246,241,232,.88));
   box-shadow:0 18px 48px rgba(31,42,36,.075);
 }
 
 .casos-carousel-stage .caso-card-top{
-  gap:clamp(12px,1.1vw,18px);
+  gap:clamp(10px,.9vw,15px);
 }
 
 .casos-carousel-stage .caso-content-kicker{
-  color:rgba(31,42,36,.72);
-  font-size:clamp(.78rem,.92vw,.98rem);
-  font-weight:850;
-  line-height:1.28;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  color:rgba(31,42,36,.68);
+  font-size:clamp(.72rem,.82vw,.9rem);
+  font-weight:800;
+  line-height:1.25;
   letter-spacing:-.02em;
 }
 
 .casos-carousel-stage .caso-card-top h3,
 .casos-carousel-stage .caso-card h3{
-  font-size:clamp(2rem,2.8vw,3.7rem);
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  font-size:clamp(1.62rem,2.15vw,2.85rem);
   line-height:.98;
-  letter-spacing:-.06em;
+  letter-spacing:-.055em;
 }
 
 .casos-carousel-stage .caso-excerpt,
 .casos-carousel-stage .caso-card p{
-  max-width:310px;
-  color:rgba(31,42,36,.72);
-  font-size:clamp(.82rem,.9vw,.98rem);
-  line-height:1.58;
-  font-weight:550;
+  display:-webkit-box;
+  -webkit-line-clamp:4;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  max-width:290px;
+  color:rgba(31,42,36,.68);
+  font-size:clamp(.76rem,.8vw,.88rem);
+  line-height:1.52;
+  font-weight:520;
 }
 
 .casos-carousel-stage .caso-meta{
-  max-width:310px;
-  gap:13px;
+  max-width:290px;
+  gap:10px;
 }
 
 .casos-carousel-stage .caso-service{
-  padding-bottom:13px;
-  border-bottom:1px solid rgba(31,42,36,.36);
+  padding-bottom:10px;
+  border-bottom:1px solid rgba(31,42,36,.28);
 }
 
 .casos-carousel-stage .caso-service,
 .casos-carousel-stage .caso-proof{
-  gap:5px;
+  gap:4px;
 }
 
 .casos-carousel-stage .caso-meta small{
-  color:rgba(31,42,36,.34);
-  font-size:clamp(.82rem,.92vw,1rem);
-  font-weight:850;
+  color:rgba(31,42,36,.32);
+  font-size:clamp(.72rem,.8vw,.88rem);
+  font-weight:820;
 }
 
 .casos-carousel-stage .caso-meta strong{
-  color:rgba(31,42,36,.76);
-  font-size:clamp(.78rem,.86vw,.94rem);
-  font-weight:650;
-  line-height:1.42;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  color:rgba(31,42,36,.72);
+  font-size:clamp(.72rem,.76vw,.84rem);
+  font-weight:620;
+  line-height:1.38;
 }
 
 .casos-carousel-stage .caso-link{
-  min-width:142px;
-  min-height:46px;
-  margin-top:clamp(8px,1.2vw,20px);
-  padding:12px 24px;
-  font-size:.92rem;
+  min-width:124px;
+  min-height:42px;
+  width:max-content;
+  margin-top:clamp(6px,.9vw,14px);
+  padding:10px 22px;
+  font-size:.84rem;
   font-weight:650;
 }
 
 @media(max-width:1180px){
   .casos-carousel-stage .caso-content{
-    width:min(310px,32vw);
-    padding:22px;
+    width:min(290px,31vw);
+    padding:20px;
   }
 
   .casos-carousel-stage .caso-card-top h3,
   .casos-carousel-stage .caso-card h3{
-    font-size:clamp(1.85rem,3.2vw,3rem);
+    font-size:clamp(1.5rem,2.7vw,2.35rem);
   }
 }
 
 @media(max-width:900px){
   .casos-carousel-stage .caso-content{
     width:auto;
+    max-height:none;
     padding:22px;
   }
 
