@@ -1,5 +1,6 @@
 const CMS_API_BASE = 'https://cms.webagencia360.com/wp-json/wp/v2';
 const SITE_ORIGIN = 'https://salero.webagencia360.com';
+const MEDIA_CACHE = new Map();
 
 export async function handleCasoRequest(context) {
   const slug = sanitizeSlug(context.params.slug || '');
@@ -15,7 +16,8 @@ export async function handleCasoRequest(context) {
       return htmlResponse(renderErrorPage('Caso no encontrado', `No existe ningún caso publicado con el slug ${escapeHtml(slug)}.`), 404);
     }
 
-    return htmlResponse(renderCasoPage(slug, item), 200);
+    const hydratedItem = await hydrateCasoMedia(item);
+    return htmlResponse(renderCasoPage(slug, hydratedItem), 200);
   } catch (error) {
     return htmlResponse(renderErrorPage('No se pudo cargar el caso desde WordPress', String(error && error.message ? error.message : error)), 502);
   }
@@ -70,6 +72,87 @@ async function fetchCaso(slug) {
   return null;
 }
 
+async function hydrateCasoMedia(item) {
+  const acf = getAcf(item);
+  const mediaFields = [
+    'video_principal',
+    'video_caso',
+    'video_campana',
+    'video',
+    'video_poster',
+    'poster_video',
+    'poster',
+    'imagen_principal',
+    'imagen_caso',
+    'imagen_destacada',
+    'imagen_campana',
+    'cover_image',
+    'logo_cliente',
+    'logo_marca',
+    'logo'
+  ];
+
+  await Promise.all(mediaFields.map(async field => {
+    if (!acf || typeof acf[field] === 'undefined') return;
+    const resolved = await resolveMaybeMedia(acf[field]);
+    if (resolved) acf[field] = resolved;
+  }));
+
+  if (Array.isArray(acf.galeria_caso)) {
+    await Promise.all(acf.galeria_caso.map(async row => {
+      if (!row || typeof row !== 'object') return;
+      if (typeof row.imagen !== 'undefined') {
+        const resolvedImage = await resolveMaybeMedia(row.imagen);
+        if (resolvedImage) row.imagen = resolvedImage;
+      }
+      if (typeof row.video !== 'undefined') {
+        const resolvedVideo = await resolveMaybeMedia(row.video);
+        if (resolvedVideo) row.video = resolvedVideo;
+      }
+    }));
+  }
+
+  return item;
+}
+
+async function resolveMaybeMedia(value) {
+  if (!value) return null;
+  if (mediaUrl(value)) return value;
+  const id = mediaId(value);
+  if (!id) return null;
+  return fetchMediaById(id);
+}
+
+function mediaId(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && /^\d+$/.test(value.trim())) return Number(value.trim());
+  if (typeof value === 'object') {
+    const candidate = value.ID || value.id || value.attachment_id || value.media_id;
+    if (candidate && /^\d+$/.test(String(candidate))) return Number(candidate);
+  }
+  return 0;
+}
+
+async function fetchMediaById(id) {
+  if (!id) return null;
+  if (MEDIA_CACHE.has(id)) return MEDIA_CACHE.get(id);
+
+  const url = `${CMS_API_BASE}/media/${id}?_t=${Date.now()}`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'User-Agent': 'SaleroDigital-Casos-SSR'
+    },
+    cf: { cacheTtl: 0, cacheEverything: false }
+  });
+
+  if (!response.ok) return null;
+  const media = await response.json();
+  MEDIA_CACHE.set(id, media);
+  return media;
+}
+
 function renderCasoPage(slug, item) {
   const acf = getAcf(item);
   const title = stripHtml(fieldValue(acf, ['cliente_nombre', 'nombre_caso', 'nombre_cliente', 'cliente'], itemTitle(item) || 'Caso de éxito'));
@@ -85,7 +168,6 @@ function renderCasoPage(slug, item) {
   const videoUrl = mediaUrl(fieldValue(acf, ['video_principal', 'video_principal_url', 'video_caso', 'video_campana', 'video'], ''));
   const posterUrl = mediaUrl(fieldValue(acf, ['video_poster', 'poster_video', 'poster', 'imagen_principal', 'imagen_caso'], featuredImage(item) || ''));
   const imageUrl = mediaUrl(fieldValue(acf, ['imagen_principal', 'imagen_caso', 'imagen_destacada', 'imagen_campana', 'cover_image'], featuredImage(item) || ''));
-  const logoUrl = mediaUrl(fieldValue(acf, ['logo_cliente', 'logo_marca', 'logo'], ''));
 
   const reto = htmlValue(fieldValue(acf, ['reto', 'reto_inicial'], ''));
   const solucion = htmlValue(fieldValue(acf, ['solucion', 'estrategia_aplicada', 'acciones_realizadas'], ''));
@@ -113,7 +195,7 @@ function renderCasoPage(slug, item) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
-  <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=4">
+  <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=5">
 </head>
 <body class="caso-detalle-page caso-${escapeAttr(slug)}">
 ${renderHeader()}
@@ -132,14 +214,13 @@ ${renderHeader()}
         </nav>
 
         <div class="caso-detail-copy">
-          <span class="eyebrow">Caso de éxito</span>
-          <h1>${escapeHtml(title)}</h1>
-          ${summary ? `<p class="lead">${escapeHtml(summary)}</p>` : ''}
           <div class="caso-detail-tags caso-detail-tags-hero" aria-label="Resumen del caso">
             <span class="is-sal">${escapeHtml(visualLabel)}</span>
             <span class="is-lima">${escapeHtml(sector)}</span>
             <span class="is-lima">${escapeHtml(service)}</span>
           </div>
+          <h1>${escapeHtml(title)}</h1>
+          ${summary ? `<p class="lead">${escapeHtml(summary)}</p>` : ''}
           <div class="caso-detail-actions"><a class="btn btn-primary" href="${escapeAttr(ctaUrl)}">${escapeHtml(ctaText)}</a><a class="btn btn-secondary" href="#caso-receta">Ver la receta</a></div>
         </div>
       </div>
@@ -205,16 +286,6 @@ function renderHeroBackdrop({ videoUrl, posterUrl, imageUrl, title }) {
       : '';
 
   return `<div class="caso-hero-backdrop" aria-hidden="true">${media}</div>`;
-}
-
-function renderHeroMedia({ videoUrl, posterUrl, imageUrl, logoUrl, title }) {
-  const media = videoUrl
-    ? `<video autoplay muted loop playsinline preload="metadata" ${posterUrl ? `poster="${escapeAttr(posterUrl)}"` : ''}><source src="${escapeAttr(videoUrl)}" type="video/mp4"></video>`
-    : imageUrl
-      ? `<img src="${escapeAttr(imageUrl)}" alt="${escapeAttr(title)}" loading="eager">`
-      : `<div class="caso-detail-media-fallback" aria-hidden="true"></div>`;
-
-  return `<div class="caso-detail-media">${media}${logoUrl ? `<span class="caso-detail-logo"><img src="${escapeAttr(logoUrl)}" alt="Logo de ${escapeAttr(title)}"></span>` : ''}</div>`;
 }
 
 function renderSection(title, html, modifier = '', number = '') {
@@ -373,7 +444,7 @@ function htmlValue(value) {
 
 function mediaUrl(value) {
   if (!value) return '';
-  if (typeof value === 'string') return value;
+  if (typeof value === 'string' && !/^\d+$/.test(value.trim())) return value;
   if (typeof value === 'object') {
     if (value.url) return value.url;
     if (value.source_url) return value.source_url;
