@@ -1,4 +1,4 @@
-/* Caso de éxito detalle | Salero Digital | v13 */
+/* Caso de éxito detalle | Salero Digital | v14 */
 
 .caso-detalle-page{
   background:#fffdf7;
@@ -38,9 +38,9 @@
   right:0;
   bottom:-1px;
   z-index:2;
-  height:clamp(320px,46vh,560px);
+  height:clamp(250px,34vh,430px);
   pointer-events:none;
-  background:linear-gradient(180deg, rgba(255,253,247,0) 0%, rgba(255,253,247,.36) 34%, rgba(255,253,247,.82) 70%, #fffdf7 100%);
+  background:linear-gradient(180deg,rgba(255,253,247,0) 54%,#fffdf7 100%);
 }
 
 .caso-detail-hero-media{
@@ -65,24 +65,24 @@
 }
 
 .caso-hero-backdrop img{
-  filter:brightness(1.08) saturate(.9) contrast(.86);
-  transform:scale(1.03);
+  filter:saturate(.98) contrast(.98) brightness(1.02);
+  transform:scale(1.04);
   transform-origin:center;
-  animation:casoHeroImageZoom 24s ease-in-out infinite alternate;
+  animation:casoHeroImageZoom 18s ease-in-out infinite alternate;
   will-change:transform;
 }
 
 .caso-hero-backdrop video{
-  filter:brightness(1.05) saturate(.92) contrast(.9);
-  transform:scale(1.02);
+  filter:saturate(.98) contrast(.98) brightness(1.02);
+  transform:scale(1.04);
 }
 
 @keyframes casoHeroImageZoom{
   from{
-    transform:scale(1.03);
+    transform:scale(1.04);
   }
   to{
-    transform:scale(1.12);
+    transform:scale(1.20);
   }
 }
 
@@ -90,7 +90,10 @@
   content:"";
   position:absolute;
   inset:0;
-  background:linear-gradient(180deg, rgba(248,242,230,0) 0%, rgba(248,242,230,0) 24%, rgba(248,242,230,.34) 44%, rgba(255,253,247,.72) 68%, #fffdf7 100%);
+  background:
+    radial-gradient(circle at 78% 24%,rgba(200,255,90,.18),transparent 24rem),
+    linear-gradient(90deg,rgba(255,253,247,.93) 0%,rgba(255,253,247,.72) 44%,rgba(32,37,27,.18) 100%),
+    linear-gradient(180deg,rgba(255,253,247,0) 68%,#fffdf7 100%);
 }
 
 .caso-detail-hero-overlay{
@@ -615,7 +618,9 @@
   }
 
   .caso-hero-backdrop:after{
-    background:linear-gradient(180deg, rgba(248,242,230,0) 0%, rgba(248,242,230,.10) 24%, rgba(248,242,230,.42) 50%, rgba(255,253,247,.76) 78%, #fffdf7 100%);
+    background:
+      radial-gradient(circle at 78% 24%,rgba(200,255,90,.12),transparent 18rem),
+      linear-gradient(180deg,rgba(255,253,247,.92) 0%,rgba(255,253,247,.72) 62%,rgba(255,253,247,.9) 100%);
   }
 
   .caso-breadcrumb{
