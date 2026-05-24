@@ -118,7 +118,7 @@
 
   function ensureCaseEnhancementStyles() {
     const styles = [
-      ['/assets/css/caso-servicios.css?v=3', 'casoServicesCss'],
+      ['/assets/css/caso-servicios.css?v=4', 'casoServicesCss'],
       ['/assets/css/caso-extra-gallery.css?v=2', 'casoExtraGalleryCss']
     ];
 
@@ -141,12 +141,15 @@
       <div class="container caso-services-inner">
         <h2>Servicios trabajados</h2>
         <div class="caso-services-grid">
-          ${labels.map((label) => `
-            <article class="caso-service-item caso-service-${serviceKey(label)}">
-              <div class="caso-service-icon" aria-hidden="true">${serviceIcon(label)}</div>
-              <span>${escapeHtml(label)}</span>
-            </article>
-          `).join('')}
+          ${labels.map((label) => {
+            const key = serviceKey(label);
+            return `
+              <article class="caso-service-item caso-service-${key}" title="${escapeHtml(label)}">
+                <div class="caso-service-icon" aria-hidden="true">${serviceIcon(key)}</div>
+                <span>${escapeHtml(serviceLabel(label))}</span>
+              </article>
+            `;
+          }).join('')}
         </div>
       </div>
     `;
@@ -203,25 +206,48 @@
 
   function serviceKey(label) {
     const key = normalize(label);
-    if (key.includes('web') || key.includes('ecommerce') || key.includes('pagina')) return 'web';
-    if (key.includes('contenido') || key.includes('copy') || key.includes('comunicacion')) return 'contenido';
-    if (key.includes('analitica') || key.includes('analytics') || key.includes('datos')) return 'analitica';
-    if (key.includes('streaming') || key.includes('directo') || key.includes('video')) return 'streaming';
-    if (key.includes('soporte') || key.includes('mantenimiento') || key.includes('acompanamiento')) return 'soporte';
+
+    if (key === 'web' || key.includes('desarrollo web') || key.includes('pagina web') || key.includes('ecommerce') || key.includes('tienda online')) return 'web';
+    if (key === 'seo' || key.includes('posicionamiento') || key.includes('google maps') || key.includes('seo local')) return 'seo';
+    if (key.includes('publicidad') || key.includes('ads') || key.includes('adwords') || key.includes('google ads') || key.includes('meta ads') || key.includes('campana')) return 'publicidad-digital';
+    if (key.includes('redes') || key.includes('social') || key.includes('instagram') || key.includes('facebook') || key.includes('tiktok') || key.includes('linkedin')) return 'redes-sociales';
+    if (key.includes('contenido') || key.includes('copy') || key.includes('storytelling') || key.includes('creatividad') || key.includes('comunicacion')) return 'contenido';
+    if (key.includes('email') || key.includes('mailing') || key.includes('newsletter') || key.includes('mailchimp')) return 'email-marketing';
+    if (key === 'sms' || key.includes('sms')) return 'sms';
+    if (key.includes('whatsapp') || key.includes('wasap')) return 'whatsapp';
+    if (key.includes('automatizacion') || key.includes('automatismo') || key.includes('zapier') || key.includes('flujo')) return 'automatizacion';
+    if (key.includes('analitica') || key.includes('analytics') || key.includes('datos') || key.includes('medicion') || key.includes('tracking')) return 'analitica';
+    if (key.includes('streaming') || key.includes('directo') || key.includes('live') || key.includes('retransmision')) return 'streaming';
+    if (key.includes('soporte') || key.includes('mantenimiento') || key.includes('tecnico') || key.includes('acompanamiento')) return 'soporte-tecnico';
+
     return 'generico';
   }
 
-  function serviceIcon(label) {
-    const key = serviceKey(label);
-    const icons = {
-      web: `<svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="48" cy="48" r="36" stroke="currentColor" stroke-width="4"/><path d="M12 48h72M48 12c11 10 17 22 17 36S59 74 48 84M48 12C37 22 31 34 31 48s6 26 17 36M20 29c8 5 18 8 28 8s20-3 28-8M20 67c8-5 18-8 28-8s20 3 28 8" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>`,
-      contenido: `<svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 14h36l16 16v50H22V14Z" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M58 14v18h16M32 32h18M32 44h30" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><rect x="30" y="56" width="22" height="16" rx="2" stroke="currentColor" stroke-width="4"/><path d="m58 70 18-18 8 8-18 18-10 2 2-10Z" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="m36 60 8 4-8 4v-8Z" fill="currentColor"/></svg>`,
-      analitica: `<svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 78h12V48H16v30ZM42 78h12V34H42v44ZM68 78h12V42H68v36Z" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M18 36 38 20l22 20 18-24" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="18" cy="36" r="5" fill="currentColor"/><circle cx="38" cy="20" r="5" fill="currentColor"/><circle cx="60" cy="40" r="5" fill="currentColor"/><circle cx="78" cy="16" r="5" fill="currentColor"/></svg>`,
-      streaming: `<svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="18" y="20" width="60" height="42" rx="5" stroke="currentColor" stroke-width="4"/><path d="M42 32v18l16-9-16-9Z" fill="currentColor"/><path d="M26 52h32M66 52h4M30 74h36M38 62l-4 12M58 62l4 12" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>`,
-      soporte: `<svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 54v-9c0-17 12-31 28-31s28 14 28 31v9" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M20 54c-6 0-10 5-10 12s4 12 10 12h8V54h-8ZM76 54c6 0 10 5 10 12s-4 12-10 12h-8V54h8Z" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M63 78c0 6-5 10-11 10h-8" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><circle cx="48" cy="48" r="10" stroke="currentColor" stroke-width="4"/><path d="M48 31v7M48 58v7M31 48h7M58 48h7M36 36l5 5M55 55l5 5M60 36l-5 5M41 55l-5 5" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>`,
-      generico: `<svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="18" y="18" width="60" height="60" rx="18" stroke="currentColor" stroke-width="4"/><path d="M32 58c8-18 20-18 32 0M34 36h28" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>`
+  function serviceLabel(label) {
+    const labels = {
+      web: 'web',
+      seo: 'seo',
+      'publicidad-digital': 'ads',
+      'redes-sociales': 'redes',
+      contenido: 'contenido',
+      'email-marketing': 'email',
+      sms: 'sms',
+      whatsapp: 'whatsapp',
+      automatizacion: 'automatización',
+      analitica: 'analítica',
+      streaming: 'streaming',
+      'soporte-tecnico': 'soporte'
     };
-    return icons[key] || icons.generico;
+
+    return labels[serviceKey(label)] || String(label || '').trim();
+  }
+
+  function serviceIcon(key) {
+    if (key && key !== 'generico') {
+      return `<img src="/assets/svg/casos/${key}.svg" alt="" loading="lazy" style="width:100%;height:100%;display:block;object-fit:contain;">`;
+    }
+
+    return `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="14" width="36" height="36" rx="11" stroke="currentColor" stroke-width="3.4"/><path d="M22 38c6-14 14-14 22 0M24 25h16" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/></svg>`;
   }
 
   function normalize(value) {
