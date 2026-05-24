@@ -61,38 +61,84 @@ const SALERO_CASOS_FALLBACK = [
   }
 ];
 
+function saleroPlainValue(value = '') {
+  if (value === null || typeof value === 'undefined') return '';
+  if (typeof value === 'string' || typeof value === 'number') return stripHtml(String(value));
+  if (Array.isArray(value)) return value.map(saleroPlainValue).filter(Boolean).join(', ');
+  if (typeof value === 'object') {
+    const candidates = [
+      value.rendered,
+      value.raw,
+      value.title,
+      value.name,
+      value.label,
+      value.value,
+      value.text,
+      value.alt,
+      value.url,
+      value.source_url
+    ];
+    for (const candidate of candidates) {
+      const result = saleroPlainValue(candidate);
+      if (result && result !== '[object Object]') return result;
+    }
+  }
+  return '';
+}
+
+function saleroSlugify(value = '') {
+  return saleroPlainValue(value)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+function saleroIsNumericSlug(value = '') {
+  return /^\d+$/.test(saleroPlainValue(value));
+}
+
 function saleroCasoField(item = {}, keys = [], fallback = '') {
   const acf = getAcf(item);
   for (const key of keys) {
-    if (acf && acf[key]) return stripHtml(String(acf[key]));
-    if (item && item[key]) return stripHtml(String(item[key]));
+    const fromAcf = saleroPlainValue(acf && acf[key]);
+    if (fromAcf) return fromAcf;
+
+    const fromItem = saleroPlainValue(item && item[key]);
+    if (fromItem) return fromItem;
   }
-  return fallback;
+  return saleroPlainValue(fallback);
 }
 
 function saleroCasoTitle(item = {}) {
-  if (item.title && item.title.rendered) return stripHtml(item.title.rendered);
-  return item.title || saleroCasoField(item, ['cliente_nombre'], '');
+  const fromAcf = saleroCasoField(item, ['cliente_nombre', 'nombre_caso', 'nombre_cliente', 'cliente'], '');
+  if (fromAcf) return fromAcf;
+
+  const fromTitle = saleroPlainValue(item.title);
+  if (fromTitle) return fromTitle;
+
+  return 'Caso de éxito';
 }
 
 function saleroTruncate(text = '', limit = 120) {
-  const clean = stripHtml(String(text || '')).replace(/\s+/g, ' ').trim();
+  const clean = saleroPlainValue(text).replace(/\s+/g, ' ').trim();
   if (clean.length <= limit) return clean;
   return `${clean.slice(0, limit).replace(/[\s,.;:-]+$/g, '')}…`;
 }
 
 function saleroCasoExcerpt(item = {}) {
   const acf = getAcf(item);
-  const preferred = acf.descripcion_corta || acf.resumen || item.descripcion_corta || item.excerpt;
-  if (preferred && preferred.rendered) return stripHtml(preferred.rendered);
-  return stripHtml(String(preferred || ''));
+  return saleroPlainValue(acf.descripcion_corta || acf.resumen || item.descripcion_corta || item.excerpt);
 }
 
 function saleroMediaUrl(media) {
   if (!media) return '';
   if (typeof media === 'string') return media;
+  if (typeof media === 'number') return '';
   if (media.url) return media.url;
   if (media.source_url) return media.source_url;
+  if (media.guid && media.guid.rendered) return media.guid.rendered;
   if (media.sizes && media.sizes.large) return media.sizes.large;
   if (media.sizes && media.sizes.medium_large) return media.sizes.medium_large;
   if (media.sizes && media.sizes.full) return media.sizes.full;
@@ -158,13 +204,19 @@ function saleroCasoAccent(item = {}, slug = '') {
 }
 
 function saleroCasoSlug(item = {}, title = '') {
-  return item.slug || title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const acf = getAcf(item);
+  const candidates = [acf.slug_caso, acf.slug, item.slug, item.post_name, title];
+  for (const candidate of candidates) {
+    const value = saleroPlainValue(candidate);
+    if (value && !saleroIsNumericSlug(value) && value !== '[object Object]') return saleroSlugify(value);
+  }
+  return saleroSlugify(title || 'caso-de-exito');
 }
 
 function saleroCasoUrl(item = {}, slug = '') {
   const acf = getAcf(item);
-  const direct = acf.url_caso || acf.enlace_caso || item.frontend_url || item.url_caso;
-  if (direct) return direct;
+  const direct = saleroPlainValue(acf.url_caso || acf.enlace_caso || item.frontend_url || item.url_caso);
+  if (direct && !/\/casos-de-exito\/\d+\/?$/.test(direct)) return direct;
   return `/casos-de-exito/${slug}/`;
 }
 
