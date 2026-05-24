@@ -1,7 +1,6 @@
-/* Casos de éxito | Medios e interacción del carrusel | v2 */
+/* Casos de éxito | Medios e interacción del carrusel | v3 */
 (function(){
-  const AUTOPLAY_WATCHDOG_DELAY = 6600;
-  const AUTOPLAY_WATCHDOG_INTERVAL = 6800;
+  const AUTOPLAY_DELAY = 6200;
   const DRAG_THRESHOLD = 58;
   const DRAG_LOCK_THRESHOLD = 9;
 
@@ -58,11 +57,6 @@
 
   function getActiveCard(root){
     return root.querySelector('.caso-card-visual.is-active');
-  }
-
-  function getActiveIndex(root){
-    const cards = [...root.querySelectorAll('.caso-card-visual')];
-    return cards.findIndex(card => card.classList.contains('is-active'));
   }
 
   function primeInitialState(root){
@@ -134,6 +128,7 @@
       dragged = false;
       locked = false;
       carousel.classList.remove('is-dragging');
+      carousel.dataset.userInteracting = 'false';
     };
 
     viewport.addEventListener('pointerdown', event => {
@@ -147,6 +142,7 @@
       lastX = event.clientX;
       dragged = false;
       locked = false;
+      carousel.dataset.userInteracting = 'true';
       carousel.classList.add('is-dragging');
 
       if (viewport.setPointerCapture) {
@@ -203,65 +199,42 @@
     }, true);
   }
 
-  function setupAutoplayWatchdog(root){
+  function setupAutoplay(root){
     const carousel = root.querySelector('[data-casos-carousel]');
     const next = root.querySelector('[data-casos-next]');
-    if (!carousel || !next || carousel.dataset.autoplayWatchdog === 'true') return;
+    if (!carousel || !next || carousel.dataset.autoplayReady === 'true') return;
 
-    carousel.dataset.autoplayWatchdog = 'true';
+    carousel.dataset.autoplayReady = 'true';
+    carousel.dataset.userInteracting = 'false';
 
-    let lastActiveIndex = getActiveIndex(root);
-    let lastChange = Date.now();
-    let paused = false;
     let visible = true;
+    let hasFocus = false;
 
-    const markChange = () => {
-      const current = getActiveIndex(root);
-      if (current !== lastActiveIndex) {
-        lastActiveIndex = current;
-        lastChange = Date.now();
-      }
-    };
-
-    const shouldAdvance = () => {
-      if (paused || !visible) return false;
+    const canAdvance = () => {
+      if (!visible) return false;
+      if (hasFocus) return false;
+      if (carousel.dataset.userInteracting === 'true') return false;
       if (root.querySelectorAll('.caso-card-visual').length <= 1) return false;
-      return Date.now() - lastChange >= AUTOPLAY_WATCHDOG_DELAY;
+      return true;
     };
 
-    const tick = () => {
-      markChange();
-      if (shouldAdvance()) {
-        next.click();
-        lastChange = Date.now();
-      }
+    const advance = () => {
+      if (!canAdvance()) return;
+      next.click();
     };
-
-    const activeObserver = new MutationObserver(markChange);
-    activeObserver.observe(carousel, {
-      subtree:true,
-      attributes:true,
-      attributeFilter:['class']
-    });
 
     if ('IntersectionObserver' in window) {
-      const visibilityObserver = new IntersectionObserver(entries => {
-        visible = entries.some(entry => entry.isIntersecting && entry.intersectionRatio > .25);
-        if (visible) lastChange = Date.now();
-      }, { threshold:[0, .25, .6] });
-      visibilityObserver.observe(carousel);
+      const observer = new IntersectionObserver(entries => {
+        visible = entries.some(entry => entry.isIntersecting && entry.intersectionRatio > .22);
+      }, { threshold:[0, .22, .6] });
+      observer.observe(carousel);
     }
 
-    carousel.addEventListener('mouseenter', () => { paused = true; });
-    carousel.addEventListener('mouseleave', () => { paused = false; lastChange = Date.now(); });
-    carousel.addEventListener('focusin', () => { paused = true; });
-    carousel.addEventListener('focusout', () => { paused = false; lastChange = Date.now(); });
-    carousel.addEventListener('pointerdown', () => { paused = true; });
-    carousel.addEventListener('pointerup', () => { paused = false; lastChange = Date.now(); });
-    carousel.addEventListener('pointercancel', () => { paused = false; lastChange = Date.now(); });
+    carousel.addEventListener('focusin', () => { hasFocus = true; });
+    carousel.addEventListener('focusout', () => { hasFocus = false; });
 
-    window.setTimeout(tick, AUTOPLAY_WATCHDOG_DELAY + 250);
-    window.setInterval(tick, AUTOPLAY_WATCHDOG_INTERVAL);
+    window.setTimeout(advance, AUTOPLAY_DELAY);
+    window.setInterval(advance, AUTOPLAY_DELAY);
   }
 
   function enhanceCarousel(root){
@@ -270,7 +243,7 @@
     root.querySelectorAll('.caso-card-visual').forEach(enhanceCard);
     syncVideoState(root);
     setupDrag(root);
-    setupAutoplayWatchdog(root);
+    setupAutoplay(root);
   }
 
   function init(){
