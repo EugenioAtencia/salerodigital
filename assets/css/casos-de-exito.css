@@ -1,4 +1,4 @@
-/* Casos de éxito | Salero Digital | v4 */
+/* Casos de éxito | Salero Digital | v5 */
 
 .casos-page{
   background:#fffdf7;
@@ -34,23 +34,31 @@
   padding-bottom:clamp(64px,8vw,112px);
   overflow:hidden;
   isolation:isolate;
-  background:
-    radial-gradient(circle at 15% 18%, rgba(199,244,88,.22), transparent 25%),
-    radial-gradient(circle at 88% 18%, rgba(215,179,77,.18), transparent 30%),
-    linear-gradient(135deg, #f6f1e8 0%, #fffdf7 52%, #e8dfcf 100%);
+  background:#1f2a24;
+}
+
+.casos-hero-video{
+  position:absolute;
+  inset:0;
+  z-index:-3;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  filter:saturate(1.02) contrast(1.04);
+  transform:scale(1.01);
 }
 
 .casos-hero:before{
   content:"";
   position:absolute;
   inset:0;
-  z-index:0;
+  z-index:-2;
   pointer-events:none;
   background:
-    linear-gradient(90deg, rgba(31,42,36,.06) 0 1px, transparent 1px),
-    linear-gradient(180deg, rgba(31,42,36,.05) 0 1px, transparent 1px);
-  background-size:74px 74px;
-  mask-image:linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,.12));
+    linear-gradient(90deg, rgba(31,42,36,.88) 0%, rgba(31,42,36,.60) 42%, rgba(31,42,36,.22) 100%),
+    radial-gradient(circle at 14% 18%, rgba(199,244,88,.20), transparent 28%),
+    radial-gradient(circle at 82% 20%, rgba(215,179,77,.14), transparent 34%);
 }
 
 .casos-hero:after{
@@ -59,21 +67,35 @@
   left:0;
   right:0;
   bottom:-1px;
-  height:38%;
+  height:44%;
   z-index:1;
   pointer-events:none;
-  background:linear-gradient(180deg, rgba(255,253,247,0), #fffdf7 90%);
+  background:linear-gradient(180deg, rgba(255,253,247,0), #fffdf7 88%);
 }
 
 .casos-hero-grain{
   position:absolute;
-  inset:auto -8% -24% auto;
-  width:min(58vw,760px);
-  aspect-ratio:1;
-  border-radius:999px;
-  background:rgba(31,42,36,.08);
-  filter:blur(2px);
-  z-index:0;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg, rgba(255,253,247,.055) 0 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255,253,247,.05) 0 1px, transparent 1px);
+  background-size:74px 74px;
+  mask-image:linear-gradient(180deg, rgba(0,0,0,.48), rgba(0,0,0,.10));
+}
+
+.casos-hero .eyebrow{
+  color:rgba(255,253,247,.80);
+}
+
+.casos-hero-copy h1{
+  color:#fffdf7;
+  text-shadow:0 22px 60px rgba(0,0,0,.28);
+}
+
+.casos-hero-copy .lead{
+  color:rgba(255,253,247,.82);
 }
 
 .casos-hero-grid{
@@ -117,10 +139,10 @@
   width:min(100%,430px);
   margin-bottom:clamp(28px,5vh,68px);
   padding:clamp(28px,3.8vw,42px);
-  border:1px solid rgba(31,42,36,.12);
+  border:1px solid rgba(255,253,247,.22);
   border-radius:30px;
   background:rgba(255,253,247,.78);
-  box-shadow:0 28px 80px rgba(31,42,36,.11);
+  box-shadow:0 28px 80px rgba(0,0,0,.18);
   backdrop-filter:blur(18px) saturate(1.05);
   -webkit-backdrop-filter:blur(18px) saturate(1.05);
 }
