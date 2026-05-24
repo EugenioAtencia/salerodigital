@@ -1,15 +1,21 @@
-/* Caso de éxito detalle | Salero Digital | v14 */
+/* Caso de éxito detalle | Salero Digital | v15 */
 
 .caso-detalle-page{
   background:#fffdf7;
 }
 
 .caso-detalle-page .site-header{
-  background:rgba(246,241,232,.88);
-  border-bottom-color:rgba(31,42,36,.10);
+  background:rgba(255,253,247,.88);
+  border-bottom:1px solid rgba(79,98,57,.12);
   box-shadow:0 12px 36px rgba(31,42,36,.045);
-  backdrop-filter:blur(18px) saturate(1.04);
-  -webkit-backdrop-filter:blur(18px) saturate(1.04);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+
+.caso-detalle-page .site-header .nav a,
+.caso-detalle-page .site-header .logo,
+.caso-detalle-page .site-header .menu-toggle{
+  color:#20251b;
 }
 
 .caso-detail-loading{
@@ -125,17 +131,7 @@
 }
 
 .caso-breadcrumb{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  gap:8px;
-  max-width:100%;
-  color:rgba(31,42,36,.66);
-  font-size:.68rem;
-  font-weight:850;
-  text-transform:uppercase;
-  letter-spacing:.045em;
-  text-shadow:0 1px 0 rgba(255,253,247,.52), 0 10px 34px rgba(255,253,247,.38);
+  display:none;
 }
 
 .caso-breadcrumb a{
@@ -161,17 +157,17 @@
 
 .caso-hero-layout{
   display:block;
-  width:100%;
+  width:75%;
   max-width:1220px;
-  margin-inline:auto;
+  margin-inline:0 auto;
 }
 
 .caso-detail-copy{
   display:grid;
   gap:clamp(16px,1.55vw,23px);
   width:100%;
-  max-width:1220px;
-  margin-inline:auto;
+  max-width:100%;
+  margin-inline:0 auto;
 }
 
 .caso-detail-copy .sector-detail-back{
@@ -180,7 +176,7 @@
 
 .caso-detail-copy h1{
   width:100%;
-  max-width:1220px;
+  max-width:100%;
   font-size:clamp(3.8rem,7.35vw,7.85rem);
   line-height:.9;
   letter-spacing:-.078em;
@@ -213,7 +209,7 @@
   align-items:center;
   gap:8px;
   width:100%;
-  max-width:1220px;
+  max-width:100%;
   margin:0 0 clamp(2px,.65vw,8px);
   white-space:nowrap;
 }
@@ -582,6 +578,7 @@
 @media(max-width:1080px){
   .caso-detail-copy,
   .caso-hero-layout{
+    width:100%;
     max-width:100%;
     margin-inline:0;
   }
@@ -624,11 +621,7 @@
   }
 
   .caso-breadcrumb{
-    font-size:.64rem;
-  }
-
-  .caso-breadcrumb a[aria-current="page"]{
-    max-width:180px;
+    display:none;
   }
 
   .caso-detail-copy h1{
