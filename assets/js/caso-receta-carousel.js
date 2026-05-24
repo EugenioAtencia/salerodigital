@@ -119,7 +119,7 @@
   function ensureCaseEnhancementStyles() {
     const styles = [
       ['/assets/css/caso-servicios.css?v=4', 'casoServicesCss'],
-      ['/assets/css/caso-extra-gallery.css?v=2', 'casoExtraGalleryCss']
+      ['/assets/css/caso-extra-gallery.css?v=3', 'casoExtraGalleryCss']
     ];
 
     styles.forEach(([href, key]) => {
