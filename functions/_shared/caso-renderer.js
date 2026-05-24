@@ -262,7 +262,7 @@ ${renderHeader()}
       </div>
     </section>
 
-    ${renderGallery(galeria)}
+    ${renderGallery(galeria, { imageUrl, videoUrl, posterUrl, title })}
 
     <section class="caso-detail-cta">
       <div class="container">
@@ -317,24 +317,34 @@ function renderMetrics(metricas) {
   return html ? `<section class="caso-detail-section caso-detail-section-metricas"><h3>Métricas destacadas</h3><div class="caso-metrics">${html}</div></section>` : '';
 }
 
-function renderGallery(galeria) {
-  if (!Array.isArray(galeria) || !galeria.length) return '';
-  const html = galeria.map(item => {
+function renderGallery(galeria, primary = {}) {
+  const galleryItems = Array.isArray(galeria) ? [...galeria] : [];
+
+  if (primary.videoUrl || primary.imageUrl) {
+    galleryItems.unshift({
+      tipo_medio: primary.videoUrl ? 'video' : 'imagen',
+      video: primary.videoUrl || '',
+      imagen: primary.imageUrl || primary.posterUrl || '',
+      alt: primary.title || 'Imagen principal del proyecto'
+    });
+  }
+
+  const seen = new Set();
+  const html = galleryItems.map(item => {
     const tipo = stripHtml(fieldValue(item, ['tipo_medio', 'tipo'], 'imagen'));
     const img = mediaUrl(fieldValue(item, ['imagen'], ''));
     const vid = mediaUrl(fieldValue(item, ['video'], ''));
-    const url = fieldValue(item, ['url_externa', 'url'], '');
-    const title = stripHtml(fieldValue(item, ['titulo', 'title'], ''));
-    const desc = stripHtml(fieldValue(item, ['descripcion', 'description'], ''));
-    const alt = stripHtml(fieldValue(item, ['alt'], title || 'Recurso del caso'));
-    let media = '';
-    if (tipo === 'video' && vid) media = `<video controls preload="metadata"><source src="${escapeAttr(vid)}" type="video/mp4"></video>`;
-    else if (tipo === 'url' && url) media = `<a class="caso-gallery-link" href="${escapeAttr(url)}" target="_blank" rel="noopener">Ver recurso externo</a>`;
-    else if (img) media = `<img src="${escapeAttr(img)}" alt="${escapeAttr(alt)}" loading="lazy">`;
-    if (!media) return '';
-    return `<article class="caso-gallery-item">${media}${title || desc ? `<div class="caso-gallery-caption">${title ? `<strong>${escapeHtml(title)}</strong>` : ''}${desc ? `<p>${escapeHtml(desc)}</p>` : ''}</div>` : ''}</article>`;
+    const alt = stripHtml(fieldValue(item, ['alt'], primary.title || 'Imagen del proyecto'));
+    const key = vid || img;
+    if (!key || seen.has(key)) return '';
+    seen.add(key);
+
+    if (tipo === 'video' && vid) return `<article class="caso-gallery-item"><video controls preload="metadata" ${img ? `poster="${escapeAttr(img)}"` : ''}><source src="${escapeAttr(vid)}" type="video/mp4"></video></article>`;
+    if (img) return `<article class="caso-gallery-item"><img src="${escapeAttr(img)}" alt="${escapeAttr(alt)}" loading="lazy"></article>`;
+    return '';
   }).filter(Boolean).join('');
-  return html ? `<section class="caso-gallery-section"><div class="container"><div class="caso-gallery-heading"><span class="eyebrow">Material del proyecto</span><h2>Una mirada más visual al trabajo realizado</h2></div><div class="caso-gallery-grid">${html}</div></div></section>` : '';
+
+  return html ? `<section class="caso-gallery-section"><div class="container"><div class="caso-gallery-heading"><span class="eyebrow">Material visual</span><h2>Imágenes del proyecto</h2></div><div class="caso-gallery-grid">${html}</div></div></section>` : '';
 }
 
 function renderHeader() {
