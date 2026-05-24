@@ -195,7 +195,7 @@ function renderCasoPage(slug, item) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
-  <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=6">
+  <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=7">
 </head>
 <body class="caso-detalle-page caso-${escapeAttr(slug)}">
 ${renderHeader()}
@@ -225,14 +225,14 @@ ${renderHeader()}
             <div class="caso-detail-actions"><a class="btn btn-primary" href="${escapeAttr(ctaUrl)}">${escapeHtml(ctaText)}</a><a class="btn btn-secondary" href="#caso-receta">Ver la receta</a></div>
           </div>
 
-          <aside class="caso-hero-card" aria-label="Argumento principal del caso">
-            <span>${escapeHtml(visualLabel)}</span>
-            <h2>${escapeHtml(proof)}</h2>
-            <ul>
-              <li>${escapeHtml(service)}</li>
-              <li>${escapeHtml(sector)}</li>
-              <li>Proyecto real de Salero Digital</li>
-            </ul>
+          <aside class="caso-hero-card caso-hero-card-editorial" aria-label="Lectura estratégica del caso">
+            <span class="caso-hero-card-kicker">${escapeHtml(visualLabel)}</span>
+            <h2>Menos escaparate y más argumento.</h2>
+            <p>Este caso no va solo de enseñar una web bonita. Va de explicar el contexto, la decisión estratégica y la solución digital que había detrás.</p>
+            <div class="caso-hero-card-meta">
+              <div><small>Proyecto</small><strong>${escapeHtml(title)}</strong></div>
+              <div><small>Prueba</small><strong>${escapeHtml(proof)}</strong></div>
+            </div>
           </aside>
         </div>
       </div>
