@@ -195,7 +195,8 @@ function renderCasoPage(slug, item) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
-  <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=13">
+  <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=20">
+  <link rel="stylesheet" href="/assets/css/caso-receta-carousel.css?v=1">
 </head>
 <body class="caso-detalle-page caso-${escapeAttr(slug)}">
 ${renderHeader()}
@@ -249,7 +250,7 @@ ${renderHeader()}
             </dl>
           </div>
         </aside>
-        <div class="caso-detail-content">
+        <div class="caso-detail-content" aria-label="Secuencia de la receta aplicada">
           ${renderSection('El reto', reto, 'reto', '01')}
           ${renderSection('La receta aplicada', solucion, 'solucion', '02')}
           ${renderSection('El resultado', resultado, 'resultado', '03')}
@@ -276,6 +277,7 @@ ${renderHeader()}
   </main>
 ${renderFooter()}
   <script src="/assets/js/helpers.js?v=41"></script>
+  <script src="/assets/js/caso-receta-carousel.js?v=1"></script>
 </body>
 </html>`;
 }
