@@ -1,4 +1,4 @@
-/* Caso de éxito | herramientas, métricas y galería masonry | v1 */
+/* Caso de éxito | herramientas, métricas y galería masonry | v2 */
 
 .caso-extra-text-section{
   position:relative;
@@ -26,22 +26,32 @@
 }
 
 .caso-extra-text-group p{
-  max-width:760px;
+  max-width:780px;
   margin:0;
   color:rgba(31,42,36,.58);
   font-size:clamp(.92rem,1vw,1.05rem);
   font-weight:650;
-  line-height:1.75;
+  line-height:1.65;
+  display:grid;
+  gap:.7rem;
 }
 
 .caso-extra-text-group p span{
-  display:inline;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:.72rem;
+  align-items:start;
+}
+
+.caso-extra-text-group p span::before{
+  content:'•';
+  color:rgba(39,49,31,.58);
+  font-weight:800;
+  line-height:1.45;
 }
 
 .caso-extra-text-group p span:not(:last-child)::after{
-  content:' · ';
-  color:rgba(31,42,36,.34);
-  font-weight:500;
+  content:none;
 }
 
 .caso-gallery-section{
