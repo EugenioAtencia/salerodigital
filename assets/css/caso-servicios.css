@@ -1,0 +1,121 @@
+/* Caso de éxito | servicios trabajados visuales | v1 */
+
+.caso-services-section{
+  position:relative;
+  overflow:hidden;
+  padding:clamp(76px,8vw,120px) 0 clamp(70px,8vw,112px);
+  background:var(--sector-cream,#fffdf7);
+}
+
+.caso-services-section:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 8% 18%,rgba(200,255,90,.16),transparent 25rem),
+    radial-gradient(circle at 92% 80%,rgba(215,179,77,.08),transparent 28rem);
+}
+
+.caso-services-inner{
+  position:relative;
+  z-index:1;
+}
+
+.caso-services-inner h2{
+  max-width:900px;
+  margin:0 auto clamp(38px,5vw,76px);
+  color:var(--sector-ink,#20251b);
+  font-family:var(--font-serif, 'Playfair Display', serif);
+  font-size:clamp(2.55rem,5vw,5.25rem);
+  line-height:.98;
+  letter-spacing:-.06em;
+  text-align:center;
+}
+
+.caso-services-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:clamp(24px,3.6vw,58px);
+  align-items:end;
+}
+
+.caso-service-item{
+  display:grid;
+  justify-items:center;
+  gap:clamp(18px,2.1vw,28px);
+  min-width:0;
+}
+
+.caso-service-icon{
+  width:clamp(104px,9vw,164px);
+  height:clamp(104px,9vw,164px);
+  display:grid;
+  place-items:center;
+  color:#1e211b;
+  transition:transform .28s ease, color .28s ease;
+}
+
+.caso-service-icon svg{
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+.caso-service-item span{
+  min-width:min(100%,220px);
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  padding:.72rem 1.35rem;
+  border:1px solid rgba(31,36,24,.28);
+  border-radius:999px;
+  background:rgba(246,241,232,.58);
+  color:rgba(31,36,24,.88);
+  font-size:clamp(.96rem,1.2vw,1.24rem);
+  font-weight:500;
+  line-height:1;
+  text-align:center;
+  text-transform:lowercase;
+  box-shadow:0 1px 0 rgba(255,255,255,.68) inset;
+  transition:background .28s ease, border-color .28s ease, transform .28s ease;
+}
+
+.caso-service-item:hover .caso-service-icon,
+.caso-service-item:focus-within .caso-service-icon{
+  transform:translateY(-8px) scale(1.04);
+  color:var(--sector-olive-dark,#27311f);
+}
+
+.caso-service-item:hover span,
+.caso-service-item:focus-within span{
+  transform:translateY(-2px);
+  border-color:rgba(39,49,31,.38);
+  background:rgba(200,255,90,.18);
+}
+
+@media(max-width:900px){
+  .caso-services-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+@media(max-width:560px){
+  .caso-services-section{
+    padding:4rem 0 3.6rem;
+  }
+
+  .caso-services-inner h2{
+    text-align:left;
+  }
+
+  .caso-services-grid{
+    grid-template-columns:1fr;
+    gap:2.4rem;
+  }
+
+  .caso-service-icon{
+    width:128px;
+    height:128px;
+  }
+}
