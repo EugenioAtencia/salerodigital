@@ -1,4 +1,4 @@
-/* Caso de éxito detalle | Salero Digital | v18 */
+/* Caso de éxito detalle | Salero Digital | v19 */
 
 .caso-detalle-page{
   --sector-cream:#fffdf7;
@@ -48,7 +48,7 @@
   align-items:center;
   overflow:hidden;
   isolation:isolate;
-  padding:8.4rem 0 8rem;
+  padding:8.4rem 0 6.4rem;
   background:var(--sector-cream);
 }
 
@@ -59,9 +59,9 @@
   right:0;
   bottom:-1px;
   z-index:2;
-  height:clamp(260px,34vh,460px);
+  height:clamp(340px,44vh,620px);
   pointer-events:none;
-  background:linear-gradient(180deg,rgba(255,253,247,0) 0%,rgba(255,253,247,.78) 70%,var(--sector-cream) 100%);
+  background:linear-gradient(180deg,rgba(255,253,247,0) 0%,rgba(255,253,247,.70) 58%,var(--sector-cream) 100%);
 }
 
 .caso-detail-hero-media{
@@ -110,7 +110,7 @@
   background:
     radial-gradient(circle at 78% 24%,rgba(200,255,90,.18),transparent 24rem),
     linear-gradient(90deg,rgba(255,253,247,.93) 0%,rgba(255,253,247,.72) 44%,rgba(32,37,27,.18) 100%),
-    linear-gradient(180deg,rgba(255,253,247,0) 58%,rgba(255,253,247,.58) 82%,var(--sector-cream) 100%);
+    linear-gradient(180deg,rgba(255,253,247,0) 54%,rgba(255,253,247,.58) 78%,var(--sector-cream) 100%);
 }
 
 .caso-detail-hero-overlay{
@@ -257,34 +257,34 @@
 
 .caso-proof-band{
   position:relative;
-  z-index:2;
-  overflow:hidden;
-  padding:clamp(64px,7.5vw,112px) 0 clamp(58px,7vw,98px);
-  margin-top:0;
-  background:
-    radial-gradient(circle at 10% 8%,rgba(200,255,90,.10),transparent 26rem),
-    linear-gradient(180deg,var(--sector-cream) 0%,#fbf7ec 50%,var(--sector-cream) 100%);
+  z-index:5;
+  overflow:visible;
+  padding:0 0 clamp(58px,7vw,98px);
+  margin-top:clamp(-245px,-19vh,-150px);
+  background:linear-gradient(180deg,rgba(255,253,247,0) 0%,var(--sector-cream) 42%,#fbf7ec 72%,var(--sector-cream) 100%);
 }
 
 .caso-proof-band:before{
   content:"";
   position:absolute;
-  inset:0;
+  inset:clamp(80px,8vw,130px) 0 0;
   pointer-events:none;
   background:
+    radial-gradient(circle at 10% 8%,rgba(200,255,90,.10),transparent 26rem),
     linear-gradient(rgba(39,49,31,.025) 1px,transparent 1px),
     linear-gradient(90deg,rgba(39,49,31,.02) 1px,transparent 1px);
-  background-size:84px 84px;
+  background-size:auto,84px 84px,84px 84px;
   mask-image:linear-gradient(180deg,transparent 0%,#000 18%,#000 74%,transparent 100%);
   opacity:.52;
 }
 
 .caso-proof-grid{
   position:relative;
-  z-index:1;
+  z-index:6;
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:clamp(14px,1.4vw,22px);
+  counter-reset:proof-card;
 }
 
 .caso-proof-grid article{
@@ -301,7 +301,9 @@
   background:
     radial-gradient(circle at 100% 100%,rgba(200,255,90,.12),transparent 13rem),
     linear-gradient(145deg,rgba(255,253,247,.96) 0%,rgba(249,244,231,.72) 100%);
-  box-shadow:0 1px 0 rgba(255,255,255,.78) inset,0 22px 70px rgba(32,37,27,.055);
+  box-shadow:0 1px 0 rgba(255,255,255,.78) inset,0 28px 90px rgba(32,37,27,.10);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
 }
 
 .caso-proof-grid article:before{
@@ -317,10 +319,6 @@
   line-height:.78;
   letter-spacing:-.08em;
   pointer-events:none;
-}
-
-.caso-proof-grid{
-  counter-reset:proof-card;
 }
 
 .caso-proof-grid article:after{
@@ -655,6 +653,10 @@
     top:auto;
   }
 
+  .caso-proof-band{
+    margin-top:clamp(-170px,-13vh,-110px);
+  }
+
   .caso-proof-grid,
   .caso-metrics,
   .caso-gallery-grid{
@@ -706,7 +708,12 @@
   }
 
   .caso-proof-band{
-    padding:3.5rem 0 3rem;
+    margin-top:-86px;
+    padding:0 0 3rem;
+  }
+
+  .caso-proof-band:before{
+    inset:4rem 0 0;
   }
 
   .caso-proof-grid article{
