@@ -196,7 +196,7 @@ function renderCasoPage(slug, item) {
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
   <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=20">
-  <link rel="stylesheet" href="/assets/css/caso-receta-carousel.css?v=1">
+  <link rel="stylesheet" href="/assets/css/caso-receta-carousel.css?v=8">
 </head>
 <body class="caso-detalle-page caso-${escapeAttr(slug)}">
 ${renderHeader()}
@@ -277,7 +277,7 @@ ${renderHeader()}
   </main>
 ${renderFooter()}
   <script src="/assets/js/helpers.js?v=41"></script>
-  <script src="/assets/js/caso-receta-carousel.js?v=1"></script>
+  <script src="/assets/js/caso-receta-carousel.js?v=2"></script>
 </body>
 </html>`;
 }
