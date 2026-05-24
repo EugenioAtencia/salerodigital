@@ -5,7 +5,7 @@ const SALERO_CASOS_FALLBACK = [
     sector: 'Industria y formación corporativa',
     service: 'Desarrollo web, evento digital y experiencia privada',
     proof: 'Tecnología para un evento corporativo de alta exigencia',
-    excerpt: 'Desarrollo de una experiencia digital para centralizar información, acceso a sesiones, contenidos y recursos de un evento corporativo de alta exigencia.',
+    excerpt: 'Desarrollamos una experiencia digital privada para centralizar contenidos, sesiones, recursos formativos y comunicación interna de un evento corporativo internacional.',
     visual: 'Evento corporativo',
     accent: 'summit'
   },
@@ -72,12 +72,20 @@ function saleroCasoField(item = {}, keys = [], fallback = '') {
 
 function saleroCasoTitle(item = {}) {
   if (item.title && item.title.rendered) return stripHtml(item.title.rendered);
-  return item.title || '';
+  return item.title || saleroCasoField(item, ['cliente_nombre'], '');
+}
+
+function saleroTruncate(text = '', limit = 120) {
+  const clean = stripHtml(String(text || '')).replace(/\s+/g, ' ').trim();
+  if (clean.length <= limit) return clean;
+  return `${clean.slice(0, limit).replace(/[\s,.;:-]+$/g, '')}…`;
 }
 
 function saleroCasoExcerpt(item = {}) {
-  if (item.excerpt && item.excerpt.rendered) return stripHtml(item.excerpt.rendered);
-  return item.excerpt || saleroCasoField(item, ['resumen', 'resumen_del_reto', 'descripcion_corta', 'descripcion'], '');
+  const acf = getAcf(item);
+  const preferred = acf.descripcion_corta || acf.resumen || item.descripcion_corta || item.excerpt;
+  if (preferred && preferred.rendered) return stripHtml(preferred.rendered);
+  return stripHtml(String(preferred || ''));
 }
 
 function saleroMediaUrl(media) {
@@ -137,10 +145,6 @@ function saleroCasoLogo(item = {}) {
   return '';
 }
 
-function saleroCasoInitials(title = '') {
-  return title.split(/\s+/).filter(Boolean).slice(0, 2).map(word => word[0]).join('').toUpperCase();
-}
-
 function saleroCasoAccent(item = {}, slug = '') {
   if (item.accent) return item.accent;
   const text = `${slug} ${saleroCasoTitle(item)} ${saleroCasoField(item, ['sector'], '')}`.toLowerCase();
@@ -151,6 +155,17 @@ function saleroCasoAccent(item = {}, slug = '') {
   if (text.includes('enoro') || text.includes('aceite') || text.includes('agro')) return 'agro';
   if (text.includes('museo') || text.includes('cal') || text.includes('patrimonio')) return 'culture';
   return 'default';
+}
+
+function saleroCasoSlug(item = {}, title = '') {
+  return item.slug || title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function saleroCasoUrl(item = {}, slug = '') {
+  const acf = getAcf(item);
+  const direct = acf.url_caso || acf.enlace_caso || item.frontend_url || item.url_caso;
+  if (direct) return direct;
+  return `/casos-de-exito/${slug}/`;
 }
 
 function renderCasoMedia(item = {}, title = '', visualLabel = '') {
@@ -177,17 +192,17 @@ function renderCasoLogo(item = {}, title = '') {
 
 function renderCasoCard(item = {}) {
   const title = saleroCasoTitle(item);
-  const slug = item.slug || title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const slug = saleroCasoSlug(item, title);
   const sector = saleroCasoField(item, ['sector', 'sector_cliente', 'tipo_de_cliente'], item.sector || 'Caso de éxito');
-  const service = saleroCasoField(item, ['servicio_principal', 'servicios', 'servicio'], item.service || 'Estrategia digital');
-  const proof = saleroCasoField(item, ['resultado', 'dato_destacado', 'mejora_conseguida'], item.proof || 'Proyecto real de Salero Digital');
-  const excerpt = saleroCasoExcerpt(item) || item.excerpt || '';
+  const service = saleroTruncate(saleroCasoField(item, ['servicio_principal', 'servicios', 'servicio'], item.service || 'Estrategia digital'), 86);
+  const proof = saleroTruncate(saleroCasoField(item, ['dato_destacado', 'mejora_conseguida', 'resultado'], item.proof || 'Proyecto real de Salero Digital'), 96);
+  const excerpt = saleroTruncate(saleroCasoExcerpt(item) || item.excerpt || '', 130);
   const accent = saleroCasoAccent(item, slug);
-  const visualLabel = item.visual || saleroCasoField(item, ['visual_label', 'etiqueta_visual', 'cliente'], title);
-  const url = `/casos-de-exito/${slug}/`;
+  const visualLabel = item.visual || saleroCasoField(item, ['visual_label', 'etiqueta_visual', 'cliente_nombre', 'cliente'], title);
+  const url = saleroCasoUrl(item, slug);
 
   return `<article class="caso-card caso-card-visual caso-accent-${escapeHtml(accent)}">
-    <a class="caso-media" href="${url}" aria-label="Ver caso de éxito de ${escapeHtml(title)}">
+    <a class="caso-media" href="${escapeHtml(url)}" aria-label="Ver caso de éxito de ${escapeHtml(title)}">
       ${renderCasoMedia(item, title, visualLabel)}
       <span class="caso-sector-badge">${escapeHtml(sector)}</span>
       <div class="caso-media-overlay" aria-hidden="true"></div>
@@ -195,14 +210,14 @@ function renderCasoCard(item = {}) {
     </a>
     <div class="caso-content">
       <div class="caso-card-top">
-        <span class="caso-content-kicker">${escapeHtml(visualLabel)}<br>${escapeHtml(sector)}</span>
+        <span class="caso-content-kicker">${escapeHtml(saleroTruncate(visualLabel, 34))}<br>${escapeHtml(saleroTruncate(sector, 46))}</span>
         <h3>${escapeHtml(title)}</h3>
-        <p class="caso-excerpt">${escapeHtml(excerpt).slice(0,220)}</p>
+        <p class="caso-excerpt">${escapeHtml(excerpt)}</p>
       </div>
       <div class="caso-meta">
         <div class="caso-service"><small>Servicio principal</small><strong>${escapeHtml(service)}</strong></div>
         <div class="caso-proof"><small>Qué demuestra</small><strong>${escapeHtml(proof)}</strong></div>
-        <a class="caso-link" href="${url}" aria-label="Ver caso de éxito de ${escapeHtml(title)}">Ver caso</a>
+        <a class="caso-link" href="${escapeHtml(url)}" aria-label="Ver caso de éxito de ${escapeHtml(title)}">Ver caso</a>
       </div>
     </div>
   </article>`;
