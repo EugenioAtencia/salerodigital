@@ -2,11 +2,23 @@
   const carousels = document.querySelectorAll('.caso-detail-content');
 
   carousels.forEach((carousel) => {
-    const cards = Array.from(carousel.querySelectorAll('.caso-detail-section'))
+    if (carousel.dataset.recipeCarousel === 'ready') return;
+
+    const allSections = Array.from(carousel.querySelectorAll(':scope > .caso-detail-section'));
+    const cards = allSections
       .filter((card) => !card.classList.contains('caso-detail-list-section') && !card.classList.contains('caso-detail-section-metricas'))
       .slice(0, 4);
+    const extraSections = allSections.filter((section) => !cards.includes(section));
 
-    if (cards.length < 2 || carousel.dataset.recipeCarousel === 'ready') return;
+    if (extraSections.length) {
+      const extraWrap = document.createElement('div');
+      extraWrap.className = 'caso-detail-extra';
+      extraWrap.setAttribute('aria-label', 'Información complementaria del caso');
+      extraSections.forEach((section) => extraWrap.appendChild(section));
+      carousel.insertAdjacentElement('afterend', extraWrap);
+    }
+
+    if (cards.length < 2) return;
     carousel.dataset.recipeCarousel = 'ready';
 
     cards.forEach((card, index) => {
@@ -37,10 +49,11 @@
       return dot;
     });
 
-    let active = 0;
+    let active = -1;
 
     function activate(index, shouldScroll = false) {
       active = (index + cards.length) % cards.length;
+      carousel.classList.add('has-active');
 
       cards.forEach((card, cardIndex) => {
         const isActive = cardIndex === active;
@@ -52,13 +65,23 @@
         dot.classList.toggle('is-active', dotIndex === active);
       });
 
-      if (shouldScroll) {
+      if (shouldScroll && window.matchMedia('(max-width: 1180px)').matches) {
         cards[active].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
       }
     }
 
-    controls.querySelector('[data-recipe-prev]').addEventListener('click', () => activate(active - 1, true));
-    controls.querySelector('[data-recipe-next]').addEventListener('click', () => activate(active + 1, true));
+    function reset() {
+      active = -1;
+      carousel.classList.remove('has-active');
+      cards.forEach((card) => {
+        card.classList.remove('is-active');
+        card.removeAttribute('aria-current');
+      });
+      dots.forEach((dot) => dot.classList.remove('is-active'));
+    }
+
+    controls.querySelector('[data-recipe-prev]').addEventListener('click', () => activate(active < 0 ? cards.length - 1 : active - 1, true));
+    controls.querySelector('[data-recipe-next]').addEventListener('click', () => activate(active < 0 ? 0 : active + 1, true));
 
     cards.forEach((card, index) => {
       card.addEventListener('mouseenter', () => activate(index, false));
@@ -66,20 +89,7 @@
       card.addEventListener('click', () => activate(index, true));
     });
 
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries
-        .filter((entry) => entry.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-      if (!visible) return;
-      const index = Number(visible.target.dataset.recipeIndex || 0);
-      activate(index, false);
-    }, {
-      root: carousel,
-      threshold: [0.45, 0.62, 0.78]
-    });
-
-    cards.forEach((card) => observer.observe(card));
-    activate(0, false);
+    carousel.addEventListener('mouseleave', reset);
+    reset();
   });
 })();
