@@ -43,7 +43,7 @@
   border-radius:999px;
   background:rgba(83,97,47,.08);
   color:#2f381d;
-  font-size:.84rem;
+  font-size:0;
   font-weight:900;
   letter-spacing:.08em;
   text-transform:uppercase;
@@ -57,10 +57,6 @@
   height:4px;
   border-radius:999px;
   background:#d7aa55;
-}
-
-.service-main-content>.service-section-kicker{
-  font-size:0;
 }
 
 .service-main-content>.service-section-kicker::after{
@@ -163,10 +159,7 @@
   max-width:980px;
 }
 
-.service-action-card{
-  min-width:0;
-}
-
+.service-action-card,
 .service-action-card h2,
 .service-action-card ul{
   min-width:0;
@@ -174,10 +167,15 @@
 
 .service-faq-block{
   width:100%;
-  grid-template-columns:minmax(0,.88fr) minmax(420px,1fr);
-  gap:clamp(40px,6vw,86px);
-  padding-top:0;
+  grid-template-columns:minmax(0,.86fr) minmax(460px,1.08fr);
+  gap:clamp(48px,7vw,112px);
+  align-items:center;
+  padding:clamp(78px,8vw,128px) max(36px,calc((100vw - 1180px) / 2));
+  margin:0 calc(50% - 50vw);
   overflow:hidden;
+  background:
+    radial-gradient(circle at 8% 18%,rgba(200,255,77,.18),transparent 25%),
+    linear-gradient(135deg,rgba(246,239,216,.58),rgba(255,253,247,.94));
 }
 
 .service-faq-copy,
@@ -185,21 +183,111 @@
   min-width:0;
 }
 
+.service-faq-copy .service-section-kicker{
+  display:inline-flex;
+  align-items:center;
+  gap:16px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:#2f381d;
+  font-size:.78rem;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+
+.service-faq-copy .service-section-kicker::before{
+  width:46px;
+  height:3px;
+  background:#d7aa55;
+}
+
 .service-faq-copy h2{
-  max-width:620px;
-  font-size:clamp(2.7rem,5.2vw,5.45rem);
-  line-height:.93;
+  max-width:680px;
+  margin:1.7rem 0 1.4rem;
+  font-size:clamp(3.2rem,6.35vw,6.8rem);
+  line-height:.86;
+  letter-spacing:-.075em;
   overflow-wrap:normal;
   word-break:normal;
   hyphens:none;
 }
 
 .service-faq-copy p{
-  max-width:500px;
+  max-width:560px;
+  color:#5f6655;
+  font-size:clamp(1.05rem,1.32vw,1.22rem);
+  line-height:1.72;
+}
+
+.service-faq-accordion{
+  display:grid;
+  gap:1rem;
 }
 
 .service-faq-accordion details{
   overflow:hidden;
+  border:1px solid rgba(31,36,24,.12);
+  border-radius:1.25rem;
+  background:rgba(255,253,247,.86);
+  box-shadow:0 18px 48px rgba(31,36,24,.06);
+  transition:border-color .2s ease,background .2s ease,box-shadow .2s ease,transform .2s ease;
+}
+
+.service-faq-accordion details[open]{
+  background:rgba(255,253,247,.96);
+  border-color:rgba(200,255,90,.42);
+  box-shadow:0 24px 70px rgba(31,36,24,.1);
+}
+
+.service-faq-accordion summary{
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  cursor:pointer;
+  list-style:none;
+  padding:1.15rem 1.3rem;
+  color:#20251b;
+  font-weight:900;
+  font-size:clamp(1.02rem,1.28vw,1.18rem);
+  line-height:1.25;
+}
+
+.service-faq-accordion summary::-webkit-details-marker{
+  display:none;
+}
+
+.service-faq-accordion summary::before{
+  content:"";
+  flex:0 0 .7rem;
+  width:.7rem;
+  height:.7rem;
+  border-radius:999px;
+  background:#c8ff5a;
+  box-shadow:0 0 0 7px rgba(200,255,90,.18);
+}
+
+.service-faq-accordion summary::after{
+  content:"+";
+  margin-left:auto;
+  color:#27311f;
+  font-size:1.35rem;
+  line-height:1;
+}
+
+.service-faq-accordion details[open] summary::after{
+  content:"–";
+}
+
+.service-faq-answer{
+  padding:0 1.3rem 1.25rem 3rem;
+}
+
+.service-faq-answer p{
+  margin:0;
+  color:#5f6655;
+  font-size:1rem;
+  line-height:1.7;
 }
 
 .service-faq-answer p + p{
@@ -249,6 +337,13 @@
     padding-right:calc((100vw - min(100vw - 36px,1320px)) / 2);
   }
 
+  .service-faq-block{
+    margin-left:calc((100vw - min(100vw - 36px,1320px)) / -2);
+    margin-right:calc((100vw - min(100vw - 36px,1320px)) / -2);
+    padding-left:calc((100vw - min(100vw - 36px,1320px)) / 2);
+    padding-right:calc((100vw - min(100vw - 36px,1320px)) / 2);
+  }
+
   .service-faq-copy h2{
     max-width:820px;
   }
@@ -278,7 +373,21 @@
     padding-bottom:clamp(64px,14vw,92px);
   }
 
+  .service-faq-block{
+    padding-top:clamp(64px,14vw,92px);
+    padding-bottom:clamp(64px,14vw,92px);
+  }
+
   .service-faq-copy h2{
     font-size:clamp(2.45rem,13vw,4.35rem);
+  }
+
+  .service-faq-accordion summary{
+    padding:1rem;
+    font-size:1rem;
+  }
+
+  .service-faq-answer{
+    padding:0 1rem 1rem 2.6rem;
   }
 }
