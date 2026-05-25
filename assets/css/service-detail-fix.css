@@ -1,7 +1,29 @@
 /* Ajustes de layout para páginas dinámicas de El Menú */
 
+.service-content-section{
+  position:relative;
+  overflow:hidden;
+  padding:clamp(82px,9vw,132px) 0 clamp(88px,9vw,140px);
+  background:#fbf7eb;
+  color:#1f2418;
+}
+
+.service-content-section::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 10% 20%,rgba(200,255,77,.22),transparent 26%),
+    radial-gradient(circle at 90% 10%,rgba(83,97,47,.12),transparent 28%);
+}
+
 .service-content-grid{
+  position:relative;
+  z-index:1;
   overflow:visible;
+  align-items:end;
 }
 
 .service-main-content{
@@ -11,18 +33,77 @@
 .service-main-content>.service-section-kicker{
   grid-column:1;
   grid-row:1;
+  display:inline-flex;
+  align-items:center;
+  gap:18px;
+  width:fit-content;
+  margin:0 0 22px;
+  padding:10px 20px;
+  border:1px solid rgba(83,97,47,.24);
+  border-radius:999px;
+  background:rgba(83,97,47,.08);
+  color:#2f381d;
+  font-size:.84rem;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  box-shadow:none;
+}
+
+.service-main-content>.service-section-kicker::before{
+  content:"";
+  display:inline-block;
+  width:46px;
+  height:4px;
+  border-radius:999px;
+  background:#d7aa55;
+}
+
+.service-main-content>.service-section-kicker{
+  font-size:0;
+}
+
+.service-main-content>.service-section-kicker::after{
+  content:"La carta";
+  font-size:.84rem;
 }
 
 .service-lead-content{
   grid-column:1;
   grid-row:2;
   min-width:0;
+  max-width:920px;
+  margin:0;
+  padding:0;
+  border:0;
+  background:transparent;
+}
+
+.service-lead-content p:first-child{
+  max-width:900px;
+  margin:0;
+  color:#1f2418;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:clamp(2.35rem,5vw,5.6rem);
+  font-weight:800;
+  line-height:.98;
+  letter-spacing:-.06em;
+}
+
+.service-lead-content p:not(:first-child){
+  max-width:760px;
+  margin:28px 0 0;
+  color:rgba(31,36,24,.74);
+  font-size:clamp(1rem,1.18vw,1.18rem);
+  line-height:1.78;
+  font-weight:500;
 }
 
 .service-sidebar{
   grid-column:2;
   grid-row:1 / span 2;
   min-width:0;
+  align-self:center;
 }
 
 .service-dynamic-blocks{
@@ -31,7 +112,7 @@
   gap:clamp(56px,7vw,104px);
   width:100%;
   min-width:0;
-  margin-top:clamp(56px,7vw,96px);
+  margin-top:clamp(72px,8vw,118px);
 }
 
 .service-editorial-split{
@@ -144,10 +225,15 @@
 
   .service-content-grid{
     grid-template-columns:1fr;
+    align-items:start;
+  }
+
+  .service-sidebar{
+    margin-top:clamp(34px,5vw,56px);
   }
 
   .service-dynamic-blocks{
-    margin-top:clamp(48px,7vw,80px);
+    margin-top:clamp(56px,7vw,90px);
   }
 
   .service-editorial-split,
@@ -169,6 +255,19 @@
 }
 
 @media(max-width:720px){
+  .service-content-section{
+    padding-top:clamp(64px,14vw,92px);
+  }
+
+  .service-main-content>.service-section-kicker::before{
+    width:34px;
+  }
+
+  .service-lead-content p:first-child{
+    font-size:clamp(2.45rem,13vw,4.2rem);
+    letter-spacing:-.065em;
+  }
+
   .service-editorial-card h2{
     font-size:clamp(2.05rem,11vw,3.4rem);
     letter-spacing:-.06em;
