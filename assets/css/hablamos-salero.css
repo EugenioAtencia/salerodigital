@@ -177,6 +177,40 @@
   color: var(--hb-ink) !important;
 }
 
+.contact-privacy-field,
+.contact-recaptcha-field {
+  margin-top: 2px;
+}
+
+.contact-checkbox-label {
+  display: flex !important;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid rgba(31, 36, 24, 0.14);
+  border-radius: 16px;
+  background: rgba(255, 253, 247, 0.74);
+  color: rgba(31, 36, 24, 0.78) !important;
+  cursor: pointer;
+  line-height: 1.45;
+}
+
+.contact-checkbox-label input {
+  width: 18px !important;
+  min-width: 18px;
+  height: 18px;
+  min-height: 18px !important;
+  margin-top: 1px;
+  accent-color: var(--hb-olive-dark);
+}
+
+.contact-recaptcha-field .g-recaptcha {
+  max-width: 100%;
+  overflow: hidden;
+  transform-origin: left top;
+}
+
 .contact-hero::before,
 .contact-form-section::after,
 .contact-final-cta::before {
@@ -219,5 +253,9 @@
 
   .contact-card a {
     width: 100%;
+  }
+
+  .contact-recaptcha-field .g-recaptcha {
+    transform: scale(0.88);
   }
 }
