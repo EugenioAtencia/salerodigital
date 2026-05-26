@@ -118,12 +118,11 @@
         </div>
 
         <div class="contact-form-card">
-          <form class="contact-form" action="https://formsubmit.co/info@eugenioatencia.com" method="POST">
-            <input type="hidden" name="_subject" value="Nueva cata digital desde Salero Digital">
-            <input type="hidden" name="_next" value="https://salero.webagencia360.com/hablamos/gracias/">
-            <input type="hidden" name="_captcha" value="false">
-            <input type="hidden" name="_template" value="table">
-            <input type="hidden" name="_autoresponse" value="Gracias por contactar con Salero Digital. Hemos recibido tu solicitud de cata digital y te responderemos lo antes posible.">
+          <form class="contact-form" action="https://cms.webagencia360.com/salero-contacto.php" method="POST">
+            <div style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
+              <label for="website">No rellenar este campo</label>
+              <input id="website" type="text" name="website" tabindex="-1" autocomplete="off">
+            </div>
 
             <div class="contact-form-field">
               <label for="nombre">Nombre</label>
@@ -170,7 +169,7 @@
 
             <button class="btn btn-primary" type="submit">Enviar solicitud</button>
             <p class="contact-form-note">
-              Al enviar, recibirás una confirmación y accederás a una página de gracias. La solicitud llegará al correo de contacto de Salero Digital.
+              Al enviar, accederás a una página de gracias. La solicitud llegará al correo de contacto de Salero Digital.
             </p>
           </form>
         </div>
