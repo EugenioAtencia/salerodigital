@@ -242,6 +242,127 @@
   }
 }
 
+@media (max-width: 880px) {
+  .hablamos-page .site-header,
+  .hablamos-page .site-header.is-scrolled {
+    background: rgba(246, 241, 232, 0.86) !important;
+    border-bottom-color: rgba(31, 42, 36, 0.10) !important;
+    box-shadow: none !important;
+    backdrop-filter: blur(18px) saturate(1.05) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(1.05) !important;
+  }
+
+  .hablamos-page.menu-open .site-header {
+    background: transparent !important;
+    border-bottom-color: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .hablamos-page .menu-toggle,
+  .hablamos-page .site-header .menu-toggle {
+    display: inline-grid !important;
+    place-items: center !important;
+    position: relative !important;
+    z-index: 153 !important;
+    width: 58px !important;
+    height: 58px !important;
+    min-width: 58px !important;
+    min-height: 58px !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: var(--ink) !important;
+    color: var(--paper) !important;
+    font-size: 1.55rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    box-shadow: none !important;
+  }
+
+  .hablamos-page.menu-open .menu-toggle,
+  .hablamos-page.menu-open .site-header .menu-toggle {
+    background: var(--ink) !important;
+    color: var(--paper) !important;
+  }
+
+  .hablamos-page .nav {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    z-index: 140 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: clamp(18px, 3.8vh, 30px) !important;
+    padding: 110px 28px 44px !important;
+    background: var(--cream) !important;
+    color: var(--ink) !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    overflow-y: auto !important;
+    transform: translateY(-10px) !important;
+    transition: opacity .24s ease, visibility .24s ease, transform .24s ease !important;
+  }
+
+  .hablamos-page.menu-open .nav {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: translateY(0) !important;
+  }
+
+  .hablamos-page .nav a {
+    display: block !important;
+    width: 100% !important;
+    padding: 0 !important;
+    font-family: var(--font-serif) !important;
+    font-size: clamp(2.45rem, 13vw, 5.6rem) !important;
+    font-weight: 800 !important;
+    line-height: .9 !important;
+    letter-spacing: -.06em !important;
+    color: var(--ink) !important;
+    opacity: 1 !important;
+    text-align: left !important;
+    text-shadow: none !important;
+  }
+
+  .hablamos-page .nav a::after {
+    display: none !important;
+  }
+
+  .hablamos-page .nav-mobile-contact {
+    display: block !important;
+    margin-top: 10px !important;
+    font-family: var(--font-serif) !important;
+  }
+
+  .hablamos-page .nav-mobile-cta {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    min-height: 58px !important;
+    margin-top: 12px !important;
+    padding: 17px 24px !important;
+    border-radius: 999px !important;
+    background: var(--ink) !important;
+    color: var(--paper) !important;
+    font-family: var(--font-sans) !important;
+    font-size: 1rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0 !important;
+    line-height: 1.1 !important;
+    text-align: center !important;
+  }
+}
+
 @media (max-width: 760px) {
   .contact-card {
     border-radius: 24px !important;
