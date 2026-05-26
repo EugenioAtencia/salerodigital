@@ -1,0 +1,137 @@
+/* ==========================================================
+   Salero Digital - Refuerzo de salero para /hablamos/
+   Capa específica para mejorar copy visual, tarjetas y contraste.
+   ========================================================== */
+
+.contact-form-copy h2 {
+  max-width: 660px;
+}
+
+.contact-form-copy p {
+  max-width: 620px;
+  font-size: clamp(1rem, 1.16vw, 1.16rem);
+}
+
+.contact-form-copy .contact-card-list {
+  margin-top: clamp(28px, 4vw, 46px);
+}
+
+.contact-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(246, 239, 216, 0.24) !important;
+  border-radius: 30px !important;
+  background:
+    linear-gradient(135deg, rgba(246, 239, 216, 0.16), rgba(246, 239, 216, 0.06)) !important;
+  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.18) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.contact-card::before {
+  content: "";
+  position: absolute;
+  inset: auto 22px 0 22px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200, 255, 77, 0.55), transparent);
+}
+
+.contact-card span {
+  color: var(--hb-lime) !important;
+}
+
+.contact-card h3 {
+  max-width: 620px;
+  color: var(--hb-cream-soft) !important;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.75rem, 2.7vw, 2.85rem) !important;
+  line-height: 0.98 !important;
+  letter-spacing: -0.055em !important;
+}
+
+.contact-card p {
+  max-width: 620px;
+  margin: 0;
+  color: rgba(251, 247, 235, 0.78) !important;
+  font-size: 1rem;
+  line-height: 1.66;
+}
+
+.contact-card a {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 48px;
+  margin-top: 18px !important;
+  padding: 13px 18px;
+  border: 1px solid rgba(200, 255, 77, 0.72);
+  border-radius: 999px;
+  background: var(--hb-lime);
+  color: var(--hb-ink) !important;
+  font-weight: 950 !important;
+  line-height: 1.1;
+  text-decoration: none;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.20);
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, color 180ms ease;
+}
+
+.contact-card a::after {
+  content: "→";
+  margin-left: 8px;
+  transition: transform 180ms ease;
+}
+
+.contact-card a:hover,
+.contact-card a:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.24);
+  background: var(--hb-cream-soft);
+  color: var(--hb-ink) !important;
+}
+
+.contact-card a:hover::after,
+.contact-card a:focus-visible::after {
+  transform: translateX(4px);
+}
+
+.contact-hero .btn-secondary,
+.contact-final-cta .btn-secondary,
+.contact-final-card .btn-secondary {
+  background: rgba(246, 239, 216, 0.94) !important;
+  border: 1px solid rgba(246, 239, 216, 0.96) !important;
+  color: var(--hb-ink) !important;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.22);
+}
+
+.contact-hero .btn-secondary:hover,
+.contact-hero .btn-secondary:focus-visible,
+.contact-final-cta .btn-secondary:hover,
+.contact-final-cta .btn-secondary:focus-visible,
+.contact-final-card .btn-secondary:hover,
+.contact-final-card .btn-secondary:focus-visible {
+  background: var(--hb-lime) !important;
+  border-color: var(--hb-lime) !important;
+  color: var(--hb-ink) !important;
+}
+
+.contact-form .btn-primary {
+  background: var(--hb-ink) !important;
+  color: var(--hb-cream-soft) !important;
+}
+
+.contact-form .btn-primary:hover,
+.contact-form .btn-primary:focus-visible {
+  background: var(--hb-lime) !important;
+  color: var(--hb-ink) !important;
+}
+
+@media (max-width: 760px) {
+  .contact-card {
+    border-radius: 24px !important;
+  }
+
+  .contact-card a {
+    width: 100%;
+  }
+}
