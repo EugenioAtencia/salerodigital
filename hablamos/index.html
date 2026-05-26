@@ -43,6 +43,7 @@
     <section class="contact-hero">
       <div class="contact-hero-media" aria-hidden="true">
         <video class="contact-hero-video" autoplay muted loop playsinline preload="metadata" poster="/assets/img/hero-poster-desktop.webp">
+          <source src="/assets/video/pueblo-con-salero.mp4" type="video/mp4">
           <source src="/assets/video/hero-salero.mp4" type="video/mp4">
         </video>
       </div>
@@ -98,7 +99,7 @@
           <span class="eyebrow">Pide tu cata</span>
           <h2>Déjanos los datos y abrimos la conversación con fundamento.</h2>
           <p>
-            El formulario prepara un mensaje directo por WhatsApp para que podamos responderte de forma ágil, con la información mínima necesaria y sin marearte con tecnicismos.
+            El formulario envía la solicitud directamente por correo para que podamos responderte de forma ágil, con la información mínima necesaria y sin marearte con tecnicismos.
           </p>
 
           <div class="contact-card-list" aria-label="Datos de contacto de Salero Digital">
@@ -117,35 +118,41 @@
         </div>
 
         <div class="contact-form-card">
-          <form class="contact-form" data-contact-form>
+          <form class="contact-form" action="https://formsubmit.co/info@eugenioatencia.com" method="POST">
+            <input type="hidden" name="_subject" value="Nueva cata digital desde Salero Digital">
+            <input type="hidden" name="_next" value="https://salero.webagencia360.com/hablamos/gracias/">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_autoresponse" value="Gracias por contactar con Salero Digital. Hemos recibido tu solicitud de cata digital y te responderemos lo antes posible.">
+
             <div class="contact-form-field">
               <label for="nombre">Nombre</label>
-              <input id="nombre" type="text" name="nombre" autocomplete="name" required>
+              <input id="nombre" type="text" name="Nombre" autocomplete="name" required>
             </div>
 
             <div class="contact-form-field">
               <label for="empresa">Empresa</label>
-              <input id="empresa" type="text" name="empresa" autocomplete="organization" required>
+              <input id="empresa" type="text" name="Empresa" autocomplete="organization" required>
             </div>
 
             <div class="contact-form-field">
               <label for="telefono">Teléfono</label>
-              <input id="telefono" type="tel" name="telefono" autocomplete="tel" required>
+              <input id="telefono" type="tel" name="Telefono" autocomplete="tel" required>
             </div>
 
             <div class="contact-form-field">
               <label for="email">Email</label>
-              <input id="email" type="email" name="email" autocomplete="email">
+              <input id="email" type="email" name="Email" autocomplete="email" required>
             </div>
 
             <div class="contact-form-field">
               <label for="zona">Zona</label>
-              <input id="zona" type="text" name="zona" placeholder="Morón, Arahal, Marchena...">
+              <input id="zona" type="text" name="Zona" placeholder="Morón, Arahal, Marchena...">
             </div>
 
             <div class="contact-form-field">
               <label for="interes">Qué necesitas</label>
-              <select id="interes" name="interes" required>
+              <select id="interes" name="Necesidad" required>
                 <option value="">Selecciona una opción</option>
                 <option>Web y presencia digital</option>
                 <option>SEO local y Google Maps</option>
@@ -158,12 +165,12 @@
 
             <div class="contact-form-field is-full">
               <label for="mensaje">Cuéntanos el punto de partida</label>
-              <textarea id="mensaje" name="mensaje" placeholder="Explícanos brevemente tu negocio, qué te preocupa ahora y qué te gustaría conseguir."></textarea>
+              <textarea id="mensaje" name="Mensaje" placeholder="Explícanos brevemente tu negocio, qué te preocupa ahora y qué te gustaría conseguir."></textarea>
             </div>
 
-            <button class="btn btn-primary" type="submit">Enviar por WhatsApp</button>
+            <button class="btn btn-primary" type="submit">Enviar solicitud</button>
             <p class="contact-form-note">
-              Al enviar, se abrirá WhatsApp con tu mensaje preparado. Así podemos empezar la conversación de forma más rápida y cercana.
+              Al enviar, recibirás una confirmación y accederás a una página de gracias. La solicitud llegará al correo de contacto de Salero Digital.
             </p>
           </form>
         </div>
@@ -256,6 +263,5 @@
   <a class="whatsapp-float" href="https://wa.me/34665688916?text=Hola%2C%20quiero%20hacer%20una%20cata%20digital%20con%20Salero%20Digital." target="_blank" rel="noopener">¿Te hace un café y hablamos?</a>
 
   <script src="/assets/js/helpers.js?v=39" defer></script>
-  <script src="/assets/js/contact-form.js?v=1" defer></script>
 </body>
 </html>
