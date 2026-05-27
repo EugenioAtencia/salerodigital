@@ -1,17 +1,107 @@
-/* Blog article | ajuste tipográfico de FAQs | v1 */
+/* Blog article | ajuste tipográfico de FAQs | v2 */
 
 .ba-faq h3,
 .ba-faq-item h3,
 .ba-faq-question h3,
 .ba-faq-question-title,
-.ba-faq-toggle h3{
-  font-family:var(--font-sans) !important;
+.ba-faq-toggle h3,
+.ba-faq button,
+.ba-faq summary,
+.ba-faq [class*="question"],
+.ba-faq [class*="Question"],
+.ba-faq [class*="title"],
+.ba-faq [class*="Title"],
+.ba-faq [class*="toggle"],
+.ba-faq [class*="Toggle"],
+.ba-faq-item button,
+.ba-faq-item summary,
+.ba-faq-item [class*="question"],
+.ba-faq-item [class*="Question"],
+.ba-faq-item [class*="title"],
+.ba-faq-item [class*="Title"],
+.blog-article [class*="faq"] h3,
+.blog-article [class*="faq"] button,
+.blog-article [class*="faq"] summary,
+.blog-article [class*="faq"] [class*="question"],
+.blog-article [class*="faq"] [class*="Question"],
+.blog-article [class*="faq"] [class*="title"],
+.blog-article [class*="faq"] [class*="Title"],
+.article-content [class*="faq"] h3,
+.article-content [class*="faq"] button,
+.article-content [class*="faq"] summary,
+.article-content [class*="faq"] [class*="question"],
+.article-content [class*="faq"] [class*="Question"],
+.article-content [class*="faq"] [class*="title"],
+.article-content [class*="faq"] [class*="Title"],
+main [class*="faq"] h3,
+main [class*="faq"] button,
+main [class*="faq"] summary,
+main [class*="faq"] [class*="question"],
+main [class*="faq"] [class*="Question"],
+main [class*="faq"] [class*="title"],
+main [class*="faq"] [class*="Title"]{
+  font-family:var(--font-sans), Montserrat, Arial, sans-serif !important;
   font-weight:600 !important;
+  letter-spacing:-.035em !important;
+}
+
+.ba-faq h3 *,
+.ba-faq-item h3 *,
+.ba-faq-question h3 *,
+.ba-faq-question-title *,
+.ba-faq-toggle h3 *,
+.ba-faq button *,
+.ba-faq summary *,
+.ba-faq [class*="question"] *,
+.ba-faq [class*="Question"] *,
+.ba-faq [class*="title"] *,
+.ba-faq [class*="Title"] *,
+.ba-faq [class*="toggle"] *,
+.ba-faq [class*="Toggle"] *,
+.blog-article [class*="faq"] h3 *,
+.blog-article [class*="faq"] button *,
+.blog-article [class*="faq"] summary *,
+.blog-article [class*="faq"] [class*="question"] *,
+.blog-article [class*="faq"] [class*="Question"] *,
+.blog-article [class*="faq"] [class*="title"] *,
+.blog-article [class*="faq"] [class*="Title"] *,
+.article-content [class*="faq"] h3 *,
+.article-content [class*="faq"] button *,
+.article-content [class*="faq"] summary *,
+.article-content [class*="faq"] [class*="question"] *,
+.article-content [class*="faq"] [class*="Question"] *,
+.article-content [class*="faq"] [class*="title"] *,
+.article-content [class*="faq"] [class*="Title"] *,
+main [class*="faq"] h3 *,
+main [class*="faq"] button *,
+main [class*="faq"] summary *,
+main [class*="faq"] [class*="question"] *,
+main [class*="faq"] [class*="Question"] *,
+main [class*="faq"] [class*="title"] *,
+main [class*="faq"] [class*="Title"] *{
+  font-family:inherit !important;
+  font-weight:inherit !important;
 }
 
 .ba-faq-answer,
 .ba-faq-answer p,
-.ba-faq-answer li{
-  font-family:var(--font-sans) !important;
+.ba-faq-answer li,
+.ba-faq [class*="answer"],
+.ba-faq [class*="Answer"],
+.ba-faq [class*="answer"] p,
+.ba-faq [class*="Answer"] p,
+.blog-article [class*="faq"] [class*="answer"],
+.blog-article [class*="faq"] [class*="Answer"],
+.blog-article [class*="faq"] [class*="answer"] p,
+.blog-article [class*="faq"] [class*="Answer"] p,
+.article-content [class*="faq"] [class*="answer"],
+.article-content [class*="faq"] [class*="Answer"],
+.article-content [class*="faq"] [class*="answer"] p,
+.article-content [class*="faq"] [class*="Answer"] p,
+main [class*="faq"] [class*="answer"],
+main [class*="faq"] [class*="Answer"],
+main [class*="faq"] [class*="answer"] p,
+main [class*="faq"] [class*="Answer"] p{
+  font-family:var(--font-sans), Montserrat, Arial, sans-serif !important;
   font-weight:400 !important;
 }
