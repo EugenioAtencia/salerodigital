@@ -1,29 +1,17 @@
+.service-dynamic-blocks:has(.service-related-section){
+  gap:clamp(24px,3vw,42px) !important;
+}
+
+.service-faq-block + .service-related-section{
+  margin-top:0 !important;
+  padding-top:clamp(18px,2.4vw,30px) !important;
+  border-top:0 !important;
+}
+
 .service-related-section{
-  margin-top:clamp(54px,7vw,96px);
-  padding-top:clamp(44px,6vw,78px);
-  border-top:1px solid rgba(31,42,36,.10);
-}
-
-.service-related-heading{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(280px,520px);
-  gap:clamp(24px,4vw,54px);
-  align-items:end;
-  margin-bottom:clamp(28px,4vw,46px);
-}
-
-.service-related-heading h2{
-  max-width:760px;
-  font-size:clamp(2.1rem,4.8vw,4.9rem);
-  line-height:.98;
-  letter-spacing:-.055em;
-}
-
-.service-related-heading p{
-  margin:0;
-  color:var(--soft);
-  font-size:clamp(1rem,1.35vw,1.18rem);
-  line-height:1.65;
+  margin-top:0;
+  padding-top:clamp(18px,2.4vw,30px);
+  border-top:0;
 }
 
 .service-related-grid{
@@ -77,13 +65,16 @@
   transform:translateX(4px);
 }
 
-@media(max-width:1120px){
-  .service-related-heading{
-    grid-template-columns:1fr;
-  }
-}
-
 @media(max-width:680px){
+  .service-dynamic-blocks:has(.service-related-section){
+    gap:28px !important;
+  }
+
+  .service-faq-block + .service-related-section,
+  .service-related-section{
+    padding-top:18px !important;
+  }
+
   .service-related-card{
     min-height:360px;
     border-radius:28px;
