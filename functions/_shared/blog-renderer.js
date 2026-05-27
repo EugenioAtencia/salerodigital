@@ -15,7 +15,8 @@ export async function handleBlogPostRequest(context) {
       return htmlResponse(renderErrorPage('Artículo no encontrado', `No existe ningún artículo publicado con el slug ${escapeHtml(slug)}.`), 404);
     }
 
-    return htmlResponse(renderPostPage(slug, post), 200);
+    const blogContext = await fetchBlogContext(post);
+    return htmlResponse(renderPostPage(slug, post, blogContext), 200);
   } catch (error) {
     return htmlResponse(renderErrorPage('No se pudo cargar el artículo desde WordPress', String(error && error.message ? error.message : error)), 502);
   }
@@ -27,6 +28,68 @@ async function fetchPost(slug) {
   url.searchParams.set('_embed', '1');
   url.searchParams.set('_t', String(Date.now()));
 
+  const data = await fetchWpCollection(url);
+  return Array.isArray(data) && data.length ? data[0] : null;
+}
+
+async function fetchBlogContext(post) {
+  const categories = Array.isArray(post.categories) ? post.categories.filter(Boolean) : [];
+
+  const previousUrl = new URL(`${CMS_API_BASE}/posts`);
+  previousUrl.searchParams.set('_embed', '1');
+  previousUrl.searchParams.set('per_page', '1');
+  previousUrl.searchParams.set('orderby', 'date');
+  previousUrl.searchParams.set('order', 'desc');
+  previousUrl.searchParams.set('before', post.date);
+  previousUrl.searchParams.set('exclude', String(post.id));
+
+  const nextUrl = new URL(`${CMS_API_BASE}/posts`);
+  nextUrl.searchParams.set('_embed', '1');
+  nextUrl.searchParams.set('per_page', '1');
+  nextUrl.searchParams.set('orderby', 'date');
+  nextUrl.searchParams.set('order', 'asc');
+  nextUrl.searchParams.set('after', post.date);
+  nextUrl.searchParams.set('exclude', String(post.id));
+
+  const relatedUrl = new URL(`${CMS_API_BASE}/posts`);
+  relatedUrl.searchParams.set('_embed', '1');
+  relatedUrl.searchParams.set('per_page', '2');
+  relatedUrl.searchParams.set('orderby', 'date');
+  relatedUrl.searchParams.set('order', 'desc');
+  relatedUrl.searchParams.set('exclude', String(post.id));
+  if (categories.length) relatedUrl.searchParams.set('categories', categories.join(','));
+
+  try {
+    const [previousPosts, nextPosts, relatedPosts] = await Promise.all([
+      fetchWpCollection(previousUrl),
+      fetchWpCollection(nextUrl),
+      fetchWpCollection(relatedUrl)
+    ]);
+
+    let related = Array.isArray(relatedPosts) ? relatedPosts.filter(item => item && item.id !== post.id).slice(0, 2) : [];
+
+    if (related.length < 2) {
+      const fallbackUrl = new URL(`${CMS_API_BASE}/posts`);
+      fallbackUrl.searchParams.set('_embed', '1');
+      fallbackUrl.searchParams.set('per_page', String(2 - related.length));
+      fallbackUrl.searchParams.set('orderby', 'date');
+      fallbackUrl.searchParams.set('order', 'desc');
+      fallbackUrl.searchParams.set('exclude', [post.id, ...related.map(item => item.id)].join(','));
+      const fallback = await fetchWpCollection(fallbackUrl);
+      related = related.concat(Array.isArray(fallback) ? fallback.filter(item => item && item.id !== post.id) : []).slice(0, 2);
+    }
+
+    return {
+      previous: Array.isArray(previousPosts) && previousPosts.length ? previousPosts[0] : null,
+      next: Array.isArray(nextPosts) && nextPosts.length ? nextPosts[0] : null,
+      related
+    };
+  } catch (error) {
+    return { previous: null, next: null, related: [] };
+  }
+}
+
+async function fetchWpCollection(url) {
   const response = await fetch(url.toString(), {
     method: 'GET',
     headers: {
@@ -40,8 +103,7 @@ async function fetchPost(slug) {
   });
 
   if (!response.ok) throw new Error(`WordPress respondió con estado ${response.status}`);
-  const data = await response.json();
-  return Array.isArray(data) && data.length ? data[0] : null;
+  return response.json();
 }
 
 function htmlResponse(html, status = 200) {
@@ -54,7 +116,7 @@ function htmlResponse(html, status = 200) {
   });
 }
 
-function renderPostPage(slug, post) {
+function renderPostPage(slug, post, blogContext = {}) {
   const title = stripHtml(post?.title?.rendered || 'Artículo de La Rebotica');
   const fullContent = sanitizeWpContent(post?.content?.rendered || '<p>Contenido pendiente de ampliar desde WordPress.</p>');
   const faqData = extractBlogFaqs(fullContent);
@@ -69,6 +131,7 @@ function renderPostPage(slug, post) {
   const canonical = `${SITE_ORIGIN}/la-rebotica/${slug}/`;
   const metaDescription = (excerpt || stripHtml(fullContent).slice(0, 155)).slice(0, 155);
   const tocHtml = buildToc(rawContent);
+  const navigationBlock = renderBlogNavigation(blogContext);
 
   return `<!doctype html>
 <html lang="es">
@@ -84,7 +147,7 @@ function renderPostPage(slug, post) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
-  <link rel="stylesheet" href="/assets/css/blog-article.css?v=7">
+  <link rel="stylesheet" href="/assets/css/blog-article.css?v=8">
 </head>
 <body class="blog-article-page">
 ${renderHeader()}
@@ -125,6 +188,8 @@ ${renderHeader()}
           </div>
         </div>
       </section>
+
+      ${navigationBlock}
 
       <section class="ba-final-cta">
         <div class="container ba-final-box">
@@ -170,6 +235,63 @@ function renderHeroCard(categories = []) {
           </aside>`;
 }
 
+function renderBlogNavigation(context = {}) {
+  const previous = context.previous || null;
+  const next = context.next || null;
+  const related = Array.isArray(context.related) ? context.related.filter(Boolean).slice(0, 2) : [];
+
+  if (!previous && !next && !related.length) return '';
+
+  return `<section class="ba-navigation-section" aria-labelledby="ba-navigation-title">
+        <div class="container ba-navigation-inner">
+          <div class="ba-navigation-head">
+            <span class="eyebrow">Sigue leyendo</span>
+            <h2 id="ba-navigation-title">Más recetas de La Rebotica</h2>
+          </div>
+
+          ${(previous || next) ? `<nav class="ba-prev-next" aria-label="Navegación entre artículos">
+            ${previous ? renderAdjacentPost(previous, 'Anterior', '←') : '<span class="ba-adjacent ba-adjacent--empty" aria-hidden="true"></span>'}
+            ${next ? renderAdjacentPost(next, 'Siguiente', '→') : '<span class="ba-adjacent ba-adjacent--empty" aria-hidden="true"></span>'}
+          </nav>` : ''}
+
+          ${related.length ? `<div class="ba-related-grid" aria-label="Artículos relacionados">
+            ${related.map(renderRelatedPostCard).join('')}
+          </div>` : ''}
+        </div>
+      </section>`;
+}
+
+function renderAdjacentPost(post, label, arrow) {
+  const title = stripHtml(post?.title?.rendered || 'Artículo de La Rebotica');
+  return `<a class="ba-adjacent" href="${articleUrl(post)}">
+            <span>${escapeHtml(label)}</span>
+            <strong>${escapeHtml(title)}</strong>
+            <em>${escapeHtml(arrow)}</em>
+          </a>`;
+}
+
+function renderRelatedPostCard(post) {
+  const title = stripHtml(post?.title?.rendered || 'Artículo de La Rebotica');
+  const image = featuredImage(post);
+  const category = postCategories(post)[0] || 'La Rebotica';
+
+  return `<article class="ba-related-card">
+          <a href="${articleUrl(post)}" class="ba-related-card__media" aria-label="Leer ${escapeAttr(title)}">
+            ${image ? `<img src="${escapeAttr(image.url)}" alt="${escapeAttr(image.alt || title)}" loading="lazy">` : '<span class="ba-related-card__fallback">SD</span>'}
+            <span class="ba-related-card__shade" aria-hidden="true"></span>
+            <div class="ba-related-card__content">
+              <span>${escapeHtml(category)}</span>
+              <h3>${escapeHtml(title)}</h3>
+              <strong>Leer más</strong>
+            </div>
+          </a>
+        </article>`;
+}
+
+function articleUrl(post) {
+  return `/la-rebotica/${sanitizeSlug(post?.slug || '')}/`;
+}
+
 function renderHeader() {
   return `  <header class="site-header">
     <div class="container header-inner">
@@ -208,7 +330,7 @@ function renderFooter() {
 }
 
 function renderErrorPage(title, text) {
-  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/css/main.css?v=50"><link rel="stylesheet" href="/assets/css/blog-article.css?v=7"></head><body class="blog-article-page">${renderHeader()}<main class="ba-page"><section class="ba-error-section"><div class="container"><div class="ba-error-card"><span class="eyebrow">La Rebotica</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(text)}</p><a class="btn btn-primary" href="/la-rebotica/">Volver a La Rebotica</a></div></div></section></main>${renderFooter()}<script src="/assets/js/config.js?v=50" defer></script><script src="/assets/js/helpers.js?v=50" defer></script></body></html>`;
+  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/css/main.css?v=50"><link rel="stylesheet" href="/assets/css/blog-article.css?v=8"></head><body class="blog-article-page">${renderHeader()}<main class="ba-page"><section class="ba-error-section"><div class="container"><div class="ba-error-card"><span class="eyebrow">La Rebotica</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(text)}</p><a class="btn btn-primary" href="/la-rebotica/">Volver a La Rebotica</a></div></div></section></main>${renderFooter()}<script src="/assets/js/config.js?v=50" defer></script><script src="/assets/js/helpers.js?v=50" defer></script></body></html>`;
 }
 
 function buildToc(content) {
