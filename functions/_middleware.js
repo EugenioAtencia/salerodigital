@@ -1,5 +1,7 @@
 import { renderJsonLd, schemaForPath } from './_shared/schema.js';
 
+const MONTSERRAT_TEST_CSS = '<link rel="stylesheet" href="/assets/css/font-body-montserrat.css?v=1">';
+
 export async function onRequest(context) {
   const requestUrl = new URL(context.request.url);
 
@@ -13,17 +15,15 @@ export async function onRequest(context) {
   if (!contentType.includes('text/html')) return response;
 
   const schema = schemaForPath(requestUrl.pathname);
-  if (!schema) return response;
-
   const html = await response.text();
-  if (html.includes('id="salero-schema-graph"') || html.includes("id='salero-schema-graph'")) {
-    return new Response(html, response);
-  }
+  let nextHtml = injectMontserratTest(html);
 
-  const jsonLd = renderJsonLd(schema);
-  const nextHtml = html.includes('</head>')
-    ? html.replace('</head>', `  ${jsonLd}\n</head>`)
-    : `${html}\n${jsonLd}`;
+  if (schema && !nextHtml.includes('id="salero-schema-graph"') && !nextHtml.includes("id='salero-schema-graph'")) {
+    const jsonLd = renderJsonLd(schema);
+    nextHtml = nextHtml.includes('</head>')
+      ? nextHtml.replace('</head>', `  ${jsonLd}\n</head>`)
+      : `${nextHtml}\n${jsonLd}`;
+  }
 
   const headers = new Headers(response.headers);
   headers.delete('content-length');
@@ -33,6 +33,13 @@ export async function onRequest(context) {
     statusText: response.statusText,
     headers
   });
+}
+
+function injectMontserratTest(html = '') {
+  if (html.includes('/assets/css/font-body-montserrat.css')) return html;
+  return html.includes('</head>')
+    ? html.replace('</head>', `  ${MONTSERRAT_TEST_CSS}\n</head>`)
+    : `${html}\n${MONTSERRAT_TEST_CSS}`;
 }
 
 function isBlogArticlePath(pathname = '/') {
