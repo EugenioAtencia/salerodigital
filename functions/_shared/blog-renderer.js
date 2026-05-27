@@ -59,15 +59,18 @@ function htmlResponse(html, status = 200) {
 
 function renderPostPage(slug, post) {
   const title = stripHtml(post?.title?.rendered || 'Artículo de La Rebotica');
-  const rawContent = sanitizeWpContent(post?.content?.rendered || '<p>Contenido pendiente de ampliar desde WordPress.</p>');
+  const fullContent = sanitizeWpContent(post?.content?.rendered || '<p>Contenido pendiente de ampliar desde WordPress.</p>');
+  const faqData = extractBlogFaqs(fullContent);
+  const rawContent = faqData.content;
+  const faqBlock = renderBlogFaqBlock(faqData.faqs);
   const excerpt = stripHtml(post?.excerpt?.rendered || '').slice(0, 170);
   const categories = postCategories(post);
   const primaryCategory = categories[0] || 'La Rebotica';
   const featured = featuredImage(post);
   const date = formatDate(post.date);
-  const readTime = readingTime(rawContent);
+  const readTime = readingTime(fullContent);
   const canonical = `${SITE_ORIGIN}/la-rebotica/${slug}/`;
-  const metaDescription = (excerpt || stripHtml(rawContent).slice(0, 155)).slice(0, 155);
+  const metaDescription = (excerpt || stripHtml(fullContent).slice(0, 155)).slice(0, 155);
   const tocHtml = buildToc(rawContent);
 
   return `<!doctype html>
@@ -83,7 +86,7 @@ function renderPostPage(slug, post) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
-  <link rel="stylesheet" href="/assets/css/blog-article.css?v=2">
+  <link rel="stylesheet" href="/assets/css/blog-article.css?v=3">
 </head>
 <body class="blog-article-page">
 ${renderHeader()}
@@ -131,6 +134,8 @@ ${renderHeader()}
         </div>
       </section>
 
+      ${faqBlock}
+
       <section class="ba-final-cta">
         <div class="container ba-final-box">
           <span class="eyebrow">Siguiente paso</span>
@@ -147,6 +152,20 @@ ${renderHeader()}
 ${renderFooter()}
   <script src="/assets/js/config.js?v=50" defer></script>
   <script src="/assets/js/helpers.js?v=50" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.ba-faq-accordion details').forEach(function (item) {
+        item.addEventListener('toggle', function () {
+          if (!item.open) return;
+          var group = item.closest('.ba-faq-accordion');
+          if (!group) return;
+          group.querySelectorAll('details').forEach(function (other) {
+            if (other !== item) other.open = false;
+          });
+        });
+      });
+    });
+  </script>
 </body>
 </html>`;
 }
@@ -189,13 +208,13 @@ function renderFooter() {
 }
 
 function renderErrorPage(title, text) {
-  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/css/main.css?v=50"><link rel="stylesheet" href="/assets/css/blog-article.css?v=2"></head><body class="blog-article-page">${renderHeader()}<main class="ba-page"><section class="ba-error-section"><div class="container"><div class="ba-error-card"><span class="eyebrow">La Rebotica</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(text)}</p><a class="btn btn-primary" href="/la-rebotica/">Volver a La Rebotica</a></div></div></section></main>${renderFooter()}<script src="/assets/js/config.js?v=50" defer></script><script src="/assets/js/helpers.js?v=50" defer></script></body></html>`;
+  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/css/main.css?v=50"><link rel="stylesheet" href="/assets/css/blog-article.css?v=3"></head><body class="blog-article-page">${renderHeader()}<main class="ba-page"><section class="ba-error-section"><div class="container"><div class="ba-error-card"><span class="eyebrow">La Rebotica</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(text)}</p><a class="btn btn-primary" href="/la-rebotica/">Volver a La Rebotica</a></div></div></section></main>${renderFooter()}<script src="/assets/js/config.js?v=50" defer></script><script src="/assets/js/helpers.js?v=50" defer></script></body></html>`;
 }
 
 function buildToc(content) {
   const headings = [...String(content).matchAll(/<h([23])([^>]*)>([\s\S]*?)<\/h\1>/gi)]
     .map((match, index) => ({ level: match[1], text: stripHtml(match[3]), id: headingId(stripHtml(match[3]), index) }))
-    .filter(item => item.text.length > 0);
+    .filter(item => item.text.length > 0 && !isFaqHeading(item.text));
 
   if (headings.length < 3) return '';
 
@@ -227,6 +246,162 @@ function sanitizeWpContent(content = '') {
   });
 
   return html.replace(/\sstyle=["'][^"']*["']/gi, '');
+}
+
+function extractBlogFaqs(content = '') {
+  let html = String(content || '');
+  const headingMatch = findFaqHeading(html);
+
+  if (!headingMatch) {
+    const details = parseDetailsFaqs(html);
+    if (!details.faqs.length) return { content: html, faqs: [] };
+    return { content: details.content, faqs: details.faqs };
+  }
+
+  const sectionStart = headingMatch.index;
+  const sectionEnd = findNextHeadingBoundary(html, headingMatch.end, headingMatch.level);
+  const faqSection = html.slice(sectionStart, sectionEnd);
+  const sectionBody = html.slice(headingMatch.end, sectionEnd);
+  let faqs = parseHeadingFaqs(sectionBody);
+
+  if (!faqs.length) {
+    faqs = parseDetailsFaqs(sectionBody).faqs;
+  }
+
+  if (!faqs.length) {
+    faqs = parseStrongFaqs(sectionBody);
+  }
+
+  if (!faqs.length) return { content: html, faqs: [] };
+
+  const cleaned = `${html.slice(0, sectionStart)}${html.slice(sectionEnd)}`.trim();
+  return { content: cleaned, faqs };
+}
+
+function findFaqHeading(html = '') {
+  const re = /<h([2-4])([^>]*)>([\s\S]*?)<\/h\1>/gi;
+  let match;
+
+  while ((match = re.exec(html))) {
+    const text = stripHtml(match[3]);
+    if (!isFaqHeading(text)) continue;
+    return {
+      index: match.index,
+      end: match.index + match[0].length,
+      level: Number(match[1])
+    };
+  }
+
+  return null;
+}
+
+function findNextHeadingBoundary(html = '', fromIndex = 0, currentLevel = 2) {
+  const re = /<h([1-4])\b[^>]*>[\s\S]*?<\/h\1>/gi;
+  re.lastIndex = fromIndex;
+  let match;
+
+  while ((match = re.exec(html))) {
+    const level = Number(match[1]);
+    if (level <= currentLevel) return match.index;
+  }
+
+  return html.length;
+}
+
+function parseHeadingFaqs(block = '') {
+  const matches = [...String(block).matchAll(/<h([3-6])([^>]*)>([\s\S]*?)<\/h\1>/gi)]
+    .filter(match => stripHtml(match[3]).trim().length > 0);
+
+  if (!matches.length) return [];
+
+  return matches.map((match, index) => {
+    const start = match.index + match[0].length;
+    const end = index + 1 < matches.length ? matches[index + 1].index : block.length;
+    const q = stripHtml(match[3]);
+    const a = String(block.slice(start, end)).trim();
+    return q && a ? { q, a } : null;
+  }).filter(Boolean);
+}
+
+function parseDetailsFaqs(html = '') {
+  const source = String(html || '');
+  const detailRe = /<details\b[^>]*>[\s\S]*?<\/details>/gi;
+  const faqs = [];
+  let content = source;
+  let match;
+
+  while ((match = detailRe.exec(source))) {
+    const detail = match[0];
+    const summary = detail.match(/<summary\b[^>]*>([\s\S]*?)<\/summary>/i);
+    if (!summary) continue;
+    const q = stripHtml(summary[1]);
+    const a = detail.replace(summary[0], '').replace(/^<details\b[^>]*>/i, '').replace(/<\/details>$/i, '').trim();
+    if (q && a) faqs.push({ q, a });
+  }
+
+  if (faqs.length) {
+    content = source.replace(detailRe, '').trim();
+  }
+
+  return { content, faqs };
+}
+
+function parseStrongFaqs(block = '') {
+  const pieces = String(block || '').split(/(<p[^>]*>\s*(?:<strong[^>]*>)?[\s\S]*?\?[\s\S]*?<\/p>)/i).filter(Boolean);
+  const faqs = [];
+
+  for (let index = 0; index < pieces.length; index += 1) {
+    const item = pieces[index];
+    if (!/<p/i.test(item) || !stripHtml(item).includes('?')) continue;
+    const q = stripHtml(item);
+    const answerParts = [];
+
+    let cursor = index + 1;
+    while (cursor < pieces.length && !stripHtml(pieces[cursor]).includes('?')) {
+      answerParts.push(pieces[cursor]);
+      cursor += 1;
+    }
+
+    const a = answerParts.join('').trim();
+    if (q && a) faqs.push({ q, a });
+  }
+
+  return faqs;
+}
+
+function renderBlogFaqBlock(faqs = []) {
+  if (!Array.isArray(faqs) || !faqs.length) return '';
+
+  return `<section class="ba-faq-section" id="preguntas-frecuentes">
+        <div class="container ba-faq-block">
+          <div class="ba-faq-copy">
+            <span class="eyebrow">Preguntas frecuentes</span>
+            <h2>Primero aclaramos las dudas. Después activamos la estrategia.</h2>
+            <p>Resolvemos las preguntas clave antes de proponer una receta digital para tu negocio.</p>
+          </div>
+          <div class="ba-faq-accordion">
+            ${faqs.map((faq, index) => `<details ${index === 0 ? 'open' : ''}><summary><span>${escapeHtml(stripHtml(faq.q))}</span></summary><div class="ba-faq-answer">${formatFaqAnswer(faq.a)}</div></details>`).join('')}
+          </div>
+        </div>
+      </section>`;
+}
+
+function formatFaqAnswer(value = '') {
+  const text = String(value || '').trim();
+  if (!text) return '';
+  if (/<[a-z][\s\S]*>/i.test(text)) return text;
+  return text.split(/\n{2,}/).map(paragraph => `<p>${escapeHtml(paragraph.trim()).replace(/\n/g, '<br>')}</p>`).join('');
+}
+
+function isFaqHeading(text = '') {
+  const normalized = String(text || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  return normalized.includes('preguntas frecuentes') || normalized.includes('faq') || normalized.includes('dudas frecuentes');
 }
 
 function postCategories(post) {
