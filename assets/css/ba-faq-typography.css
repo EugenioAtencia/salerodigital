@@ -1,0 +1,17 @@
+/* Blog article | ajuste tipográfico de FAQs | v1 */
+
+.ba-faq h3,
+.ba-faq-item h3,
+.ba-faq-question h3,
+.ba-faq-question-title,
+.ba-faq-toggle h3{
+  font-family:var(--font-sans) !important;
+  font-weight:600 !important;
+}
+
+.ba-faq-answer,
+.ba-faq-answer p,
+.ba-faq-answer li{
+  font-family:var(--font-sans) !important;
+  font-weight:400 !important;
+}
