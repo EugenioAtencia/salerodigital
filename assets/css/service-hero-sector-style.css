@@ -1,5 +1,5 @@
 .service-detail-page .site-header{
-  background:rgba(255,253,247,.82) !important;
+  background:rgba(255,253,247,.86) !important;
   border-bottom:1px solid rgba(31,42,36,.08) !important;
   box-shadow:0 1px 0 rgba(31,42,36,.035) !important;
   backdrop-filter:blur(18px) saturate(1.08) !important;
@@ -24,22 +24,21 @@
 .service-detail-hero-video,
 .service-detail-hero-image{
   z-index:-5 !important;
-  opacity:.96 !important;
-  filter:saturate(.98) contrast(.98) brightness(1.1) !important;
+  opacity:1 !important;
+  filter:saturate(1.02) contrast(.96) brightness(1.16) !important;
   transform:scale(1.01) !important;
 }
 
 .service-detail-veil{
   z-index:-4 !important;
   background:
-    linear-gradient(90deg,rgba(255,253,247,.98) 0%,rgba(255,253,247,.94) 30%,rgba(255,253,247,.74) 51%,rgba(255,253,247,.36) 72%,rgba(255,253,247,.10) 100%),
-    radial-gradient(ellipse at 20% 56%,rgba(255,253,247,.92) 0%,rgba(255,253,247,.74) 30%,rgba(255,253,247,.28) 56%,transparent 76%),
-    radial-gradient(circle at 78% 26%,rgba(200,255,90,.10),transparent 24rem) !important;
+    linear-gradient(90deg,rgba(255,253,247,1) 0%,rgba(255,253,247,.98) 26%,rgba(255,253,247,.86) 48%,rgba(255,253,247,.48) 70%,rgba(255,253,247,.12) 100%),
+    radial-gradient(ellipse at 18% 52%,rgba(255,253,247,1) 0%,rgba(255,253,247,.88) 30%,rgba(255,253,247,.38) 60%,transparent 78%) !important;
 }
 
 .service-detail-gradient{
   z-index:-3 !important;
-  background:linear-gradient(180deg,rgba(255,253,247,0) 64%,rgba(255,253,247,.46) 84%,#fffdf7 100%) !important;
+  background:linear-gradient(180deg,rgba(255,253,247,0) 66%,rgba(255,253,247,.26) 84%,#fffdf7 100%) !important;
 }
 
 .service-detail-hero-inner{
@@ -54,14 +53,14 @@
 
 .service-detail-back,
 .service-detail-kicker{
-  background:rgba(255,253,247,.86) !important;
+  background:rgba(255,253,247,.90) !important;
   border-color:rgba(31,42,36,.16) !important;
   color:#27311f !important;
   box-shadow:0 12px 34px rgba(31,42,36,.05) !important;
 }
 
 .service-detail-kicker{
-  background:rgba(200,255,90,.28) !important;
+  background:rgba(200,255,90,.32) !important;
   border-color:rgba(79,98,57,.22) !important;
 }
 
@@ -91,7 +90,7 @@
 
 .service-detail-actions .btn-secondary,
 .service-btn-glass{
-  background:rgba(255,253,247,.76) !important;
+  background:rgba(255,253,247,.82) !important;
   color:var(--ink) !important;
   border-color:rgba(31,42,36,.14) !important;
   box-shadow:0 14px 34px rgba(31,42,36,.07) !important;
@@ -124,7 +123,7 @@
 }
 
 .service-card-label{
-  background:rgba(255,253,247,.72) !important;
+  background:rgba(255,253,247,.78) !important;
   border-color:rgba(31,42,36,.14) !important;
   color:#27311f !important;
 }
