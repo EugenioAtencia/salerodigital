@@ -78,18 +78,20 @@ function renderPostPage(slug, post) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="${escapeAttr(metaDescription)}">
   <link rel="canonical" href="${escapeAttr(canonical)}">
+  ${featured ? `<meta property="og:image" content="${escapeAttr(featured.url)}">` : ''}
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
-  <link rel="stylesheet" href="/assets/css/blog-article.css?v=5">
+  <link rel="stylesheet" href="/assets/css/blog-article.css?v=6">
 </head>
 <body class="blog-article-page">
 ${renderHeader()}
   <main class="ba-page">
     <article class="ba-article">
-      <section class="ba-hero">
+      <section class="ba-hero ${featured ? 'ba-hero--with-image' : ''}">
+        ${featured ? `<img class="ba-hero-bg-image" src="${escapeAttr(featured.url)}" alt="" aria-hidden="true" loading="eager">` : ''}
         <div class="ba-hero-bg" aria-hidden="true"></div>
         <div class="container ba-hero-grid">
           <div class="ba-hero-copy">
@@ -103,17 +105,9 @@ ${renderHeader()}
               <span>Salero Digital</span>
             </div>
           </div>
-          <aside class="ba-hero-card" aria-label="Resumen del artículo">
-            <span>Receta digital</span>
-            <p>Un contenido de La Rebotica para tomar decisiones con más criterio y menos ruido.</p>
-            <div class="ba-hero-tags">
-              ${(categories.length ? categories : ['Marketing digital', 'Estrategia']).slice(0, 4).map(cat => `<strong>${escapeHtml(cat)}</strong>`).join('')}
-            </div>
-          </aside>
+          ${featured ? renderHeroImage(featured, title, categories) : renderHeroCard(categories)}
         </div>
       </section>
-
-      ${featured ? `<section class="ba-featured-section"><div class="container"><figure class="ba-featured"><img src="${escapeAttr(featured.url)}" alt="${escapeAttr(featured.alt || title)}" loading="eager"></figure></div></section>` : ''}
 
       <section class="ba-body-section">
         <div class="container ba-body-grid">
@@ -166,6 +160,28 @@ ${renderFooter()}
 </html>`;
 }
 
+function renderHeroCard(categories = []) {
+  return `<aside class="ba-hero-card" aria-label="Resumen del artículo">
+            <span>Receta digital</span>
+            <p>Un contenido de La Rebotica para tomar decisiones con más criterio y menos ruido.</p>
+            <div class="ba-hero-tags">
+              ${(categories.length ? categories : ['Marketing digital', 'Estrategia']).slice(0, 4).map(cat => `<strong>${escapeHtml(cat)}</strong>`).join('')}
+            </div>
+          </aside>`;
+}
+
+function renderHeroImage(featured, title, categories = []) {
+  return `<figure class="ba-hero-media">
+            <img src="${escapeAttr(featured.url)}" alt="${escapeAttr(featured.alt || title)}" loading="eager">
+            <figcaption>
+              <span>Imagen principal</span>
+              <div class="ba-hero-tags">
+                ${(categories.length ? categories : ['Marketing digital', 'Estrategia']).slice(0, 4).map(cat => `<strong>${escapeHtml(cat)}</strong>`).join('')}
+              </div>
+            </figcaption>
+          </figure>`;
+}
+
 function renderHeader() {
   return `  <header class="site-header">
     <div class="container header-inner">
@@ -204,7 +220,7 @@ function renderFooter() {
 }
 
 function renderErrorPage(title, text) {
-  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/css/main.css?v=50"><link rel="stylesheet" href="/assets/css/blog-article.css?v=5"></head><body class="blog-article-page">${renderHeader()}<main class="ba-page"><section class="ba-error-section"><div class="container"><div class="ba-error-card"><span class="eyebrow">La Rebotica</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(text)}</p><a class="btn btn-primary" href="/la-rebotica/">Volver a La Rebotica</a></div></div></section></main>${renderFooter()}<script src="/assets/js/config.js?v=50" defer></script><script src="/assets/js/helpers.js?v=50" defer></script></body></html>`;
+  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/css/main.css?v=50"><link rel="stylesheet" href="/assets/css/blog-article.css?v=6"></head><body class="blog-article-page">${renderHeader()}<main class="ba-page"><section class="ba-error-section"><div class="container"><div class="ba-error-card"><span class="eyebrow">La Rebotica</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(text)}</p><a class="btn btn-primary" href="/la-rebotica/">Volver a La Rebotica</a></div></div></section></main>${renderFooter()}<script src="/assets/js/config.js?v=50" defer></script><script src="/assets/js/helpers.js?v=50" defer></script></body></html>`;
 }
 
 function buildToc(content) {
