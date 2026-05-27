@@ -197,6 +197,7 @@ function renderCasoPage(slug, item) {
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
   <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=20">
   <link rel="stylesheet" href="/assets/css/caso-receta-carousel.css?v=8">
+  <link rel="stylesheet" href="/assets/css/caso-receta-carousel-fix.css?v=1">
 </head>
 <body class="caso-detalle-page caso-${escapeAttr(slug)}">
 ${renderHeader()}
@@ -432,44 +433,37 @@ function fieldValue(source, keys, fallback = '') {
 
 function fieldList(value) {
   if (!value) return [];
-  if (Array.isArray(value)) return value.map(item => stripHtml(valueToString(item))).filter(Boolean);
-  return String(stripHtml(valueToString(value))).split(/\n|,/).map(item => item.trim()).filter(Boolean);
-}
-
-function valueToString(value) {
-  if (value === null || typeof value === 'undefined') return '';
-  if (typeof value === 'string' || typeof value === 'number') return String(value);
-  if (Array.isArray(value)) return value.map(valueToString).filter(Boolean).join(', ');
-  if (typeof value === 'object') {
-    const candidates = [value.rendered, value.raw, value.title, value.name, value.label, value.value, value.text, value.alt, value.url, value.source_url];
-    for (const candidate of candidates) {
-      const result = valueToString(candidate);
-      if (result && result !== '[object Object]') return result;
-    }
-  }
-  return '';
+  if (Array.isArray(value)) return value.map(stripHtml).filter(Boolean);
+  return stripHtml(value).split(/\n|,/).map(x => x.trim()).filter(Boolean);
 }
 
 function htmlValue(value) {
   if (!value) return '';
   if (typeof value === 'object' && value.rendered) return value.rendered;
-  return formatText(valueToString(value));
+  if (typeof value === 'object' && value.raw) return formatText(value.raw);
+  return formatText(stripHtml(value));
 }
 
-function mediaUrl(value) {
-  if (!value) return '';
-  if (typeof value === 'string' && !/^\d+$/.test(value.trim())) return value;
-  if (typeof value === 'object') {
-    if (value.url) return value.url;
-    if (value.source_url) return value.source_url;
-    if (value.guid && value.guid.rendered) return value.guid.rendered;
-    if (value.sizes) {
-      if (value.sizes.large) return value.sizes.large;
-      if (value.sizes.medium_large) return value.sizes.medium_large;
-      if (value.sizes.full) return value.sizes.full;
+function formatText(value = '') {
+  const clean = stripHtml(value).trim();
+  if (!clean) return '';
+  return clean.split(/\n{2,}/).map(p => `<p>${escapeHtml(p).replace(/\n/g, '<br>')}</p>`).join('');
+}
+
+function mediaUrl(media) {
+  if (!media) return '';
+  if (typeof media === 'string' && /^https?:\/\//i.test(media)) return media;
+  if (typeof media === 'object') {
+    if (media.url) return media.url;
+    if (media.source_url) return media.source_url;
+    if (media.guid && media.guid.rendered) return media.guid.rendered;
+    if (media.sizes) {
+      if (media.sizes.large && typeof media.sizes.large === 'string') return media.sizes.large;
+      if (media.sizes.medium_large && typeof media.sizes.medium_large === 'string') return media.sizes.medium_large;
+      if (media.sizes.full && typeof media.sizes.full === 'string') return media.sizes.full;
     }
-    if (value.media_details && value.media_details.sizes) {
-      const sizes = value.media_details.sizes;
+    if (media.media_details && media.media_details.sizes) {
+      const sizes = media.media_details.sizes;
       if (sizes.large && sizes.large.source_url) return sizes.large.source_url;
       if (sizes.medium_large && sizes.medium_large.source_url) return sizes.medium_large.source_url;
       if (sizes.full && sizes.full.source_url) return sizes.full.source_url;
@@ -478,36 +472,42 @@ function mediaUrl(value) {
   return '';
 }
 
-function normalizeUrl(url) {
-  const value = stripHtml(valueToString(url));
-  if (!value) return '/hablamos/';
-  if (value.startsWith('http') || value.startsWith('/')) return value;
-  return `/${value.replace(/^\/+/, '')}`;
+function normalizeUrl(value) {
+  const clean = String(value || '').trim();
+  if (!clean) return '/hablamos/';
+  if (/^https?:\/\//i.test(clean) || clean.startsWith('/')) return clean;
+  return `/${clean.replace(/^\/+|\/+$/g, '')}/`;
 }
 
-function formatText(text) {
-  const clean = String(text || '').trim();
-  if (!clean) return '';
-  if (/<[a-z][\s\S]*>/i.test(clean)) return clean;
-  return clean.split(/\n{2,}/).map(paragraph => `<p>${escapeHtml(paragraph.trim())}</p>`).join('');
-}
-
-function sanitizeSlug(slug) {
-  return String(slug || '').toLowerCase().trim().replace(/[^a-z0-9-]/g, '').replace(/^-|-$/g, '');
+function sanitizeSlug(value) {
+  return String(value || '').toLowerCase().replace(/[^a-z0-9-_]/g, '').slice(0, 90);
 }
 
 function slugify(value) {
-  return stripHtml(valueToString(value)).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return stripHtml(value).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
-function stripHtml(value) {
-  return String(value || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+function stripHtml(value = '') {
+  if (value === null || typeof value === 'undefined') return '';
+  if (typeof value === 'object') {
+    if (value.rendered) return stripHtml(value.rendered);
+    if (value.raw) return stripHtml(value.raw);
+    if (value.name) return stripHtml(value.name);
+    if (value.title) return stripHtml(value.title);
+    return '';
+  }
+  return String(value).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-function escapeHtml(value) {
-  return String(value || '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[char]));
+function escapeHtml(value = '') {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
 }
 
-function escapeAttr(value) {
-  return escapeHtml(value);
+function escapeAttr(value = '') {
+  return escapeHtml(value).replace(/`/g, '&#096;');
 }
