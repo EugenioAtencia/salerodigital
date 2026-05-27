@@ -30,10 +30,40 @@ button{
 }
 
 h1,
+h1 *,
 h2,
+h2 *,
+h3,
 .logo,
+.logo *,
+.nav a,
+.nav a *,
+.nav-dropdown-toggle,
+.nav-dropdown-toggle *,
 .service-row h3,
+.service-row h3 *,
 .menu-card h3,
-.quote-inner h2{
-  font-family:var(--font-serif);
+.menu-card h3 *,
+.quote-inner h2,
+.quote-inner h2 *,
+.manifesto-inner h2,
+.manifesto-inner h2 *,
+.sectores-dynamic-grid .card h3,
+.sectores-dynamic-grid .card h3 *,
+.sector-card-dynamic h3,
+.sector-card-dynamic h3 *{
+  font-family:var(--font-serif) !important;
+}
+
+.nav-mobile-cta,
+.nav-mobile-cta *,
+.btn,
+.btn *,
+.card-link,
+.card-link *,
+.tag,
+.tag *,
+.sector-value-tag,
+.sector-value-tag *{
+  font-family:var(--font-sans) !important;
 }
