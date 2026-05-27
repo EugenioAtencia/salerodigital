@@ -83,7 +83,7 @@ function renderPostPage(slug, post) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
-  <link rel="stylesheet" href="/assets/css/blog-article.css?v=4">
+  <link rel="stylesheet" href="/assets/css/blog-article.css?v=5">
 </head>
 <body class="blog-article-page">
 ${renderHeader()}
@@ -204,7 +204,7 @@ function renderFooter() {
 }
 
 function renderErrorPage(title, text) {
-  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/css/main.css?v=50"><link rel="stylesheet" href="/assets/css/blog-article.css?v=4"></head><body class="blog-article-page">${renderHeader()}<main class="ba-page"><section class="ba-error-section"><div class="container"><div class="ba-error-card"><span class="eyebrow">La Rebotica</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(text)}</p><a class="btn btn-primary" href="/la-rebotica/">Volver a La Rebotica</a></div></div></section></main>${renderFooter()}<script src="/assets/js/config.js?v=50" defer></script><script src="/assets/js/helpers.js?v=50" defer></script></body></html>`;
+  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/css/main.css?v=50"><link rel="stylesheet" href="/assets/css/blog-article.css?v=5"></head><body class="blog-article-page">${renderHeader()}<main class="ba-page"><section class="ba-error-section"><div class="container"><div class="ba-error-card"><span class="eyebrow">La Rebotica</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(text)}</p><a class="btn btn-primary" href="/la-rebotica/">Volver a La Rebotica</a></div></div></section></main>${renderFooter()}<script src="/assets/js/config.js?v=50" defer></script><script src="/assets/js/helpers.js?v=50" defer></script></body></html>`;
 }
 
 function buildToc(content) {
@@ -353,14 +353,14 @@ function parseStrongFaqs(block = '') {
 function renderBlogFaqBlock(faqs = []) {
   if (!Array.isArray(faqs) || !faqs.length) return '';
 
-  return `<section class="ba-inline-faq" id="preguntas-frecuentes">
+  return `<section class="ba-inline-faq" id="preguntas-frecuentes" aria-labelledby="preguntas-frecuentes-title">
           <div class="ba-inline-faq-head">
             <span class="eyebrow">Preguntas frecuentes</span>
-            <h2>Primero aclaramos las dudas.</h2>
-            <p>Después activamos la estrategia con una receta digital pensada para tu negocio.</p>
+            <h2 id="preguntas-frecuentes-title">Preguntas frecuentes</h2>
+            <p>Primero aclaramos las dudas. Después activamos la estrategia con una receta digital pensada para tu negocio.</p>
           </div>
           <div class="ba-faq-accordion">
-            ${faqs.map((faq, index) => `<details ${index === 0 ? 'open' : ''}><summary><span>${escapeHtml(stripHtml(faq.q))}</span></summary><div class="ba-faq-answer">${formatFaqAnswer(faq.a)}</div></details>`).join('')}
+            ${faqs.map((faq, index) => `<details ${index === 0 ? 'open' : ''}><summary><h3>${escapeHtml(stripHtml(faq.q))}</h3></summary><div class="ba-faq-answer">${formatFaqAnswer(faq.a)}</div></details>`).join('')}
           </div>
         </section>`;
 }
