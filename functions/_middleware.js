@@ -7,6 +7,7 @@ const SERVICE_RELATED_JS = '<script src="/assets/js/service-related.js?v=1" defe
 const SERVICE_HERO_SECTOR_CSS = '<link rel="stylesheet" href="/assets/css/service-hero-sector-style.css?v=4">';
 const SERVICE_MOBILE_NAV_CSS = '<link rel="stylesheet" href="/assets/css/service-mobile-nav.css?v=1">';
 const NAV_SERVICE_DROPDOWN_JS = '<script src="/assets/js/nav-service-dropdown.js?v=1" defer></script>';
+const CASE_RECIPE_FIX_CSS = '<link rel="stylesheet" href="/assets/css/caso-receta-carousel-fix.css?v=3">';
 const REMOVED_MENU_PACKS = new Set([
   '/nuestros-menus/media-racion/',
   '/nuestros-menus/el-pellizco/',
@@ -101,6 +102,7 @@ export async function onRequest(context) {
   let nextHtml = injectMontserrat(html);
   nextHtml = injectNavServiceDropdown(nextHtml);
   nextHtml = injectServiceAssets(nextHtml, normalizedPath);
+  nextHtml = versionCaseRecipeFix(nextHtml);
   nextHtml = normalizeFooter(nextHtml);
   nextHtml = injectSeo(nextHtml, SEO_PAGES[normalizedPath]);
 
@@ -147,6 +149,10 @@ function injectServiceAssets(html = '', path = '') {
     next = next.includes('</body>') ? next.replace('</body>', `  ${SERVICE_RELATED_JS}\n</body>`) : `${next}\n${SERVICE_RELATED_JS}`;
   }
   return next;
+}
+
+function versionCaseRecipeFix(html = '') {
+  return injectOrReplaceStylesheet(html, '/assets/css/caso-receta-carousel-fix.css', CASE_RECIPE_FIX_CSS);
 }
 
 function injectOrReplaceStylesheet(html = '', hrefPath = '', tag = '') {
