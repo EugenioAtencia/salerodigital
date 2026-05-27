@@ -9,6 +9,7 @@
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
   <link rel="stylesheet" href="/assets/css/la-rebotica.css?v=2">
+  <link rel="stylesheet" href="/assets/css/la-rebotica-hero-video.css?v=1">
 </head>
 <body class="page-la-rebotica">
   <header class="site-header">
@@ -40,7 +41,11 @@
   </header>
 
   <main class="rb-page">
-    <section class="rb-hero" aria-labelledby="rb-hero-title">
+    <section class="rb-hero rb-hero--video" aria-labelledby="rb-hero-title">
+      <video class="rb-hero__video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+        <source src="/assets/video/la-rebotica.mp4" type="video/mp4">
+      </video>
+      <div class="rb-hero__veil" aria-hidden="true"></div>
       <div class="rb-hero__grain" aria-hidden="true"></div>
       <div class="container rb-hero__inner">
         <div class="rb-hero__content">
