@@ -127,11 +127,15 @@ export function renderJsonLd(schema) {
 
 export function organizationSchema() {
   return {
-    '@type': ['Organization', 'LocalBusiness'],
+    '@type': ['Organization', 'ProfessionalService'],
     '@id': ORGANIZATION_ID,
     name: 'Salero Digital',
+    legalName: 'Salero Digital',
     url: SITE_ORIGIN,
-    logo: `${SITE_ORIGIN}/assets/img/favicon.svg`,
+    logo: {
+      '@type': 'ImageObject',
+      url: `${SITE_ORIGIN}/assets/img/favicon.svg`
+    },
     image: `${SITE_ORIGIN}/assets/img/favicon.svg`,
     slogan: 'Tu marca, con salero',
     description: 'Agencia digital para negocios locales que necesitan estrategia, desarrollo web, SEO, redes sociales y campañas con criterio comercial.',
@@ -142,7 +146,23 @@ export function organizationSchema() {
       addressRegion: 'Sevilla',
       addressCountry: 'ES'
     },
-    areaServed: DEFAULT_AREA_SERVED.map((name) => ({ '@type': 'AdministrativeArea', name }))
+    areaServed: DEFAULT_AREA_SERVED.map((name) => ({ '@type': 'AdministrativeArea', name })),
+    contactPoint: {
+      '@type': 'ContactPoint',
+      telephone: '+34665688916',
+      contactType: 'customer service',
+      availableLanguage: ['es']
+    },
+    knowsAbout: [
+      'marketing digital',
+      'desarrollo web',
+      'SEO local',
+      'redes sociales',
+      'campañas digitales',
+      'Google Ads',
+      'Meta Ads',
+      'estrategia de contenidos'
+    ]
   };
 }
 
@@ -151,13 +171,14 @@ export function websiteSchema() {
     '@type': 'WebSite',
     '@id': WEBSITE_ID,
     name: 'Salero Digital',
+    alternateName: 'Agencia digital con salero',
     url: SITE_ORIGIN,
     inLanguage: 'es-ES',
     publisher: { '@id': ORGANIZATION_ID }
   };
 }
 
-export function webPageSchema({ url, name, description, type = 'WebPage', primaryImage, datePublished, dateModified } = {}) {
+export function webPageSchema({ url, name, description, type = 'WebPage', primaryImage, datePublished, dateModified, mainEntity } = {}) {
   return {
     '@type': type,
     '@id': `${absoluteUrl(url)}#webpage`,
@@ -167,6 +188,7 @@ export function webPageSchema({ url, name, description, type = 'WebPage', primar
     inLanguage: 'es-ES',
     isPartOf: { '@id': WEBSITE_ID },
     about: { '@id': ORGANIZATION_ID },
+    mainEntity: mainEntity ? { '@id': mainEntity } : undefined,
     primaryImageOfPage: primaryImage ? { '@type': 'ImageObject', url: absoluteUrl(primaryImage) } : undefined,
     datePublished,
     dateModified
@@ -209,7 +231,7 @@ export function serviceSchema({ name, description, url, serviceType, audience, a
   };
 }
 
-export function offerCatalogSchema({ url = '/nuestros-menus/', name = 'Nuestros menús digitales', offers } = {}) {
+export function offerCatalogSchema({ url = '/nuestros-menus/', name = 'Packs de marketing digital de Salero Digital', offers } = {}) {
   const items = Array.isArray(offers) && offers.length ? offers : Object.entries(PACKS).map(([slug, pack]) => ({ slug, ...pack }));
 
   return {
@@ -219,13 +241,15 @@ export function offerCatalogSchema({ url = '/nuestros-menus/', name = 'Nuestros 
     url: absoluteUrl(url),
     itemListElement: items.map((item) => ({
       '@type': 'Offer',
+      '@id': `${absoluteUrl('/nuestros-menus/')}#${sanitizeId(item.slug || item.name)}`,
       name: item.name,
       description: item.description,
-      url: absoluteUrl(item.url || `/nuestros-menus/${item.slug}/`),
+      url: `${absoluteUrl('/nuestros-menus/')}#${sanitizeId(item.slug || item.name)}`,
       itemOffered: {
         '@type': 'Service',
         name: item.serviceName || item.name,
-        provider: { '@id': ORGANIZATION_ID }
+        provider: { '@id': ORGANIZATION_ID },
+        areaServed: DEFAULT_AREA_SERVED.map((name) => ({ '@type': 'AdministrativeArea', name }))
       }
     }))
   };
@@ -264,6 +288,7 @@ export function blogPostingSchema({ post, title, description, url, image, catego
       datePublished: published,
       dateModified: modified,
       inLanguage: 'es-ES',
+      isAccessibleForFree: true,
       author: { '@id': ORGANIZATION_ID },
       publisher: { '@id': ORGANIZATION_ID },
       articleSection: categories,
@@ -338,21 +363,9 @@ export function schemaForPath(pathname = '/') {
     const url = `/el-menu/${serviceMatch}/`;
     return schemaGraph([
       common,
-      webPageSchema({ url, name: item.name, description: item.description, type: 'ServicePage' }),
+      webPageSchema({ url, name: item.name, description: item.description, type: 'ServicePage', mainEntity: `${absoluteUrl(url)}#service` }),
       breadcrumbSchema([{ name: 'Inicio', url: '/' }, { name: 'El Menú', url: '/el-menu/' }, { name: item.name, url }]),
       serviceSchema({ ...item, url })
-    ]);
-  }
-
-  const packMatch = matchSlug(path, '/nuestros-menus/');
-  if (packMatch && PACKS[packMatch]) {
-    const item = PACKS[packMatch];
-    const url = `/nuestros-menus/${packMatch}/`;
-    return schemaGraph([
-      common,
-      webPageSchema({ url, name: item.name, description: item.description }),
-      breadcrumbSchema([{ name: 'Inicio', url: '/' }, { name: 'Nuestros menús', url: '/nuestros-menus/' }, { name: item.name, url }]),
-      offerCatalogSchema({ url: '/nuestros-menus/', offers: [{ slug: packMatch, ...item }] })
     ]);
   }
 
@@ -362,7 +375,7 @@ export function schemaForPath(pathname = '/') {
     const url = `/sectores/${sectorMatch}/`;
     return schemaGraph([
       common,
-      webPageSchema({ url, name: item.name, description: item.description, type: 'ServicePage' }),
+      webPageSchema({ url, name: item.name, description: item.description, type: 'ServicePage', mainEntity: `${absoluteUrl(url)}#service` }),
       breadcrumbSchema([{ name: 'Inicio', url: '/' }, { name: 'Sectores', url: '/sectores/' }, { name: item.name, url }]),
       serviceSchema({ ...item, url })
     ]);
@@ -374,7 +387,7 @@ export function schemaForPath(pathname = '/') {
     const url = `/casos-de-exito/${caseMatch}/`;
     return schemaGraph([
       common,
-      webPageSchema({ url, name: item.name, description: item.description }),
+      webPageSchema({ url, name: item.name, description: item.description, mainEntity: `${absoluteUrl(url)}#case-study` }),
       breadcrumbSchema([{ name: 'Inicio', url: '/' }, { name: 'Casos de éxito', url: '/casos-de-exito/' }, { name: item.name, url }]),
       caseStudySchema({ title: item.name, description: item.description, url, client: item.name, service: item.service })
     ]);
@@ -401,45 +414,49 @@ function staticPageData(path) {
     },
     '/el-menu/': {
       url: '/el-menu/',
-      name: 'El Menú',
-      description: 'Servicios digitales de Salero Digital: desarrollo web, SEO local, redes sociales y campañas de publicidad digital.',
+      name: 'Servicios de marketing digital',
+      description: 'Desarrollo web, SEO local, redes sociales y campañas digitales para negocios que quieren dejar de estar sosos en internet.',
       type: 'CollectionPage',
+      mainEntity: `${absoluteUrl('/el-menu/')}#item-list`,
       breadcrumb: [{ name: 'Inicio', url: '/' }, { name: 'El Menú', url: '/el-menu/' }],
       extra: itemListSchema({
         url: '/el-menu/',
-        name: 'Servicios digitales',
+        name: 'Servicios digitales de Salero Digital',
         items: Object.entries(SERVICES).map(([slug, item]) => ({ name: item.name, url: `/el-menu/${slug}/` }))
       })
     },
     '/nuestros-menus/': {
       url: '/nuestros-menus/',
-      name: 'Nuestros menús',
-      description: 'Packs comerciales de Salero Digital para empezar con presencia digital, crecer o activar una estrategia integral.',
+      name: 'Packs de marketing digital',
+      description: 'Elige el menú digital que necesita tu negocio: presencia, crecimiento o estrategia integral con web, SEO, redes y campañas.',
       type: 'CollectionPage',
+      mainEntity: `${absoluteUrl('/nuestros-menus/')}#offer-catalog`,
       breadcrumb: [{ name: 'Inicio', url: '/' }, { name: 'Nuestros menús', url: '/nuestros-menus/' }],
       extra: offerCatalogSchema()
     },
     '/sectores/': {
       url: '/sectores/',
-      name: 'Sectores',
-      description: 'Marketing digital para sectores que mueven la comarca: hostelería, comercio local, pymes, almazaras y aceite.',
+      name: 'Marketing para sectores locales',
+      description: 'Estrategias digitales para hostelería, comercios, pymes y marcas con origen. Marketing local con criterio, cercanía y salero.',
       type: 'CollectionPage',
+      mainEntity: `${absoluteUrl('/sectores/')}#item-list`,
       breadcrumb: [{ name: 'Inicio', url: '/' }, { name: 'Sectores', url: '/sectores/' }],
       extra: itemListSchema({
         url: '/sectores/',
-        name: 'Sectores trabajados',
+        name: 'Sectores trabajados por Salero Digital',
         items: Object.entries(SECTORS).map(([slug, item]) => ({ name: item.name, url: `/sectores/${slug}/` }))
       })
     },
     '/casos-de-exito/': {
       url: '/casos-de-exito/',
-      name: 'Casos de éxito',
-      description: 'Portfolio y casos de éxito de Salero Digital en estrategia, desarrollo web, campañas, contenidos y marketing digital.',
+      name: 'Casos de éxito de marketing digital',
+      description: 'Proyectos reales de estrategia, desarrollo web, contenidos y campañas para marcas, negocios locales y organizaciones.',
       type: 'CollectionPage',
+      mainEntity: `${absoluteUrl('/casos-de-exito/')}#item-list`,
       breadcrumb: [{ name: 'Inicio', url: '/' }, { name: 'Casos de éxito', url: '/casos-de-exito/' }],
       extra: itemListSchema({
         url: '/casos-de-exito/',
-        name: 'Casos de éxito',
+        name: 'Casos de éxito de Salero Digital',
         items: Object.entries(CASES).map(([slug, item]) => ({ name: item.name, url: `/casos-de-exito/${slug}/` }))
       })
     },
@@ -452,8 +469,8 @@ function staticPageData(path) {
     },
     '/hablamos/': {
       url: '/hablamos/',
-      name: '¿Hablamos?',
-      description: 'Página de contacto de Salero Digital para solicitar una cata digital y revisar oportunidades de mejora online.',
+      name: 'Hablemos de tu estrategia digital',
+      description: 'Cuéntanos qué necesita tu negocio y preparamos una cata digital para mejorar tu web, visibilidad, redes o campañas.',
       type: 'ContactPage',
       breadcrumb: [{ name: 'Inicio', url: '/' }, { name: '¿Hablamos?', url: '/hablamos/' }]
     },
@@ -466,8 +483,8 @@ function staticPageData(path) {
     },
     '/la-receta/': {
       url: '/la-receta/',
-      name: 'La Receta',
-      description: 'La filosofía, el enfoque y la forma de trabajar de Salero Digital como agencia cercana, senior y orientada a negocio.',
+      name: 'La receta de Salero Digital',
+      description: 'Conoce la forma de trabajar de Salero Digital: estrategia, cercanía, oficio y marketing digital con los pies en la tierra.',
       type: 'AboutPage',
       breadcrumb: [{ name: 'Inicio', url: '/' }, { name: 'La Receta', url: '/la-receta/' }]
     }
@@ -527,4 +544,13 @@ function stripHtml(value = '') {
 
 function wordCount(value = '') {
   return stripHtml(value).split(/\s+/).filter(Boolean).length;
+}
+
+function sanitizeId(value = '') {
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
