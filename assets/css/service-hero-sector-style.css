@@ -29,6 +29,17 @@
   background:#fffdf7 !important;
 }
 
+.service-detail-page .service-content-section{
+  margin-top:-1px !important;
+  background:#fffdf7 !important;
+}
+
+.service-detail-page .service-content-section::before,
+.service-detail-page .service-content-section::after{
+  background:transparent !important;
+  opacity:0 !important;
+}
+
 .service-detail-hero{
   position:relative !important;
   min-height:92vh !important;
