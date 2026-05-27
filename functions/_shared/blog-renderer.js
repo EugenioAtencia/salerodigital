@@ -39,10 +39,7 @@ async function fetchPost(slug) {
     }
   });
 
-  if (!response.ok) {
-    throw new Error(`WordPress respondió con estado ${response.status}`);
-  }
-
+  if (!response.ok) throw new Error(`WordPress respondió con estado ${response.status}`);
   const data = await response.json();
   return Array.isArray(data) && data.length ? data[0] : null;
 }
@@ -86,7 +83,7 @@ function renderPostPage(slug, post) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
-  <link rel="stylesheet" href="/assets/css/blog-article.css?v=3">
+  <link rel="stylesheet" href="/assets/css/blog-article.css?v=4">
 </head>
 <body class="blog-article-page">
 ${renderHeader()}
@@ -130,11 +127,10 @@ ${renderHeader()}
           </div>
           <div class="ba-content-wrap">
             <div class="ba-content">${rawContent}</div>
+            ${faqBlock}
           </div>
         </div>
       </section>
-
-      ${faqBlock}
 
       <section class="ba-final-cta">
         <div class="container ba-final-box">
@@ -208,7 +204,7 @@ function renderFooter() {
 }
 
 function renderErrorPage(title, text) {
-  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/css/main.css?v=50"><link rel="stylesheet" href="/assets/css/blog-article.css?v=3"></head><body class="blog-article-page">${renderHeader()}<main class="ba-page"><section class="ba-error-section"><div class="container"><div class="ba-error-card"><span class="eyebrow">La Rebotica</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(text)}</p><a class="btn btn-primary" href="/la-rebotica/">Volver a La Rebotica</a></div></div></section></main>${renderFooter()}<script src="/assets/js/config.js?v=50" defer></script><script src="/assets/js/helpers.js?v=50" defer></script></body></html>`;
+  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/css/main.css?v=50"><link rel="stylesheet" href="/assets/css/blog-article.css?v=4"></head><body class="blog-article-page">${renderHeader()}<main class="ba-page"><section class="ba-error-section"><div class="container"><div class="ba-error-card"><span class="eyebrow">La Rebotica</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(text)}</p><a class="btn btn-primary" href="/la-rebotica/">Volver a La Rebotica</a></div></div></section></main>${renderFooter()}<script src="/assets/js/config.js?v=50" defer></script><script src="/assets/js/helpers.js?v=50" defer></script></body></html>`;
 }
 
 function buildToc(content) {
@@ -217,7 +213,6 @@ function buildToc(content) {
     .filter(item => item.text.length > 0 && !isFaqHeading(item.text));
 
   if (headings.length < 3) return '';
-
   return `<aside class="ba-toc" aria-label="Índice del artículo"><span>En esta receta</span>${headings.map(item => `<a class="ba-toc__link ba-toc__link--h${item.level}" href="#${escapeAttr(item.id)}">${escapeHtml(item.text)}</a>`).join('')}</aside>`;
 }
 
@@ -260,18 +255,11 @@ function extractBlogFaqs(content = '') {
 
   const sectionStart = headingMatch.index;
   const sectionEnd = findNextHeadingBoundary(html, headingMatch.end, headingMatch.level);
-  const faqSection = html.slice(sectionStart, sectionEnd);
   const sectionBody = html.slice(headingMatch.end, sectionEnd);
   let faqs = parseHeadingFaqs(sectionBody);
 
-  if (!faqs.length) {
-    faqs = parseDetailsFaqs(sectionBody).faqs;
-  }
-
-  if (!faqs.length) {
-    faqs = parseStrongFaqs(sectionBody);
-  }
-
+  if (!faqs.length) faqs = parseDetailsFaqs(sectionBody).faqs;
+  if (!faqs.length) faqs = parseStrongFaqs(sectionBody);
   if (!faqs.length) return { content: html, faqs: [] };
 
   const cleaned = `${html.slice(0, sectionStart)}${html.slice(sectionEnd)}`.trim();
@@ -285,11 +273,7 @@ function findFaqHeading(html = '') {
   while ((match = re.exec(html))) {
     const text = stripHtml(match[3]);
     if (!isFaqHeading(text)) continue;
-    return {
-      index: match.index,
-      end: match.index + match[0].length,
-      level: Number(match[1])
-    };
+    return { index: match.index, end: match.index + match[0].length, level: Number(match[1]) };
   }
 
   return null;
@@ -339,10 +323,7 @@ function parseDetailsFaqs(html = '') {
     if (q && a) faqs.push({ q, a });
   }
 
-  if (faqs.length) {
-    content = source.replace(detailRe, '').trim();
-  }
-
+  if (faqs.length) content = source.replace(detailRe, '').trim();
   return { content, faqs };
 }
 
@@ -355,8 +336,8 @@ function parseStrongFaqs(block = '') {
     if (!/<p/i.test(item) || !stripHtml(item).includes('?')) continue;
     const q = stripHtml(item);
     const answerParts = [];
-
     let cursor = index + 1;
+
     while (cursor < pieces.length && !stripHtml(pieces[cursor]).includes('?')) {
       answerParts.push(pieces[cursor]);
       cursor += 1;
@@ -372,18 +353,16 @@ function parseStrongFaqs(block = '') {
 function renderBlogFaqBlock(faqs = []) {
   if (!Array.isArray(faqs) || !faqs.length) return '';
 
-  return `<section class="ba-faq-section" id="preguntas-frecuentes">
-        <div class="container ba-faq-block">
-          <div class="ba-faq-copy">
+  return `<section class="ba-inline-faq" id="preguntas-frecuentes">
+          <div class="ba-inline-faq-head">
             <span class="eyebrow">Preguntas frecuentes</span>
-            <h2>Primero aclaramos las dudas. Después activamos la estrategia.</h2>
-            <p>Resolvemos las preguntas clave antes de proponer una receta digital para tu negocio.</p>
+            <h2>Primero aclaramos las dudas.</h2>
+            <p>Después activamos la estrategia con una receta digital pensada para tu negocio.</p>
           </div>
           <div class="ba-faq-accordion">
             ${faqs.map((faq, index) => `<details ${index === 0 ? 'open' : ''}><summary><span>${escapeHtml(stripHtml(faq.q))}</span></summary><div class="ba-faq-answer">${formatFaqAnswer(faq.a)}</div></details>`).join('')}
           </div>
-        </div>
-      </section>`;
+        </section>`;
 }
 
 function formatFaqAnswer(value = '') {
@@ -420,10 +399,7 @@ function featuredImage(post) {
   const selected = sizes && (sizes.full || sizes.large || sizes.medium_large || sizes.medium);
   const url = selected?.source_url || media.source_url;
   if (!url) return null;
-  return {
-    url,
-    alt: media.alt_text || stripHtml(post?.title?.rendered || '') || 'Imagen del artículo'
-  };
+  return { url, alt: media.alt_text || stripHtml(post?.title?.rendered || '') || 'Imagen del artículo' };
 }
 
 function readingTime(html) {
