@@ -197,7 +197,7 @@ function renderCasoPage(slug, item) {
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
   <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=20">
   <link rel="stylesheet" href="/assets/css/caso-receta-carousel.css?v=8">
-  <link rel="stylesheet" href="/assets/css/caso-receta-carousel-fix.css?v=1">
+  <link rel="stylesheet" href="/assets/css/caso-receta-carousel-fix.css?v=2">
 </head>
 <body class="caso-detalle-page caso-${escapeAttr(slug)}">
 ${renderHeader()}
