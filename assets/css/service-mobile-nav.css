@@ -1,0 +1,68 @@
+/* Corrección específica del menú móvil en páginas hijas de El Menú */
+@media(max-width:880px){
+  body.service-detail-page.menu-open{
+    overflow:hidden !important;
+  }
+
+  body.service-detail-page.menu-open .site-header{
+    background:transparent !important;
+    border-bottom-color:transparent !important;
+    box-shadow:none !important;
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+  }
+
+  body.service-detail-page .site-header .menu-toggle,
+  body.service-detail-page.menu-open .site-header .menu-toggle{
+    display:inline-grid !important;
+    place-items:center !important;
+    width:58px !important;
+    height:58px !important;
+    min-width:58px !important;
+    min-height:58px !important;
+    border:0 !important;
+    border-radius:50% !important;
+    background:#1f2a24 !important;
+    color:#fffdf7 !important;
+    font-family:var(--font-sans) !important;
+    font-size:1.55rem !important;
+    font-weight:900 !important;
+    line-height:1 !important;
+    box-shadow:none !important;
+    text-shadow:none !important;
+  }
+
+  body.service-detail-page .site-header .nav{
+    background:rgba(246,241,232,.97) !important;
+    color:#1f2a24 !important;
+  }
+
+  body.service-detail-page .site-header .nav a,
+  body.service-detail-page .site-header .nav-dropdown-toggle{
+    color:#1f2a24 !important;
+    text-shadow:none !important;
+  }
+
+  body.service-detail-page .site-header .nav .nav-mobile-cta{
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    min-height:58px !important;
+    margin-top:4px !important;
+    padding:17px 24px !important;
+    border-radius:999px !important;
+    background:#1f2a24 !important;
+    color:#fffdf7 !important;
+    font-family:var(--font-sans) !important;
+    font-size:1rem !important;
+    font-weight:900 !important;
+    letter-spacing:0 !important;
+    line-height:1.1 !important;
+    text-align:center !important;
+  }
+
+  body.service-detail-page .site-header .nav .nav-submenu a{
+    color:#1f2a24 !important;
+  }
+}
