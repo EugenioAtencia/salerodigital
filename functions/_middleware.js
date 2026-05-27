@@ -5,6 +5,7 @@ const MONTSERRAT_CSS = '<link rel="stylesheet" href="/assets/css/font-body-monts
 const SERVICE_RELATED_CSS = '<link rel="stylesheet" href="/assets/css/service-related.css?v=1">';
 const SERVICE_RELATED_JS = '<script src="/assets/js/service-related.js?v=1" defer></script>';
 const SERVICE_HERO_SECTOR_CSS = '<link rel="stylesheet" href="/assets/css/service-hero-sector-style.css?v=4">';
+const SERVICE_MOBILE_NAV_CSS = '<link rel="stylesheet" href="/assets/css/service-mobile-nav.css?v=1">';
 const REMOVED_MENU_PACKS = new Set([
   '/nuestros-menus/media-racion/',
   '/nuestros-menus/el-pellizco/',
@@ -132,6 +133,7 @@ function injectServiceAssets(html = '', path = '') {
     next = next.includes('</head>') ? next.replace('</head>', `  ${SERVICE_RELATED_CSS}\n</head>`) : `${next}\n${SERVICE_RELATED_CSS}`;
   }
   next = injectOrReplaceStylesheet(next, '/assets/css/service-hero-sector-style.css', SERVICE_HERO_SECTOR_CSS);
+  next = injectOrReplaceStylesheet(next, '/assets/css/service-mobile-nav.css', SERVICE_MOBILE_NAV_CSS);
   if (!next.includes('/assets/js/service-related.js')) {
     next = next.includes('</body>') ? next.replace('</body>', `  ${SERVICE_RELATED_JS}\n</body>`) : `${next}\n${SERVICE_RELATED_JS}`;
   }
