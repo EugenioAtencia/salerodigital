@@ -1,4 +1,4 @@
-/* Casos de éxito | Refinado de ficha informativa | v3 */
+/* Casos de éxito | Refinado de ficha informativa | v4 */
 
 .casos-carousel-stage .caso-content{
   width:min(330px,23vw);
@@ -182,6 +182,10 @@
   left:calc(100% + clamp(18px,2vw,34px));
 }
 
+.casos-carousel-stage .casos-carousel-controls{
+  box-shadow:none !important;
+}
+
 @media(max-width:1180px){
   .casos-carousel-stage .caso-content{
     width:min(290px,31vw);
@@ -200,38 +204,191 @@
 }
 
 @media(max-width:900px){
-  .casos-carousel-stage .caso-content{
-    width:auto;
-    max-height:none;
-    padding:22px;
+  .casos-grid-section{
+    padding-top:clamp(30px,7vw,54px);
+    padding-bottom:clamp(42px,8vw,72px);
   }
 
-  .casos-carousel-stage .caso-card-top h3,
-  .casos-carousel-stage .caso-card h3{
-    font-size:clamp(2rem,9vw,3.4rem);
-  }
-
-  .casos-carousel-stage .caso-excerpt,
-  .casos-carousel-stage .caso-card p,
-  .casos-carousel-stage .caso-meta{
-    max-width:none;
+  .casos-carousel-stage{
+    gap:14px;
+    padding-top:0;
   }
 
   .casos-carousel-stage .casos-carousel-viewport{
-    height:auto;
+    height:auto !important;
+    min-height:0 !important;
+    overflow:visible !important;
+    padding:0 18px !important;
+  }
+
+  .casos-carousel-stage .casos-carousel-track{
+    height:auto !important;
+    align-items:stretch;
   }
 
   .casos-carousel-stage .caso-card-visual,
   .casos-carousel-stage .caso-card-visual.is-active{
     aspect-ratio:auto;
-    width:auto;
-    height:auto;
+    position:relative !important;
+    top:auto !important;
+    left:auto !important;
+    flex:0 0 calc(100vw - 36px) !important;
+    width:auto !important;
+    height:auto !important;
+    min-height:0 !important;
+    display:flex !important;
+    flex-direction:column !important;
     filter:none;
     opacity:1;
-    transform:none;
+    transform:none !important;
+    overflow:visible !important;
+  }
+
+  .casos-carousel-stage .caso-card-visual:not(.is-active){
+    display:none !important;
   }
 
   .casos-carousel-stage .caso-card-visual:not(.is-active) .caso-media:after{
+    display:none;
+  }
+
+  .casos-carousel-stage .caso-media{
+    width:100%;
+    height:auto !important;
+    aspect-ratio:16 / 10 !important;
+    border-radius:28px !important;
+    box-shadow:none !important;
+  }
+
+  .casos-carousel-stage .caso-media img,
+  .casos-carousel-stage .caso-media video,
+  .casos-carousel-stage .caso-media-video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+
+  .casos-carousel-stage .caso-content{
+    position:relative !important;
+    inset:auto !important;
+    left:auto !important;
+    top:auto !important;
+    width:100% !important;
+    max-width:none !important;
+    max-height:none !important;
+    margin-top:12px !important;
+    padding:18px 18px 20px !important;
+    border-radius:24px !important;
+    opacity:1 !important;
+    transform:none !important;
+    overflow:visible !important;
+    gap:12px;
+    box-shadow:none !important;
+    background:rgba(255,253,247,.92);
+  }
+
+  .casos-carousel-stage .caso-card-visual:not(.is-active) .caso-content{
+    opacity:1 !important;
+    transform:none !important;
+  }
+
+  .casos-carousel-stage .caso-card-top{
+    gap:9px;
+  }
+
+  .casos-carousel-stage .caso-content-kicker{
+    display:-webkit-box;
+    -webkit-line-clamp:1;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+    font-size:.74rem;
+    line-height:1.2;
+  }
+
+  .casos-carousel-stage .caso-card-top h3,
+  .casos-carousel-stage .caso-card h3{
+    display:block;
+    font-size:clamp(2rem,8vw,3rem);
+    line-height:.98;
+  }
+
+  .casos-carousel-stage .caso-excerpt,
+  .casos-carousel-stage .caso-card p{
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+    max-width:none;
+    font-size:.92rem;
+    line-height:1.45;
+  }
+
+  .casos-carousel-stage .caso-meta{
+    max-width:none;
+    gap:8px;
+  }
+
+  .casos-carousel-stage .caso-service,
+  .casos-carousel-stage .caso-proof{
+    gap:3px;
+  }
+
+  .casos-carousel-stage .caso-service{
+    padding-bottom:8px;
+  }
+
+  .casos-carousel-stage .caso-meta small{
+    font-size:.68rem;
+  }
+
+  .casos-carousel-stage .caso-meta strong{
+    -webkit-line-clamp:1;
+    font-size:.78rem;
+    line-height:1.28;
+  }
+
+  .casos-carousel-stage .caso-link{
+    min-width:0;
+    min-height:42px;
+    width:max-content;
+    margin-top:6px;
+    padding:10px 22px;
+    font-size:.86rem;
+  }
+
+  .casos-carousel-stage .casos-carousel-controls{
+    width:min(100% - 36px,420px) !important;
+    margin-top:10px !important;
+    padding:0 !important;
+    justify-content:center !important;
+    gap:12px !important;
+    background:transparent !important;
+    box-shadow:none !important;
+  }
+
+  .casos-carousel-stage .casos-carousel-btn{
+    width:48px;
+    height:48px;
+    box-shadow:none !important;
+  }
+}
+
+@media(max-width:520px){
+  .casos-carousel-stage .caso-media{
+    aspect-ratio:16 / 11 !important;
+  }
+
+  .casos-carousel-stage .caso-content{
+    padding:16px !important;
+    gap:10px;
+  }
+
+  .casos-carousel-stage .caso-card-top h3,
+  .casos-carousel-stage .caso-card h3{
+    font-size:clamp(1.82rem,8.4vw,2.45rem);
+  }
+
+  .casos-carousel-stage .caso-proof{
     display:none;
   }
 }
