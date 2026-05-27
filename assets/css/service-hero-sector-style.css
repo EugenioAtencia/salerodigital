@@ -20,7 +20,12 @@
   text-shadow:none !important;
 }
 
-.service-detail-root{
+.service-detail-root,
+.service-content-section,
+.service-content-grid,
+.service-main-content,
+.service-sidebar,
+.service-final-cta{
   background:#fffdf7 !important;
 }
 
