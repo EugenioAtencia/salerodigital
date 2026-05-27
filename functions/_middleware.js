@@ -6,6 +6,7 @@ const SERVICE_RELATED_CSS = '<link rel="stylesheet" href="/assets/css/service-re
 const SERVICE_RELATED_JS = '<script src="/assets/js/service-related.js?v=1" defer></script>';
 const SERVICE_HERO_SECTOR_CSS = '<link rel="stylesheet" href="/assets/css/service-hero-sector-style.css?v=4">';
 const SERVICE_MOBILE_NAV_CSS = '<link rel="stylesheet" href="/assets/css/service-mobile-nav.css?v=1">';
+const NAV_SERVICE_DROPDOWN_JS = '<script src="/assets/js/nav-service-dropdown.js?v=1" defer></script>';
 const REMOVED_MENU_PACKS = new Set([
   '/nuestros-menus/media-racion/',
   '/nuestros-menus/el-pellizco/',
@@ -98,6 +99,7 @@ export async function onRequest(context) {
   const schema = isBlogArticlePath(requestUrl.pathname) ? null : schemaForPath(requestUrl.pathname);
   const html = await response.text();
   let nextHtml = injectMontserrat(html);
+  nextHtml = injectNavServiceDropdown(nextHtml);
   nextHtml = injectServiceAssets(nextHtml, normalizedPath);
   nextHtml = normalizeFooter(nextHtml);
   nextHtml = injectSeo(nextHtml, SEO_PAGES[normalizedPath]);
@@ -124,6 +126,13 @@ function injectMontserrat(html = '') {
   return html.includes('</head>')
     ? html.replace('</head>', `  ${MONTSERRAT_CSS}\n</head>`)
     : `${html}\n${MONTSERRAT_CSS}`;
+}
+
+function injectNavServiceDropdown(html = '') {
+  if (html.includes('/assets/js/nav-service-dropdown.js')) return html;
+  return html.includes('</body>')
+    ? html.replace('</body>', `  ${NAV_SERVICE_DROPDOWN_JS}\n</body>`)
+    : `${html}\n${NAV_SERVICE_DROPDOWN_JS}`;
 }
 
 function injectServiceAssets(html = '', path = '') {
