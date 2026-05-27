@@ -1,22 +1,17 @@
 import { renderJsonLd, schemaForPath } from './_shared/schema.js';
 
-const MONTSERRAT_TEST_CSS = '<link rel="stylesheet" href="/assets/css/font-body-montserrat.css?v=1">';
+const MONTSERRAT_CSS = '<link rel="stylesheet" href="/assets/css/font-body-montserrat.css?v=2">';
 
 export async function onRequest(context) {
   const requestUrl = new URL(context.request.url);
-
-  if (isBlogArticlePath(requestUrl.pathname)) {
-    return context.next();
-  }
-
   const response = await context.next();
   const contentType = response.headers.get('content-type') || '';
 
   if (!contentType.includes('text/html')) return response;
 
-  const schema = schemaForPath(requestUrl.pathname);
+  const schema = isBlogArticlePath(requestUrl.pathname) ? null : schemaForPath(requestUrl.pathname);
   const html = await response.text();
-  let nextHtml = injectMontserratTest(html);
+  let nextHtml = injectMontserrat(html);
 
   if (schema && !nextHtml.includes('id="salero-schema-graph"') && !nextHtml.includes("id='salero-schema-graph'")) {
     const jsonLd = renderJsonLd(schema);
@@ -35,11 +30,11 @@ export async function onRequest(context) {
   });
 }
 
-function injectMontserratTest(html = '') {
+function injectMontserrat(html = '') {
   if (html.includes('/assets/css/font-body-montserrat.css')) return html;
   return html.includes('</head>')
-    ? html.replace('</head>', `  ${MONTSERRAT_TEST_CSS}\n</head>`)
-    : `${html}\n${MONTSERRAT_TEST_CSS}`;
+    ? html.replace('</head>', `  ${MONTSERRAT_CSS}\n</head>`)
+    : `${html}\n${MONTSERRAT_CSS}`;
 }
 
 function isBlogArticlePath(pathname = '/') {
