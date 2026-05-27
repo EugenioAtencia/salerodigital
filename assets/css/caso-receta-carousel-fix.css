@@ -1,4 +1,4 @@
-/* Caso de éxito | corrección estricta de fichas de receta | v2 */
+/* Caso de éxito | corrección de carrusel y escala móvil de fichas de receta | v3 */
 
 body.caso-detalle-page{
   overflow-x:hidden !important;
@@ -31,6 +31,8 @@ body.caso-detalle-page{
 @media(max-width:1180px){
   body.caso-detalle-page .caso-detail-body{
     overflow:hidden !important;
+    padding-top:clamp(56px,12vw,82px) !important;
+    padding-bottom:clamp(58px,12vw,92px) !important;
   }
 
   body.caso-detalle-page .caso-detail-body .caso-detail-body-grid{
@@ -39,68 +41,87 @@ body.caso-detalle-page{
 
   body.caso-detalle-page .caso-detail-content,
   body.caso-detalle-page .caso-detail-content.has-active{
-    width:min(100% - 36px,640px) !important;
-    max-width:640px !important;
-    margin-left:auto !important;
-    margin-right:auto !important;
-    padding:0 0 24px !important;
-    display:block !important;
-    overflow:visible !important;
-    scroll-snap-type:none !important;
+    width:100vw !important;
+    max-width:100vw !important;
+    margin-left:calc(50% - 50vw) !important;
+    margin-right:calc(50% - 50vw) !important;
+    padding:0 clamp(18px,5vw,34px) 8px !important;
+    display:flex !important;
+    align-items:flex-start !important;
+    gap:clamp(12px,3vw,18px) !important;
+    overflow-x:auto !important;
+    overflow-y:visible !important;
+    scroll-snap-type:x mandatory !important;
+    scroll-padding-inline:clamp(18px,5vw,34px) !important;
+    -webkit-overflow-scrolling:touch !important;
+    scrollbar-width:none !important;
+  }
+
+  body.caso-detalle-page .caso-detail-content::-webkit-scrollbar{
+    display:none !important;
   }
 
   body.caso-detalle-page .caso-detail-content > .caso-detail-section,
   body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section,
-  body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section:hover,
-  body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section:focus-within{
-    display:none !important;
-    visibility:hidden !important;
-    flex:none !important;
-    width:100% !important;
-    max-width:100% !important;
+  body.caso-detalle-page .caso-detail-content > .caso-detail-section:hover,
+  body.caso-detalle-page .caso-detail-content > .caso-detail-section:focus-within{
+    display:flex !important;
+    visibility:visible !important;
+    flex:0 0 min(78vw,390px) !important;
+    width:min(78vw,390px) !important;
+    max-width:min(78vw,390px) !important;
     min-width:0 !important;
+    aspect-ratio:1 / 1 !important;
+    height:auto !important;
+    min-height:0 !important;
+    scroll-snap-align:center !important;
+    border-radius:clamp(28px,7vw,42px) !important;
     transform:none !important;
-    opacity:1 !important;
-    filter:none !important;
+    opacity:.62 !important;
+    filter:saturate(.84) !important;
+    overflow:hidden !important;
+    color:transparent !important;
   }
 
   body.caso-detalle-page .caso-detail-content:not(.has-active) > .caso-detail-section:first-child,
   body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section.is-active,
   body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section.is-active:hover,
   body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section.is-active:focus-within{
-    display:flex !important;
-    visibility:visible !important;
-    flex-direction:column !important;
-    width:100% !important;
-    max-width:100% !important;
-    min-width:0 !important;
-    border-radius:clamp(28px,7vw,42px) !important;
-    transform:none !important;
+    flex-basis:min(86vw,430px) !important;
+    width:min(86vw,430px) !important;
+    max-width:min(86vw,430px) !important;
     opacity:1 !important;
     filter:none !important;
+    transform:none !important;
   }
 
   body.caso-detalle-page .caso-detail-content:not(.has-active) > .caso-detail-section:first-child{
     aspect-ratio:1 / 1 !important;
-    height:auto !important;
-    min-height:0 !important;
-    overflow:hidden !important;
     color:transparent !important;
   }
 
   body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section.is-active{
     aspect-ratio:auto !important;
-    height:auto !important;
-    min-height:auto !important;
-    overflow:visible !important;
+    height:clamp(390px,58svh,520px) !important;
+    min-height:clamp(390px,58svh,520px) !important;
+    max-height:clamp(390px,58svh,520px) !important;
+    justify-content:flex-start !important;
+    overflow:auto !important;
     color:rgba(31,42,36,.78) !important;
+    -webkit-overflow-scrolling:touch !important;
+    scrollbar-width:none !important;
+  }
+
+  body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section.is-active::-webkit-scrollbar{
+    display:none !important;
   }
 
   body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section.is-active h3{
     max-width:100% !important;
-    margin-bottom:clamp(16px,4vw,24px) !important;
+    margin-bottom:clamp(12px,3vw,18px) !important;
     transform:none !important;
-    font-size:clamp(2.2rem,10vw,4.2rem) !important;
+    font-size:clamp(1.82rem,8.2vw,3.1rem) !important;
+    line-height:.96 !important;
   }
 
   body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section.is-active p,
@@ -112,7 +133,7 @@ body.caso-detalle-page{
   body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section.is-active:hover ol,
   body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section.is-active:hover div:not(.caso-metrics){
     max-height:none !important;
-    margin-top:clamp(10px,3vw,14px) !important;
+    margin-top:clamp(8px,2.4vw,12px) !important;
     opacity:1 !important;
     overflow:visible !important;
     pointer-events:auto !important;
@@ -121,29 +142,67 @@ body.caso-detalle-page{
 
   body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section.is-active p,
   body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section.is-active li{
-    font-size:clamp(.96rem,4.1vw,1.08rem) !important;
-    line-height:1.62 !important;
+    font-size:clamp(.74rem,3.08vw,.98rem) !important;
+    line-height:1.48 !important;
+  }
+
+  body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section.is-active strong,
+  body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section.is-active b{
+    font-size:1em !important;
+    line-height:inherit !important;
   }
 
   body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section.is-active p:not(:first-of-type){
-    margin-top:1em !important;
+    margin-top:.82em !important;
   }
 
   body.caso-detalle-page .caso-recipe-controls{
+    position:relative !important;
+    z-index:6 !important;
     width:fit-content !important;
     max-width:calc(100vw - 36px) !important;
-    margin-top:14px !important;
+    margin-top:12px !important;
     margin-left:auto !important;
     margin-right:auto !important;
+    padding:10px 14px !important;
+    gap:10px !important;
+  }
+
+  body.caso-detalle-page .caso-recipe-control{
+    width:44px !important;
+    height:44px !important;
+    font-size:1.25rem !important;
+  }
+
+  body.caso-detalle-page .caso-recipe-dot{
+    width:8px !important;
+    height:8px !important;
+  }
+
+  body.caso-detalle-page .caso-recipe-dot.is-active{
+    width:32px !important;
   }
 }
 
 @media(max-width:720px){
-  body.caso-detalle-page .caso-detail-content:not(.has-active) > .caso-detail-section:first-child{
-    aspect-ratio:1 / 1 !important;
+  body.caso-detalle-page .caso-detail-content > .caso-detail-section,
+  body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section{
+    flex-basis:78vw !important;
+    width:78vw !important;
+    max-width:78vw !important;
+    padding:clamp(1.18rem,5vw,1.6rem) !important;
+  }
+
+  body.caso-detalle-page .caso-detail-content:not(.has-active) > .caso-detail-section:first-child,
+  body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section.is-active{
+    flex-basis:86vw !important;
+    width:86vw !important;
+    max-width:86vw !important;
   }
 
   body.caso-detalle-page .caso-detail-content.has-active > .caso-detail-section.is-active{
-    padding:clamp(1.45rem,5.5vw,2rem) !important;
+    height:clamp(370px,56svh,500px) !important;
+    min-height:clamp(370px,56svh,500px) !important;
+    max-height:clamp(370px,56svh,500px) !important;
   }
 }
