@@ -8,7 +8,7 @@ const SERVICE_HERO_SECTOR_CSS = '<link rel="stylesheet" href="/assets/css/servic
 const SERVICE_MOBILE_NAV_CSS = '<link rel="stylesheet" href="/assets/css/service-mobile-nav.css?v=1">';
 const NAV_SERVICE_DROPDOWN_JS = '<script src="/assets/js/nav-service-dropdown.js?v=1" defer></script>';
 const CASE_RECIPE_FIX_CSS = '<link rel="stylesheet" href="/assets/css/caso-receta-carousel-fix.css?v=3">';
-const BLOG_FAQ_TYPOGRAPHY_CSS = '<link rel="stylesheet" href="/assets/css/ba-faq-typography.css?v=1">';
+const BLOG_FAQ_TYPOGRAPHY_CSS = '<link rel="stylesheet" href="/assets/css/ba-faq-typography.css?v=2">';
 const REMOVED_MENU_PACKS = new Set([
   '/nuestros-menus/media-racion/',
   '/nuestros-menus/el-pellizco/',
@@ -158,8 +158,12 @@ function versionCaseRecipeFix(html = '') {
 }
 
 function injectBlogFaqTypography(html = '', path = '') {
-  if (!isBlogArticlePath(path) && !html.includes('ba-faq')) return html;
+  if (!isBlogArticlePath(path) && !hasFaqMarkup(html)) return html;
   return injectOrReplaceStylesheet(html, '/assets/css/ba-faq-typography.css', BLOG_FAQ_TYPOGRAPHY_CSS);
+}
+
+function hasFaqMarkup(html = '') {
+  return /ba-faq|faq|pregunta|preguntas frecuentes|accordion/i.test(html);
 }
 
 function injectOrReplaceStylesheet(html = '', hrefPath = '', tag = '') {
