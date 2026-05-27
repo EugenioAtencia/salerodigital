@@ -169,10 +169,7 @@
     const url = `${apiBase()}/posts?${params.toString()}`;
     const response = await fetch(url, {
       cache: 'no-store',
-      headers: {
-        Accept: 'application/json',
-        'Cache-Control': 'no-cache'
-      }
+      headers: { Accept: 'application/json' }
     });
 
     if (!response.ok) {
