@@ -36,10 +36,6 @@ h2 *,
 h3,
 .logo,
 .logo *,
-.nav a,
-.nav a *,
-.nav-dropdown-toggle,
-.nav-dropdown-toggle *,
 .service-row h3,
 .service-row h3 *,
 .menu-card h3,
@@ -55,6 +51,27 @@ h3,
   font-family:var(--font-serif) !important;
 }
 
+@media(min-width:881px){
+  .nav a,
+  .nav a *,
+  .nav-dropdown-toggle,
+  .nav-dropdown-toggle *,
+  .nav-contact,
+  .nav-contact *{
+    font-family:var(--font-sans) !important;
+    letter-spacing:-.015em;
+  }
+}
+
+@media(max-width:880px){
+  .nav a,
+  .nav a *,
+  .nav-dropdown-toggle,
+  .nav-dropdown-toggle *{
+    font-family:var(--font-serif) !important;
+  }
+}
+
 .nav-mobile-cta,
 .nav-mobile-cta *,
 .btn,
@@ -64,6 +81,8 @@ h3,
 .tag,
 .tag *,
 .sector-value-tag,
-.sector-value-tag *{
+.sector-value-tag *,
+.nav .nav-submenu a,
+.nav .nav-submenu a *{
   font-family:var(--font-sans) !important;
 }
