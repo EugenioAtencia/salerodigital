@@ -8,7 +8,7 @@
 
   const state = {
     page: 1,
-    perPage: 9,
+    perPage: 12,
     totalPages: 1,
     posts: [],
     activeCategory: 'all',
@@ -156,8 +156,24 @@
   }
 
   async function fetchPosts(page) {
-    const url = `${apiBase()}/posts?_embed=1&per_page=${state.perPage}&page=${page}&orderby=date&order=desc`;
-    const response = await fetch(url, { headers: { Accept: 'application/json' } });
+    const params = new URLSearchParams({
+      _embed: '1',
+      per_page: String(state.perPage),
+      page: String(page),
+      orderby: 'date',
+      order: 'desc',
+      status: 'publish',
+      _t: String(Date.now())
+    });
+
+    const url = `${apiBase()}/posts?${params.toString()}`;
+    const response = await fetch(url, {
+      cache: 'no-store',
+      headers: {
+        Accept: 'application/json',
+        'Cache-Control': 'no-cache'
+      }
+    });
 
     if (!response.ok) {
       throw new Error(`No se pudieron cargar los artículos. Estado ${response.status}`);
