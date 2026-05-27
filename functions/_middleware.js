@@ -2,6 +2,8 @@ import { renderJsonLd, schemaForPath } from './_shared/schema.js';
 
 const SITE_ORIGIN = 'https://salero.webagencia360.com';
 const MONTSERRAT_CSS = '<link rel="stylesheet" href="/assets/css/font-body-montserrat.css?v=3">';
+const SERVICE_RELATED_CSS = '<link rel="stylesheet" href="/assets/css/service-related.css?v=1">';
+const SERVICE_RELATED_JS = '<script src="/assets/js/service-related.js?v=1" defer></script>';
 const REMOVED_MENU_PACKS = new Set([
   '/nuestros-menus/media-racion/',
   '/nuestros-menus/el-pellizco/',
@@ -94,6 +96,7 @@ export async function onRequest(context) {
   const schema = isBlogArticlePath(requestUrl.pathname) ? null : schemaForPath(requestUrl.pathname);
   const html = await response.text();
   let nextHtml = injectMontserrat(html);
+  nextHtml = injectServiceRelatedAssets(nextHtml, normalizedPath);
   nextHtml = normalizeFooter(nextHtml);
   nextHtml = injectSeo(nextHtml, SEO_PAGES[normalizedPath]);
 
@@ -119,6 +122,18 @@ function injectMontserrat(html = '') {
   return html.includes('</head>')
     ? html.replace('</head>', `  ${MONTSERRAT_CSS}\n</head>`)
     : `${html}\n${MONTSERRAT_CSS}`;
+}
+
+function injectServiceRelatedAssets(html = '', path = '') {
+  if (!isServiceDetailPath(path)) return html;
+  let next = html;
+  if (!next.includes('/assets/css/service-related.css')) {
+    next = next.includes('</head>') ? next.replace('</head>', `  ${SERVICE_RELATED_CSS}\n</head>`) : `${next}\n${SERVICE_RELATED_CSS}`;
+  }
+  if (!next.includes('/assets/js/service-related.js')) {
+    next = next.includes('</body>') ? next.replace('</body>', `  ${SERVICE_RELATED_JS}\n</body>`) : `${next}\n${SERVICE_RELATED_JS}`;
+  }
+  return next;
 }
 
 function normalizeFooter(html = '') {
@@ -163,6 +178,10 @@ function replaceOrInsertCanonical(html = '', canonical = '') {
 function isBlogArticlePath(pathname = '/') {
   const normalized = normalizePath(pathname);
   return /^\/la-rebotica\/[^/]+\/$/.test(normalized);
+}
+
+function isServiceDetailPath(pathname = '/') {
+  return /^\/el-menu\/[^/]+\/$/.test(pathname || '');
 }
 
 function normalizePath(pathname = '/') {
