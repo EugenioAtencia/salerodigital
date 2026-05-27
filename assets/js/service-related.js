@@ -54,13 +54,7 @@ function saleroInjectRelatedServices() {
 
   const section = document.createElement('section');
   section.className = 'service-related-section';
-  section.setAttribute('aria-labelledby', 'service-related-title');
-  section.innerHTML = `<div class="service-related-heading">
-      <span class="service-section-kicker">También puede encajar</span>
-      <h2 id="service-related-title">Otros servicios para completar la receta digital</h2>
-      <p>Si este servicio resuelve una parte del camino, estos otros pueden ayudarte a reforzar presencia, visibilidad y captación.</p>
-    </div>
-    <div class="cards-grid service-related-grid">
+  section.innerHTML = `<div class="cards-grid service-related-grid">
       ${related.map(saleroRelatedServiceCard).join('')}
     </div>`;
 
