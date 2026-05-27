@@ -1,7 +1,7 @@
 import { renderJsonLd, schemaForPath } from './_shared/schema.js';
 
 const SITE_ORIGIN = 'https://salero.webagencia360.com';
-const MONTSERRAT_CSS = '<link rel="stylesheet" href="/assets/css/font-body-montserrat.css?v=2">';
+const MONTSERRAT_CSS = '<link rel="stylesheet" href="/assets/css/font-body-montserrat.css?v=3">';
 const REMOVED_MENU_PACKS = new Set([
   '/nuestros-menus/media-racion/',
   '/nuestros-menus/el-pellizco/',
@@ -41,6 +41,43 @@ const SEO_PAGES = {
   }
 };
 
+const GLOBAL_FOOTER = `<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h2>Salero Digital</h2>
+        <p>Tu marca, con salero. Agencia digital para negocios que quieren dejar de estar sosos en internet.</p>
+      </div>
+      <div>
+        <h3>El Menú</h3>
+        <nav class="footer-nav" aria-label="Servicios de Salero Digital">
+          <a href="/el-menu/cimientos-digitales/">Cimientos Digitales</a>
+          <a href="/el-menu/el-pregonero/">El Pregonero</a>
+          <a href="/el-menu/gracia-y-presencia/">Gracia y Presencia</a>
+          <a href="/el-menu/el-empujon/">El Empujón</a>
+        </nav>
+      </div>
+      <div>
+        <h3>Sectores</h3>
+        <nav class="footer-nav" aria-label="Sectores de Salero Digital">
+          <a href="/sectores/marketing-para-almazaras-aceite/">Almazaras y aceite</a>
+          <a href="/sectores/marketing-para-comercios-pymes/">Comercios y pymes</a>
+          <a href="/sectores/marketing-para-hosteleria-turismo/">Hostelería y turismo</a>
+        </nav>
+      </div>
+      <div>
+        <h3>¿Hablamos?</h3>
+        <p>Morón de la Frontera, Sierra Sur y Campiña.</p>
+        <a href="/hablamos/">Pide tu cata digital</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Salero Digital</span>
+      <span>Digitalizamos con salero, pero con los pies en la tierra.</span>
+    </div>
+  </div>
+</footer>`;
+
 export async function onRequest(context) {
   const requestUrl = new URL(context.request.url);
   const normalizedPath = normalizePath(requestUrl.pathname);
@@ -57,6 +94,7 @@ export async function onRequest(context) {
   const schema = isBlogArticlePath(requestUrl.pathname) ? null : schemaForPath(requestUrl.pathname);
   const html = await response.text();
   let nextHtml = injectMontserrat(html);
+  nextHtml = normalizeFooter(nextHtml);
   nextHtml = injectSeo(nextHtml, SEO_PAGES[normalizedPath]);
 
   if (schema && !nextHtml.includes('id="salero-schema-graph"') && !nextHtml.includes("id='salero-schema-graph'")) {
@@ -81,6 +119,11 @@ function injectMontserrat(html = '') {
   return html.includes('</head>')
     ? html.replace('</head>', `  ${MONTSERRAT_CSS}\n</head>`)
     : `${html}\n${MONTSERRAT_CSS}`;
+}
+
+function normalizeFooter(html = '') {
+  if (!/<footer\b[^>]*class=["'][^"']*footer[^"']*["'][^>]*>/i.test(html)) return html;
+  return html.replace(/<footer\b[^>]*class=["'][^"']*footer[^"']*["'][^>]*>[\s\S]*?<\/footer>/i, GLOBAL_FOOTER);
 }
 
 function injectSeo(html = '', data) {
