@@ -14,6 +14,9 @@ const REMOVED_MENU_PACKS = new Set([
   '/nuestros-menus/el-pellizco/',
   '/nuestros-menus/menu-degustacion/'
 ]);
+const REMOVED_PAGES = new Set([
+  '/la-receta/'
+]);
 
 const SEO_PAGES = {
   '/sectores/': {
@@ -35,11 +38,6 @@ const SEO_PAGES = {
     title: 'Hablemos de tu estrategia digital | Salero Digital',
     description: 'Cuéntanos qué necesita tu negocio y preparamos una cata digital para mejorar tu web, visibilidad, redes o campañas.',
     canonical: '/hablamos/'
-  },
-  '/la-receta/': {
-    title: 'La receta de Salero Digital | Agencia con salero',
-    description: 'Conoce la forma de trabajar de Salero Digital: estrategia, cercanía, oficio y marketing digital con los pies en la tierra.',
-    canonical: '/la-receta/'
   },
   '/casos-de-exito/': {
     title: 'Casos de éxito de marketing digital | Salero Digital',
@@ -89,6 +87,10 @@ export async function onRequest(context) {
   const requestUrl = new URL(context.request.url);
   const normalizedPath = normalizePath(requestUrl.pathname);
 
+  if (REMOVED_PAGES.has(normalizedPath)) {
+    return renderGoneResponse();
+  }
+
   if (REMOVED_MENU_PACKS.has(normalizedPath)) {
     return Response.redirect(`${SITE_ORIGIN}/nuestros-menus/`, 301);
   }
@@ -106,6 +108,7 @@ export async function onRequest(context) {
   nextHtml = versionCaseRecipeFix(nextHtml);
   nextHtml = injectBlogFaqTypography(nextHtml, normalizedPath);
   nextHtml = normalizeFooter(nextHtml);
+  nextHtml = removeLaRecetaLinks(nextHtml);
   nextHtml = injectSeo(nextHtml, SEO_PAGES[normalizedPath]);
 
   if (schema && !nextHtml.includes('id="salero-schema-graph"') && !nextHtml.includes("id='salero-schema-graph'")) {
@@ -122,6 +125,35 @@ export async function onRequest(context) {
     status: response.status,
     statusText: response.statusText,
     headers
+  });
+}
+
+function renderGoneResponse() {
+  const html = `<!doctype html>
+<html lang="es">
+<head>
+  <title>Página retirada | Salero Digital</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="${SITE_ORIGIN}/">
+  <link rel="stylesheet" href="/assets/css/main.css?v=50">
+</head>
+<body>
+  <main class="container section">
+    <h1>Página retirada temporalmente</h1>
+    <p>Esta sección no está disponible en este momento.</p>
+    <p><a class="btn btn-primary" href="/">Volver al inicio</a></p>
+  </main>
+</body>
+</html>`;
+
+  return new Response(html, {
+    status: 410,
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store, max-age=0, must-revalidate'
+    }
   });
 }
 
@@ -176,6 +208,10 @@ function injectOrReplaceStylesheet(html = '', hrefPath = '', tag = '') {
 function normalizeFooter(html = '') {
   if (!/<footer\b[^>]*class=["'][^"']*footer[^"']*["'][^>]*>/i.test(html)) return html;
   return html.replace(/<footer\b[^>]*class=["'][^"']*footer[^"']*["'][^>]*>[\s\S]*?<\/footer>/i, GLOBAL_FOOTER);
+}
+
+function removeLaRecetaLinks(html = '') {
+  return html.replace(/\s*<a\b[^>]*href=["'](?:https:\/\/salero\.webagencia360\.com)?\/la-receta\/["'][^>]*>[\s\S]*?<\/a>/gi, '');
 }
 
 function injectSeo(html = '', data) {
