@@ -14,34 +14,82 @@ const REMOVED_MENU_PACKS = new Set([
   '/nuestros-menus/el-pellizco/',
   '/nuestros-menus/menu-degustacion/'
 ]);
-const REMOVED_PAGES = new Set([
-  '/la-receta/'
-]);
+const REMOVED_PAGES = new Set([]);
 
 const SEO_PAGES = {
-  '/sectores/': {
-    title: 'Marketing para sectores locales | Salero Digital',
-    description: 'Estrategias digitales para hostelería, comercios, pymes y marcas con origen. Marketing local con criterio, cercanía y salero.',
-    canonical: '/sectores/'
+  '/': {
+    title: 'Agencia de marketing digital en Morón - Salero Digital',
+    description: 'Web, SEO local, redes sociales y campañas para negocios de Morón, Arahal y comarca. Estrategia senior con cercanía y resultados medibles.',
+    canonical: '/'
+  },
+  '/sectores/marketing-para-almazaras-aceite/': {
+    title: 'Marketing para almazaras y aceite - Salero Digital',
+    description: 'Impulsa tu marca de aceite con web, SEO local, contenidos y campañas pensadas para almazaras de la Sierra Sur y la Campiña.',
+    canonical: '/sectores/marketing-para-almazaras-aceite/'
   },
   '/nuestros-menus/': {
-    title: 'Packs de marketing digital | Salero Digital',
-    description: 'Elige el menú digital que necesita tu negocio: presencia, crecimiento o estrategia integral con web, SEO, redes y campañas.',
+    title: 'Packs de marketing para negocios - Salero Digital',
+    description: 'Elige El Pellizco, Media Ración o El Menú Degustación según tu ritmo: presencia, crecimiento o estrategia digital integral.',
     canonical: '/nuestros-menus/'
   },
+  '/sectores/': {
+    title: 'Marketing para sectores locales - Salero Digital',
+    description: 'Soluciones digitales para hostelería, comercios, pymes y marcas con origen. Marketing local con estrategia, cercanía y foco comercial.',
+    canonical: '/sectores/'
+  },
+  '/la-rebotica/': {
+    title: 'Blog de marketing local - Salero Digital',
+    description: 'Guías prácticas sobre SEO local, redes, campañas y web para negocios que quieren ganar visibilidad sin perder su forma de ser.',
+    canonical: '/la-rebotica/'
+  },
+  '/sectores/marketing-para-hosteleria-turismo/': {
+    title: 'Marketing para hostelería y turismo - Salero Digital',
+    description: 'Atrae más reservas y clientes con web, SEO local, contenidos y campañas para bares, restaurantes, alojamientos rurales y turismo local.',
+    canonical: '/sectores/marketing-para-hosteleria-turismo/'
+  },
+  '/el-menu/cimientos-digitales/': {
+    title: 'Desarrollo web para negocios locales - Salero Digital',
+    description: 'Creamos webs rápidas, seguras y orientadas a conversión para negocios locales que necesitan una presencia digital profesional y rentable.',
+    canonical: '/el-menu/cimientos-digitales/'
+  },
   '/el-menu/': {
-    title: 'Servicios de marketing digital | Salero Digital',
-    description: 'Desarrollo web, SEO local, redes sociales y campañas digitales para negocios que quieren dejar de estar sosos en internet.',
+    title: 'Servicios de marketing digital - Salero Digital',
+    description: 'Elige desarrollo web, SEO local, redes sociales o campañas digitales para que tu negocio gane visibilidad, contactos y ventas.',
     canonical: '/el-menu/'
   },
+  '/el-menu/el-pregonero/': {
+    title: 'SEO local en Morón y comarca - Salero Digital',
+    description: 'Mejoramos tu presencia en Google y Maps para que clientes de Morón, Arahal, Marchena y la comarca encuentren tu negocio.',
+    canonical: '/el-menu/el-pregonero/'
+  },
+  '/sectores/marketing-para-comercios-pymes/': {
+    title: 'Marketing para comercios y pymes - Salero Digital',
+    description: 'Web, SEO local, redes y campañas para comercios y pymes que quieren atraer más clientes, ganar visibilidad y vender mejor.',
+    canonical: '/sectores/marketing-para-comercios-pymes/'
+  },
   '/hablamos/': {
-    title: 'Hablemos de tu estrategia digital | Salero Digital',
-    description: 'Cuéntanos qué necesita tu negocio y preparamos una cata digital para mejorar tu web, visibilidad, redes o campañas.',
+    title: 'Contacto y cata digital - Salero Digital',
+    description: 'Cuéntanos qué necesita tu negocio y preparamos una cata digital para mejorar tu web, posicionamiento, redes o campañas.',
     canonical: '/hablamos/'
   },
+  '/el-menu/gracia-y-presencia/': {
+    title: 'Gestión de redes sociales - Salero Digital',
+    description: 'Creamos estrategia, calendario y contenido para que tu marca tenga presencia real, conecte con su comunidad y genere confianza.',
+    canonical: '/el-menu/gracia-y-presencia/'
+  },
+  '/el-menu/el-empujon/': {
+    title: 'Campañas de Google Ads y Meta Ads - Salero Digital',
+    description: 'Lanzamos campañas en Google Ads y Meta Ads para captar tráfico, leads y clientes con inversión controlada y medición clara.',
+    canonical: '/el-menu/el-empujon/'
+  },
+  '/la-receta/': {
+    title: 'Agencia digital con experiencia - Salero Digital',
+    description: 'Conoce cómo trabaja Salero Digital: estrategia senior, cercanía, oficio y marketing digital con los pies en la tierra.',
+    canonical: '/la-receta/'
+  },
   '/casos-de-exito/': {
-    title: 'Casos de éxito de marketing digital | Salero Digital',
-    description: 'Proyectos reales de estrategia, desarrollo web, contenidos y campañas para marcas, negocios locales y organizaciones.',
+    title: 'Casos de éxito en marketing digital - Salero Digital',
+    description: 'Descubre proyectos reales de web, SEO, contenidos y campañas para marcas, negocios locales y organizaciones que confiaron en Salero Digital.',
     canonical: '/casos-de-exito/'
   }
 };
@@ -212,7 +260,7 @@ function normalizeFooter(html = '') {
 }
 
 function removeLaRecetaLinks(html = '') {
-  return html.replace(/\s*<a\b[^>]*href=["'](?:https:\/\/salero\.webagencia360\.com)?\/la-receta\/["'][^>]*>[\s\S]*?<\/a>/gi, '');
+  return html;
 }
 
 function optimizeAutoplayVideos(html = '') {
