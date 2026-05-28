@@ -89,7 +89,11 @@
   border-radius:1.35rem !important;
   background:rgba(255,253,247,.88) !important;
   box-shadow:0 18px 48px rgba(31,36,24,.06) !important;
-  transition:border-color .2s ease,background .2s ease,box-shadow .2s ease !important;
+  transition:border-color .24s ease, background .24s ease, box-shadow .24s ease, transform .24s ease !important;
+}
+
+.service-detail-page .service-faq-accordion details:hover{
+  transform:translateY(-2px) !important;
 }
 
 .service-detail-page .service-faq-accordion details[open]{
@@ -126,6 +130,12 @@
   border-radius:999px !important;
   background:#c8ff5a !important;
   box-shadow:0 0 0 7px rgba(200,255,90,.18) !important;
+  transition:transform .24s ease, box-shadow .24s ease, background .24s ease !important;
+}
+
+.service-detail-page .service-faq-accordion details[open] summary::before{
+  transform:scale(1.12) !important;
+  box-shadow:0 0 0 10px rgba(200,255,90,.18),0 0 26px rgba(200,255,90,.36) !important;
 }
 
 .service-detail-page .service-faq-accordion summary::after{
@@ -134,14 +144,21 @@
   color:#27311f !important;
   font-size:1.35rem !important;
   line-height:1 !important;
+  transition:transform .24s ease, opacity .24s ease !important;
 }
 
 .service-detail-page .service-faq-accordion details[open] summary::after{
   content:"–" !important;
+  transform:rotate(180deg) !important;
 }
 
 .service-detail-page .service-faq-answer{
   padding:0 1.45rem 1.45rem 3.25rem !important;
+  transform-origin:top !important;
+}
+
+.service-detail-page .service-faq-accordion details[open] .service-faq-answer{
+  animation:saleroFaqReveal .34s cubic-bezier(.22,.8,.22,1) both !important;
 }
 
 .service-detail-page .service-faq-answer p{
@@ -154,6 +171,35 @@
 
 .service-detail-page .service-faq-answer p + p{
   margin-top:1rem !important;
+}
+
+@keyframes saleroFaqReveal{
+  from{
+    opacity:0;
+    transform:translateY(-.45rem) scaleY(.985);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0) scaleY(1);
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .service-detail-page .service-faq-accordion details,
+  .service-detail-page .service-faq-accordion summary::before,
+  .service-detail-page .service-faq-accordion summary::after{
+    transition:none !important;
+  }
+
+  .service-detail-page .service-faq-accordion details:hover,
+  .service-detail-page .service-faq-accordion details[open] summary::before,
+  .service-detail-page .service-faq-accordion details[open] summary::after{
+    transform:none !important;
+  }
+
+  .service-detail-page .service-faq-accordion details[open] .service-faq-answer{
+    animation:none !important;
+  }
 }
 
 @media(max-width:1180px){
