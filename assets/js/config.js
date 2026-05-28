@@ -13,3 +13,12 @@ const SALERO_CONFIG = {
     casos: 'casos-exito'
   }
 };
+
+(function loadSaleroFaqSchema() {
+  if (document.getElementById('salero-faq-schema-loader')) return;
+  const script = document.createElement('script');
+  script.id = 'salero-faq-schema-loader';
+  script.src = '/assets/js/faq-schema.js?v=1';
+  script.defer = true;
+  document.head.appendChild(script);
+})();
