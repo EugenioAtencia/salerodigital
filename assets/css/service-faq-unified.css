@@ -1,0 +1,200 @@
+.service-detail-page .service-faq-block{
+  width:100vw !important;
+  max-width:none !important;
+  margin-left:calc(50% - 50vw) !important;
+  margin-right:calc(50% - 50vw) !important;
+  padding:clamp(4.8rem,7vw,7rem) max(1.5rem,calc((100vw - 1320px) / 2 + 1.5rem)) !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,.7fr) minmax(460px,.95fr) !important;
+  gap:clamp(3rem,6vw,7rem) !important;
+  align-items:center !important;
+  overflow:visible !important;
+  background:radial-gradient(circle at 4% 10%,rgba(200,255,90,.16),transparent 26rem),linear-gradient(135deg,rgba(246,239,216,.58),rgba(255,253,247,.94)) !important;
+  box-sizing:border-box !important;
+}
+
+.service-detail-page .service-faq-copy{
+  max-width:560px !important;
+  min-width:0 !important;
+}
+
+.service-detail-page .service-faq-copy .service-section-kicker{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:16px !important;
+  width:fit-content !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#263020 !important;
+  box-shadow:none !important;
+  font-size:.78rem !important;
+  font-weight:900 !important;
+  letter-spacing:.08em !important;
+  text-transform:uppercase !important;
+}
+
+.service-detail-page .service-faq-copy .service-section-kicker::before{
+  content:"" !important;
+  display:inline-block !important;
+  flex:0 0 46px !important;
+  width:46px !important;
+  height:3px !important;
+  border-radius:999px !important;
+  background:#d7aa55 !important;
+  box-shadow:none !important;
+}
+
+.service-detail-page .service-faq-copy .service-section-kicker::after{
+  display:none !important;
+  content:none !important;
+}
+
+.service-detail-page .service-faq-copy h2{
+  max-width:620px !important;
+  margin:1.7rem 0 1.4rem !important;
+  color:#20251b !important;
+  font-size:clamp(2.9rem,4.65vw,5.6rem) !important;
+  line-height:.9 !important;
+  letter-spacing:-.068em !important;
+  text-wrap:balance !important;
+  overflow-wrap:normal !important;
+  word-break:normal !important;
+  hyphens:none !important;
+}
+
+.service-detail-page .service-faq-copy p{
+  max-width:500px !important;
+  margin:0 !important;
+  color:#5f6655 !important;
+  font-size:clamp(1.05rem,1.24vw,1.18rem) !important;
+  line-height:1.72 !important;
+  font-weight:500 !important;
+}
+
+.service-detail-page .service-faq-accordion{
+  width:100% !important;
+  max-width:760px !important;
+  justify-self:end !important;
+  display:grid !important;
+  gap:1rem !important;
+  align-self:center !important;
+  min-width:0 !important;
+}
+
+.service-detail-page .service-faq-accordion details{
+  overflow:hidden !important;
+  border:1px solid rgba(31,36,24,.12) !important;
+  border-radius:1.35rem !important;
+  background:rgba(255,253,247,.88) !important;
+  box-shadow:0 18px 48px rgba(31,36,24,.06) !important;
+  transition:border-color .2s ease,background .2s ease,box-shadow .2s ease !important;
+}
+
+.service-detail-page .service-faq-accordion details[open]{
+  background:rgba(255,253,247,.96) !important;
+  border-color:rgba(200,255,90,.42) !important;
+  box-shadow:0 24px 70px rgba(31,36,24,.1) !important;
+}
+
+.service-detail-page .service-faq-accordion summary{
+  min-height:4.8rem !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:1rem !important;
+  cursor:pointer !important;
+  list-style:none !important;
+  padding:1.15rem 1.45rem !important;
+  color:#20251b !important;
+  font-weight:900 !important;
+  font-size:clamp(1.02rem,1.28vw,1.18rem) !important;
+  line-height:1.25 !important;
+}
+
+.service-detail-page .service-faq-accordion summary::-webkit-details-marker{
+  display:none !important;
+}
+
+.service-detail-page .service-faq-accordion summary::before{
+  content:"" !important;
+  flex:0 0 .7rem !important;
+  width:.7rem !important;
+  height:.7rem !important;
+  border-radius:999px !important;
+  background:#c8ff5a !important;
+  box-shadow:0 0 0 7px rgba(200,255,90,.18) !important;
+}
+
+.service-detail-page .service-faq-accordion summary::after{
+  content:"+" !important;
+  margin-left:auto !important;
+  color:#27311f !important;
+  font-size:1.35rem !important;
+  line-height:1 !important;
+}
+
+.service-detail-page .service-faq-accordion details[open] summary::after{
+  content:"–" !important;
+}
+
+.service-detail-page .service-faq-answer{
+  padding:0 1.45rem 1.45rem 3.25rem !important;
+}
+
+.service-detail-page .service-faq-answer p{
+  margin:0 !important;
+  color:#5f6655 !important;
+  font-size:1rem !important;
+  line-height:1.7 !important;
+  font-weight:500 !important;
+}
+
+.service-detail-page .service-faq-answer p + p{
+  margin-top:1rem !important;
+}
+
+@media(max-width:1180px){
+  .service-detail-page .service-faq-block{
+    grid-template-columns:1fr !important;
+    padding-left:max(1.5rem,calc((100vw - 920px) / 2 + 1.5rem)) !important;
+    padding-right:max(1.5rem,calc((100vw - 920px) / 2 + 1.5rem)) !important;
+  }
+
+  .service-detail-page .service-faq-copy,
+  .service-detail-page .service-faq-copy h2,
+  .service-detail-page .service-faq-copy p,
+  .service-detail-page .service-faq-accordion{
+    max-width:860px !important;
+    justify-self:start !important;
+  }
+
+  .service-detail-page .service-faq-copy h2{
+    font-size:clamp(2.9rem,8vw,5.4rem) !important;
+  }
+}
+
+@media(max-width:640px){
+  .service-detail-page .service-faq-block{
+    padding:3.5rem 1.25rem !important;
+  }
+
+  .service-detail-page .service-faq-copy h2{
+    font-size:clamp(2.65rem,13vw,4.15rem) !important;
+  }
+
+  .service-detail-page .service-faq-copy .service-section-kicker::before{
+    flex-basis:34px !important;
+    width:34px !important;
+  }
+
+  .service-detail-page .service-faq-accordion summary{
+    min-height:auto !important;
+    padding:1rem !important;
+    font-size:1rem !important;
+  }
+
+  .service-detail-page .service-faq-answer{
+    padding:0 1rem 1rem 2.6rem !important;
+  }
+}
