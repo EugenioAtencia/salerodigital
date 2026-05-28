@@ -107,7 +107,9 @@
   list-style:none !important;
   padding:1.15rem 1.45rem !important;
   color:#20251b !important;
-  font-weight:900 !important;
+  font-family:var(--font-sans), Montserrat, Arial, sans-serif !important;
+  font-weight:600 !important;
+  letter-spacing:-.035em !important;
   font-size:clamp(1.02rem,1.28vw,1.18rem) !important;
   line-height:1.25 !important;
 }
