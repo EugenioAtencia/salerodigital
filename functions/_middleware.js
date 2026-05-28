@@ -109,6 +109,7 @@ export async function onRequest(context) {
   nextHtml = injectBlogFaqTypography(nextHtml, normalizedPath);
   nextHtml = normalizeFooter(nextHtml);
   nextHtml = removeLaRecetaLinks(nextHtml);
+  nextHtml = optimizeAutoplayVideos(nextHtml);
   nextHtml = injectSeo(nextHtml, SEO_PAGES[normalizedPath]);
 
   if (schema && !nextHtml.includes('id="salero-schema-graph"') && !nextHtml.includes("id='salero-schema-graph'")) {
@@ -212,6 +213,25 @@ function normalizeFooter(html = '') {
 
 function removeLaRecetaLinks(html = '') {
   return html.replace(/\s*<a\b[^>]*href=["'](?:https:\/\/salero\.webagencia360\.com)?\/la-receta\/["'][^>]*>[\s\S]*?<\/a>/gi, '');
+}
+
+function optimizeAutoplayVideos(html = '') {
+  return html.replace(/<video\b(?=[^>]*\bautoplay\b)([^>]*)>([\s\S]*?)<\/video>/gi, (match, attrs = '', inner = '') => {
+    let nextAttrs = attrs;
+
+    if (/\bpreload=["'][^"']*["']/i.test(nextAttrs)) {
+      nextAttrs = nextAttrs.replace(/\bpreload=["'][^"']*["']/i, 'preload="none"');
+    } else {
+      nextAttrs += ' preload="none"';
+    }
+
+    const nextInner = inner.replace(/<source\b([^>]*\bsrc=["'][^"']+\.mp4[^>]*?)>/gi, (sourceTag, sourceAttrs = '') => {
+      if (/\bmedia=["'][^"']+["']/i.test(sourceAttrs)) return sourceTag;
+      return `<source${sourceAttrs} media="(min-width: 1024px)">`;
+    });
+
+    return `<video${nextAttrs}>${nextInner}</video>`;
+  });
 }
 
 function injectSeo(html = '', data) {
