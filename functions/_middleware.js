@@ -1,6 +1,7 @@
 import { renderJsonLd, schemaForPath } from './_shared/schema.js';
 
-const SITE_ORIGIN = 'https://salero.webagencia360.com';
+const SITE_ORIGIN = 'https://agenciaconsalero.es';
+const LEGACY_ORIGIN = 'https://salero.webagencia360.com';
 const MONTSERRAT_CSS = '<link rel="stylesheet" href="/assets/css/font-body-montserrat.css?v=3">';
 const SERVICE_RELATED_CSS = '<link rel="stylesheet" href="/assets/css/service-related.css?v=1">';
 const SERVICE_RELATED_JS = '<script src="/assets/js/service-related.js?v=1" defer></script>';
@@ -9,6 +10,7 @@ const SERVICE_MOBILE_NAV_CSS = '<link rel="stylesheet" href="/assets/css/service
 const NAV_SERVICE_DROPDOWN_JS = '<script src="/assets/js/nav-service-dropdown.js?v=1" defer></script>';
 const CASE_RECIPE_FIX_CSS = '<link rel="stylesheet" href="/assets/css/caso-receta-carousel-fix.css?v=3">';
 const BLOG_FAQ_TYPOGRAPHY_CSS = '<link rel="stylesheet" href="/assets/css/ba-faq-typography.css?v=2">';
+
 const REMOVED_MENU_PACKS = new Set([
   '/nuestros-menus/media-racion/',
   '/nuestros-menus/el-pellizco/',
@@ -22,55 +24,25 @@ const SEO_PAGES = {
     description: 'Web, SEO local, redes sociales y campañas para negocios de Morón, Arahal y comarca. Estrategia senior con cercanía y resultados medibles.',
     canonical: '/'
   },
-  '/sectores/marketing-para-almazaras-aceite/': {
-    title: 'Marketing para almazaras y aceite - Salero Digital',
-    description: 'Impulsa tu marca de aceite con web, SEO local, contenidos y campañas pensadas para almazaras de la Sierra Sur y la Campiña.',
-    canonical: '/sectores/marketing-para-almazaras-aceite/'
-  },
   '/nuestros-menus/': {
     title: 'Packs de marketing para negocios - Salero Digital',
     description: 'Elige El Pellizco, Media Ración o El Menú Degustación según tu ritmo: presencia, crecimiento o estrategia digital integral.',
     canonical: '/nuestros-menus/'
-  },
-  '/sectores/': {
-    title: 'Marketing para sectores locales - Salero Digital',
-    description: 'Soluciones digitales para hostelería, comercios, pymes y marcas con origen. Marketing local con estrategia, cercanía y foco comercial.',
-    canonical: '/sectores/'
-  },
-  '/la-rebotica/': {
-    title: 'Blog de marketing local - Salero Digital',
-    description: 'Guías prácticas sobre SEO local, redes, campañas y web para negocios que quieren ganar visibilidad sin perder su forma de ser.',
-    canonical: '/la-rebotica/'
-  },
-  '/sectores/marketing-para-hosteleria-turismo/': {
-    title: 'Marketing para hostelería y turismo - Salero Digital',
-    description: 'Atrae más reservas y clientes con web, SEO local, contenidos y campañas para bares, restaurantes, alojamientos rurales y turismo local.',
-    canonical: '/sectores/marketing-para-hosteleria-turismo/'
-  },
-  '/el-menu/cimientos-digitales/': {
-    title: 'Desarrollo web para negocios locales - Salero Digital',
-    description: 'Creamos webs rápidas, seguras y orientadas a conversión para negocios locales que necesitan una presencia digital profesional y rentable.',
-    canonical: '/el-menu/cimientos-digitales/'
   },
   '/el-menu/': {
     title: 'Servicios de marketing digital - Salero Digital',
     description: 'Elige desarrollo web, SEO local, redes sociales o campañas digitales para que tu negocio gane visibilidad, contactos y ventas.',
     canonical: '/el-menu/'
   },
+  '/el-menu/cimientos-digitales/': {
+    title: 'Desarrollo web para negocios locales - Salero Digital',
+    description: 'Creamos webs rápidas, seguras y orientadas a conversión para negocios locales que necesitan una presencia digital profesional y rentable.',
+    canonical: '/el-menu/cimientos-digitales/'
+  },
   '/el-menu/el-pregonero/': {
     title: 'SEO local en Morón y comarca - Salero Digital',
     description: 'Mejoramos tu presencia en Google y Maps para que clientes de Morón, Arahal, Marchena y la comarca encuentren tu negocio.',
     canonical: '/el-menu/el-pregonero/'
-  },
-  '/sectores/marketing-para-comercios-pymes/': {
-    title: 'Marketing para comercios y pymes - Salero Digital',
-    description: 'Web, SEO local, redes y campañas para comercios y pymes que quieren atraer más clientes, ganar visibilidad y vender mejor.',
-    canonical: '/sectores/marketing-para-comercios-pymes/'
-  },
-  '/hablamos/': {
-    title: 'Contacto y cata digital - Salero Digital',
-    description: 'Cuéntanos qué necesita tu negocio y preparamos una cata digital para mejorar tu web, posicionamiento, redes o campañas.',
-    canonical: '/hablamos/'
   },
   '/el-menu/gracia-y-presencia/': {
     title: 'Gestión de redes sociales - Salero Digital',
@@ -82,6 +54,26 @@ const SEO_PAGES = {
     description: 'Lanzamos campañas en Google Ads y Meta Ads para captar tráfico, leads y clientes con inversión controlada y medición clara.',
     canonical: '/el-menu/el-empujon/'
   },
+  '/sectores/': {
+    title: 'Marketing para sectores locales - Salero Digital',
+    description: 'Soluciones digitales para hostelería, comercios, pymes y marcas con origen. Marketing local con estrategia, cercanía y foco comercial.',
+    canonical: '/sectores/'
+  },
+  '/sectores/marketing-para-hosteleria-turismo/': {
+    title: 'Marketing para hostelería y turismo - Salero Digital',
+    description: 'Atrae más reservas y clientes con web, SEO local, contenidos y campañas para bares, restaurantes, alojamientos rurales y turismo local.',
+    canonical: '/sectores/marketing-para-hosteleria-turismo/'
+  },
+  '/sectores/marketing-para-comercios-pymes/': {
+    title: 'Marketing para comercios y pymes - Salero Digital',
+    description: 'Web, SEO local, redes y campañas para comercios y pymes que quieren atraer más clientes, ganar visibilidad y vender mejor.',
+    canonical: '/sectores/marketing-para-comercios-pymes/'
+  },
+  '/sectores/marketing-para-almazaras-aceite/': {
+    title: 'Marketing para almazaras y aceite - Salero Digital',
+    description: 'Impulsa tu marca de aceite con web, SEO local, contenidos y campañas pensadas para almazaras de la Sierra Sur y la Campiña.',
+    canonical: '/sectores/marketing-para-almazaras-aceite/'
+  },
   '/la-receta/': {
     title: 'Agencia digital con experiencia - Salero Digital',
     description: 'Conoce cómo trabaja Salero Digital: estrategia senior, cercanía, oficio y marketing digital con los pies en la tierra.',
@@ -91,6 +83,16 @@ const SEO_PAGES = {
     title: 'Casos de éxito en marketing digital - Salero Digital',
     description: 'Descubre proyectos reales de web, SEO, contenidos y campañas para marcas, negocios locales y organizaciones que confiaron en Salero Digital.',
     canonical: '/casos-de-exito/'
+  },
+  '/la-rebotica/': {
+    title: 'Blog de marketing local - Salero Digital',
+    description: 'Guías prácticas sobre SEO local, redes, campañas y web para negocios que quieren ganar visibilidad sin perder su forma de ser.',
+    canonical: '/la-rebotica/'
+  },
+  '/hablamos/': {
+    title: 'Contacto y cata digital - Salero Digital',
+    description: 'Cuéntanos qué necesita tu negocio y preparamos una cata digital para mejorar tu web, posicionamiento, redes o campañas.',
+    canonical: '/hablamos/'
   }
 };
 
@@ -150,7 +152,8 @@ export async function onRequest(context) {
 
   const schema = isBlogArticlePath(requestUrl.pathname) ? null : schemaForPath(requestUrl.pathname);
   const html = await response.text();
-  let nextHtml = injectMontserrat(html);
+  let nextHtml = replaceLegacyOrigin(html);
+  nextHtml = injectMontserrat(nextHtml);
   nextHtml = injectNavServiceDropdown(nextHtml);
   nextHtml = injectServiceAssets(nextHtml, normalizedPath);
   nextHtml = versionCaseRecipeFix(nextHtml);
@@ -161,7 +164,7 @@ export async function onRequest(context) {
   nextHtml = injectSeo(nextHtml, SEO_PAGES[normalizedPath]);
 
   if (schema && !nextHtml.includes('id="salero-schema-graph"') && !nextHtml.includes("id='salero-schema-graph'")) {
-    const jsonLd = renderJsonLd(schema);
+    const jsonLd = replaceLegacyOrigin(renderJsonLd(schema));
     nextHtml = nextHtml.includes('</head>')
       ? nextHtml.replace('</head>', `  ${jsonLd}\n</head>`)
       : `${nextHtml}\n${jsonLd}`;
@@ -283,12 +286,12 @@ function optimizeAutoplayVideos(html = '') {
 }
 
 function injectSeo(html = '', data) {
-  if (!data) return html;
+  if (!data) return replaceLegacyOrigin(html);
 
   let next = replaceOrInsertTitle(html, data.title);
   next = replaceOrInsertMetaDescription(next, data.description);
   next = replaceOrInsertCanonical(next, absoluteUrl(data.canonical));
-  return next;
+  return replaceLegacyOrigin(next);
 }
 
 function replaceOrInsertTitle(html = '', title = '') {
@@ -332,8 +335,12 @@ function normalizePath(pathname = '/') {
 }
 
 function absoluteUrl(value = '/') {
-  if (/^https?:\/\//i.test(String(value))) return String(value);
+  if (/^https?:\/\//i.test(String(value))) return replaceLegacyOrigin(String(value));
   return `${SITE_ORIGIN}${String(value).startsWith('/') ? value : `/${value}`}`;
+}
+
+function replaceLegacyOrigin(value = '') {
+  return String(value || '').replaceAll(LEGACY_ORIGIN, SITE_ORIGIN);
 }
 
 function escapeHtml(value = '') {
