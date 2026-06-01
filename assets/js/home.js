@@ -1,17 +1,25 @@
 (function(){
   const cfg = (typeof SALERO_CONFIG !== 'undefined') ? SALERO_CONFIG : {
     apiBase: 'https://cms.webagencia360.com/wp-json/wp/v2',
+    cmsApiBase: 'https://cms.webagencia360.com/wp-json/wp/v2',
     endpoints: { menus:'menu-packs', servicios:'servicios', sectores:'sectores' }
   };
 
   function endpointUrl(endpoint){
     if(endpoint.startsWith('http')) return endpoint;
-    if(endpoint.startsWith('salero/')) return `${cfg.apiBase.replace('/wp/v2','')}/${endpoint}`;
-    return `${cfg.apiBase}/${endpoint}`;
+
+    if(endpoint.startsWith('salero/')){
+      const cmsBase = cfg.cmsApiBase || cfg.apiBase || 'https://cms.webagencia360.com/wp-json/wp/v2';
+      const base = cmsBase.replace('/wp/v2','').replace(/\/$/, '');
+      return new URL(`${base}/${endpoint.replace(/^\/+/, '')}`, window.location.origin).toString();
+    }
+
+    const base = (cfg.apiBase || 'https://cms.webagencia360.com/wp-json/wp/v2').replace(/\/$/, '');
+    return new URL(`${base}/${endpoint.replace(/^\/+/, '')}`, window.location.origin).toString();
   }
 
   async function fetchCollection(endpoint){
-    const url = new URL(endpointUrl(endpoint));
+    const url = new URL(endpointUrl(endpoint), window.location.origin);
     url.searchParams.set('per_page','100');
     url.searchParams.set('_embed','1');
     const res = await fetch(url.toString(), { mode:'cors' });
@@ -81,7 +89,7 @@
       <h3>${esc(name)}</h3>
       <p>${esc(desc)}</p>
       ${ideal ? `<p><strong>Ideal para:</strong> ${esc(ideal)}</p>` : ''}
-      <a class="card-link editorial-link" href="/nuestros-menus/${item.slug}/">Ver ${esc(name)}</a>
+      <a class="card-link editorial-link" href="/nuestros-menus/">Ver ${esc(name)}</a>
     </article>`;
   }
 
