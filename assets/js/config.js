@@ -24,13 +24,3 @@ const SALERO_CONFIG = {
   script.defer = true;
   document.head.appendChild(script);
 })();
-
-(function loadServiceHeroMontserratOverride() {
-  if (!window.location.pathname.startsWith('/el-menu/')) return;
-  if (document.getElementById('service-hero-montserrat-css')) return;
-  const link = document.createElement('link');
-  link.id = 'service-hero-montserrat-css';
-  link.rel = 'stylesheet';
-  link.href = '/assets/css/service-detail-hero-montserrat.css?v=1';
-  document.head.appendChild(link);
-})();
