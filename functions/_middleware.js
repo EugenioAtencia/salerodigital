@@ -2,6 +2,8 @@ import { renderJsonLd, schemaForPath } from './_shared/schema.js';
 
 const SITE_ORIGIN = 'https://agenciaconsalero.es';
 const LEGACY_ORIGIN = 'https://salero.webagencia360.com';
+const LEGACY_HOSTNAMES = new Set(['salero.webagencia360.com']);
+
 const MONTSERRAT_CSS = '<link rel="stylesheet" href="/assets/css/font-body-montserrat.css?v=3">';
 const SERVICE_RELATED_CSS = '<link rel="stylesheet" href="/assets/css/service-related.css?v=1">';
 const SERVICE_RELATED_JS = '<script src="/assets/js/service-related.js?v=1" defer></script>';
@@ -135,6 +137,11 @@ const GLOBAL_FOOTER = `<footer class="footer">
 
 export async function onRequest(context) {
   const requestUrl = new URL(context.request.url);
+
+  if (LEGACY_HOSTNAMES.has(requestUrl.hostname)) {
+    return Response.redirect(`${SITE_ORIGIN}${requestUrl.pathname}${requestUrl.search}`, 301);
+  }
+
   const normalizedPath = normalizePath(requestUrl.pathname);
 
   if (REMOVED_PAGES.has(normalizedPath)) {
@@ -211,29 +218,21 @@ function renderGoneResponse() {
 
 function injectMontserrat(html = '') {
   if (html.includes('/assets/css/font-body-montserrat.css')) return html;
-  return html.includes('</head>')
-    ? html.replace('</head>', `  ${MONTSERRAT_CSS}\n</head>`)
-    : `${html}\n${MONTSERRAT_CSS}`;
+  return injectBefore(html, '</head>', `  ${MONTSERRAT_CSS}\n`);
 }
 
 function injectNavServiceDropdown(html = '') {
   if (html.includes('/assets/js/nav-service-dropdown.js')) return html;
-  return html.includes('</body>')
-    ? html.replace('</body>', `  ${NAV_SERVICE_DROPDOWN_JS}\n</body>`)
-    : `${html}\n${NAV_SERVICE_DROPDOWN_JS}`;
+  return injectBefore(html, '</body>', `  ${NAV_SERVICE_DROPDOWN_JS}\n`);
 }
 
 function injectServiceAssets(html = '', path = '') {
   if (!isServiceDetailPath(path)) return html;
   let next = html;
-  if (!next.includes('/assets/css/service-related.css')) {
-    next = next.includes('</head>') ? next.replace('</head>', `  ${SERVICE_RELATED_CSS}\n</head>`) : `${next}\n${SERVICE_RELATED_CSS}`;
-  }
+  if (!next.includes('/assets/css/service-related.css')) next = injectBefore(next, '</head>', `  ${SERVICE_RELATED_CSS}\n`);
   next = injectOrReplaceStylesheet(next, '/assets/css/service-hero-sector-style.css', SERVICE_HERO_SECTOR_CSS);
   next = injectOrReplaceStylesheet(next, '/assets/css/service-mobile-nav.css', SERVICE_MOBILE_NAV_CSS);
-  if (!next.includes('/assets/js/service-related.js')) {
-    next = next.includes('</body>') ? next.replace('</body>', `  ${SERVICE_RELATED_JS}\n</body>`) : `${next}\n${SERVICE_RELATED_JS}`;
-  }
+  if (!next.includes('/assets/js/service-related.js')) next = injectBefore(next, '</body>', `  ${SERVICE_RELATED_JS}\n`);
   return next;
 }
 
@@ -251,10 +250,12 @@ function hasFaqMarkup(html = '') {
 }
 
 function injectOrReplaceStylesheet(html = '', hrefPath = '', tag = '') {
-  const escaped = hrefPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const re = new RegExp(`<link[^>]+href=["']${escaped}(?:\\?v=[^"']*)?["'][^>]*>`, 'i');
-  if (re.test(html)) return html.replace(re, tag);
-  return html.includes('</head>') ? html.replace('</head>', `  ${tag}\n</head>`) : `${html}\n${tag}`;
+  if (html.includes(hrefPath)) return html;
+  return injectBefore(html, '</head>', `  ${tag}\n`);
+}
+
+function injectBefore(html = '', marker = '', fragment = '') {
+  return html.includes(marker) ? html.replace(marker, `${fragment}${marker}`) : `${html}\n${fragment}`;
 }
 
 function normalizeFooter(html = '') {
@@ -267,22 +268,7 @@ function removeLaRecetaLinks(html = '') {
 }
 
 function optimizeAutoplayVideos(html = '') {
-  return html.replace(/<video\b(?=[^>]*\bautoplay\b)([^>]*)>([\s\S]*?)<\/video>/gi, (match, attrs = '', inner = '') => {
-    let nextAttrs = attrs;
-
-    if (/\bpreload=["'][^"']*["']/i.test(nextAttrs)) {
-      nextAttrs = nextAttrs.replace(/\bpreload=["'][^"']*["']/i, 'preload="none"');
-    } else {
-      nextAttrs += ' preload="none"';
-    }
-
-    const nextInner = inner.replace(/<source\b([^>]*\bsrc=["'][^"']+\.mp4[^>]*?)>/gi, (sourceTag, sourceAttrs = '') => {
-      if (/\bmedia=["'][^"']+["']/i.test(sourceAttrs)) return sourceTag;
-      return `<source${sourceAttrs} media="(min-width: 1024px)">`;
-    });
-
-    return `<video${nextAttrs}>${nextInner}</video>`;
-  });
+  return html;
 }
 
 function injectSeo(html = '', data) {
@@ -300,7 +286,7 @@ function replaceOrInsertTitle(html = '', title = '') {
   if (/<title[^>]*>[\s\S]*?<\/title>/i.test(html)) {
     return html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, tag);
   }
-  return html.includes('</head>') ? html.replace('</head>', `  ${tag}\n</head>`) : `${tag}\n${html}`;
+  return injectBefore(html, '</head>', `  ${tag}\n`);
 }
 
 function replaceOrInsertMetaDescription(html = '', description = '') {
@@ -308,7 +294,7 @@ function replaceOrInsertMetaDescription(html = '', description = '') {
   const tag = `<meta name="description" content="${escapeAttr(description)}">`;
   const re = /<meta[^>]+name=["']description["'][^>]*>/i;
   if (re.test(html)) return html.replace(re, tag);
-  return html.includes('</head>') ? html.replace('</head>', `  ${tag}\n</head>`) : `${tag}\n${html}`;
+  return injectBefore(html, '</head>', `  ${tag}\n`);
 }
 
 function replaceOrInsertCanonical(html = '', canonical = '') {
@@ -316,7 +302,7 @@ function replaceOrInsertCanonical(html = '', canonical = '') {
   const tag = `<link rel="canonical" href="${escapeAttr(canonical)}">`;
   const re = /<link[^>]+rel=["']canonical["'][^>]*>/i;
   if (re.test(html)) return html.replace(re, tag);
-  return html.includes('</head>') ? html.replace('</head>', `  ${tag}\n</head>`) : `${tag}\n${html}`;
+  return injectBefore(html, '</head>', `  ${tag}\n`);
 }
 
 function isBlogArticlePath(pathname = '/') {
