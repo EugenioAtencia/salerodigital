@@ -24,3 +24,13 @@ const SALERO_CONFIG = {
   script.defer = true;
   document.head.appendChild(script);
 })();
+
+(function loadServiceSectorHeroOverride() {
+  if (!window.location.pathname.startsWith('/el-menu/')) return;
+  if (document.getElementById('service-sector-hero-css')) return;
+  const link = document.createElement('link');
+  link.id = 'service-sector-hero-css';
+  link.rel = 'stylesheet';
+  link.href = '/assets/css/service-detail-sector-hero.css?v=3';
+  document.head.appendChild(link);
+})();
