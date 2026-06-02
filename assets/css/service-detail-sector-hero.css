@@ -1,0 +1,169 @@
+/* Override de HERO para servicios de El Menú.
+   Replica únicamente la composición visual del HERO de Sectores.
+   No cambia la fuente global de los H. */
+
+.service-detail-page .service-detail-hero{
+  min-height:92vh;
+  display:grid;
+  align-items:center;
+  padding:8rem 0 5rem;
+  background:var(--service-cream,#fffdf7);
+}
+
+.service-detail-page .service-detail-hero-video,
+.service-detail-page .service-detail-hero-image{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  z-index:-4;
+  transform:scale(1.02);
+  opacity:1;
+  filter:none;
+}
+
+.service-detail-page .service-detail-veil{
+  z-index:-3;
+  background:
+    radial-gradient(circle at 78% 24%,rgba(200,255,90,.18),transparent 24rem),
+    linear-gradient(90deg,rgba(255,253,247,.93) 0%,rgba(255,253,247,.72) 44%,rgba(32,37,27,.18) 100%);
+}
+
+.service-detail-page .service-detail-gradient{
+  z-index:-2;
+  background:linear-gradient(180deg,rgba(255,253,247,0) 68%,var(--service-cream,#fffdf7) 100%);
+}
+
+.service-detail-page .service-detail-hero-inner{
+  display:grid;
+  grid-template-columns:minmax(0,1.08fr) minmax(320px,.48fr);
+  gap:clamp(2rem,6vw,5rem);
+  align-items:end;
+}
+
+.service-detail-page .service-detail-copy{
+  max-width:900px;
+}
+
+.service-detail-page .service-detail-back,
+.service-detail-page .service-detail-kicker,
+.service-detail-page .service-card-label{
+  display:inline-flex;
+  align-items:center;
+  width:fit-content;
+  border:1px solid rgba(79,98,57,.18);
+  border-radius:999px;
+  background:rgba(255,253,247,.76);
+  color:var(--service-olive-dark,#27311f);
+  font-size:.78rem;
+  line-height:1;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  font-weight:700;
+  padding:.62rem .86rem;
+  text-decoration:none;
+}
+
+.service-detail-page .service-detail-kicker{
+  margin-left:.5rem;
+  background:rgba(200,255,90,.24);
+}
+
+.service-detail-page .service-detail-copy h1{
+  margin:1.2rem 0 1.35rem;
+  max-width:1050px;
+  color:var(--service-ink,#20251b);
+  font-family:var(--font-serif,"Playfair Display",Georgia,serif);
+  font-weight:800;
+  font-size:clamp(3rem,7vw,6.9rem);
+  line-height:.88;
+  letter-spacing:-.075em;
+  text-wrap:balance;
+}
+
+.service-detail-page .service-detail-copy p{
+  max-width:760px;
+  margin:0;
+  color:var(--service-muted,#5f6655);
+  font-size:clamp(1.05rem,1.8vw,1.36rem);
+  line-height:1.62;
+  font-weight:400;
+  background:transparent;
+}
+
+.service-detail-page .service-detail-hero-card{
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(255,253,247,.52);
+  border-radius:2rem;
+  background:rgba(255,253,247,.8);
+  box-shadow:var(--service-shadow,0 28px 90px rgba(32,37,27,.16));
+  -webkit-backdrop-filter:blur(22px);
+  backdrop-filter:blur(22px);
+  padding:clamp(1.4rem,2.8vw,2rem);
+}
+
+.service-detail-page .service-detail-hero-card::before{
+  content:"";
+  position:absolute;
+  inset:auto -18% -28% auto;
+  width:15rem;
+  aspect-ratio:1;
+  border-radius:999px;
+  background:rgba(200,255,90,.34);
+  filter:blur(8px);
+}
+
+.service-detail-page .service-detail-hero-card h2{
+  position:relative;
+  margin:1rem 0 1.25rem;
+  color:var(--service-ink,#20251b);
+  font-family:var(--font-serif,"Playfair Display",Georgia,serif);
+  font-weight:800;
+  font-size:clamp(1.42rem,2.1vw,2rem);
+  line-height:1.1;
+  letter-spacing:-.035em;
+}
+
+@media(max-width:980px){
+  .service-detail-page .service-detail-hero{
+    min-height:auto;
+    padding:7.5rem 0 4rem;
+  }
+
+  .service-detail-page .service-detail-hero-inner{
+    grid-template-columns:1fr;
+  }
+
+  .service-detail-page .service-detail-copy h1{
+    font-size:clamp(3rem,13vw,5.2rem);
+  }
+
+  .service-detail-page .service-detail-hero-card{
+    position:static;
+  }
+
+  .service-detail-page .service-detail-veil{
+    background:
+      radial-gradient(circle at 80% 14%,rgba(200,255,90,.16),transparent 18rem),
+      linear-gradient(180deg,rgba(255,253,247,.94) 0%,rgba(255,253,247,.74) 62%,rgba(255,253,247,.9) 100%);
+  }
+}
+
+@media(max-width:640px){
+  .service-detail-page .service-detail-hero{
+    padding-top:6.5rem;
+  }
+
+  .service-detail-page .service-detail-back,
+  .service-detail-page .service-detail-kicker,
+  .service-detail-page .service-card-label{
+    font-size:.68rem;
+    padding:.52rem .7rem;
+  }
+
+  .service-detail-page .service-detail-kicker{
+    margin-left:0;
+    margin-top:.45rem;
+  }
+}
