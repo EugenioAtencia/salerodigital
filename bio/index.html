@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Salero Digital | Enlaces oficiales</title>
+  <meta name="description" content="Enlaces oficiales de Salero Digital. Web, SEO local, redes sociales, campañas de publicidad y cata digital para negocios con salero.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://agenciaconsalero.es/bio/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Salero Digital | Tu marca, con salero">
+  <meta property="og:description" content="Todos los enlaces importantes de Salero Digital en una página propia, rápida y medible.">
+  <meta property="og:url" content="https://agenciaconsalero.es/bio/">
+  <meta property="og:site_name" content="Salero Digital">
+  <meta name="theme-color" content="#263826">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/css/bio.css?v=1">
+</head>
+<body>
+  <main class="bio-page" aria-labelledby="bio-title">
+    <section class="bio-card" aria-label="Enlaces principales de Salero Digital">
+      <div class="brand-mark" aria-hidden="true">
+        <svg width="58" height="58" viewBox="0 0 58 58" role="img" focusable="false">
+          <rect x="4" y="4" width="50" height="50" rx="18" fill="#263826"></rect>
+          <path d="M22 19h14l-2 20H24L22 19Z" fill="#fffdf3"></path>
+          <path d="M21 17h16v5H21z" fill="#d7ff5f"></path>
+          <circle cx="25" cy="27" r="1.4" fill="#263826"></circle>
+          <circle cx="29" cy="31" r="1.4" fill="#263826"></circle>
+          <circle cx="33" cy="27" r="1.4" fill="#263826"></circle>
+        </svg>
+      </div>
+
+      <p class="eyebrow">Salero Digital</p>
+      <h1 id="bio-title">Tu marca, con salero</h1>
+      <p class="bio-intro">Marketing, web, SEO, redes y campañas para negocios que quieren dejar de estar de adorno en internet.</p>
+
+      <nav class="bio-links" aria-label="Enlaces destacados">
+        <a class="bio-link bio-link-primary" href="/hablamos/" data-bio-label="Pedir cata digital">
+          <span>
+            <strong>Pedir una cata digital</strong>
+            <small>Vemos tu web, Google, redes y oportunidades de mejora.</small>
+          </span>
+          <em>Cata</em>
+        </a>
+
+        <a class="bio-link" href="/el-menu/" data-bio-label="Ver servicios">
+          <span>
+            <strong>Ver servicios</strong>
+            <small>Web, SEO local, redes sociales y campañas de publicidad.</small>
+          </span>
+          <em>El Menú</em>
+        </a>
+
+        <a class="bio-link" href="/nuestros-menus/" data-bio-label="Ver packs comerciales">
+          <span>
+            <strong>Elegir el ritmo de tu negocio</strong>
+            <small>El Pellizco, Media Ración o El Menú Degustación.</small>
+          </span>
+          <em>Packs</em>
+        </a>
+
+        <a class="bio-link" href="/sectores/" data-bio-label="Ver sectores">
+          <span>
+            <strong>Marketing por sectores</strong>
+            <small>Hostelería, comercios, pymes, almazaras y negocios locales.</small>
+          </span>
+          <em>Sectores</em>
+        </a>
+
+        <a class="bio-link" href="/sectores/marketing-para-hosteleria-turismo/" data-bio-label="Hostelería y turismo">
+          <span>
+            <strong>Hostelería y turismo</strong>
+            <small>Reservas, reputación, Google Maps y presencia digital.</small>
+          </span>
+          <em>Landing</em>
+        </a>
+
+        <a class="bio-link" href="/hablamos/" data-bio-label="Ir a contacto">
+          <span>
+            <strong>¿Hablamos?</strong>
+            <small>Cuéntanos qué negocio tienes y dónde quieres llegar.</small>
+          </span>
+          <em>Contacto</em>
+        </a>
+      </nav>
+
+      <div class="bio-proof" aria-label="Propuesta de valor">
+        <p><strong>Ni humos, ni anglicismos raros.</strong> Estrategia digital con criterio, cercanía y foco en negocio.</p>
+      </div>
+
+      <footer class="bio-footer">
+        <a href="/">agenciaconsalero.es</a>
+        <span>Salero Digital</span>
+      </footer>
+    </section>
+  </main>
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    document.querySelectorAll('[data-bio-label]').forEach(function(link) {
+      link.addEventListener('click', function() {
+        window.dataLayer.push({
+          event: 'click_bio_link',
+          bio_link_label: link.getAttribute('data-bio-label'),
+          bio_link_url: link.href,
+          bio_page: 'instagram_bio'
+        });
+      });
+    });
+  </script>
+</body>
+</html>
