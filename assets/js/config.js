@@ -47,7 +47,7 @@ const SALERO_CONFIG = {
     const fullwidthCss = document.createElement('link');
     fullwidthCss.id = 'service-fullwidth-sections-css';
     fullwidthCss.rel = 'stylesheet';
-    fullwidthCss.href = '/assets/css/service-fullwidth-sections.css?v=1';
+    fullwidthCss.href = '/assets/css/service-fullwidth-sections.css?v=2';
     document.head.appendChild(fullwidthCss);
   }
 })();
