@@ -27,12 +27,21 @@ const SALERO_CONFIG = {
 
 (function loadServiceSectorHeroOverride() {
   if (!window.location.pathname.startsWith('/el-menu/')) return;
-  if (document.getElementById('service-sector-hero-css')) return;
-  const link = document.createElement('link');
-  link.id = 'service-sector-hero-css';
-  link.rel = 'stylesheet';
-  link.href = '/assets/css/service-detail-sector-hero.css?v=7';
-  document.head.appendChild(link);
+  if (!document.getElementById('service-sector-hero-css')) {
+    const link = document.createElement('link');
+    link.id = 'service-sector-hero-css';
+    link.rel = 'stylesheet';
+    link.href = '/assets/css/service-detail-sector-hero.css?v=7';
+    document.head.appendChild(link);
+  }
+
+  if (!document.getElementById('service-menu-accordion-css')) {
+    const accordionCss = document.createElement('link');
+    accordionCss.id = 'service-menu-accordion-css';
+    accordionCss.rel = 'stylesheet';
+    accordionCss.href = '/assets/css/service-menu-accordion.css?v=1';
+    document.head.appendChild(accordionCss);
+  }
 })();
 
 (function loadServiceDetailContentFix() {
@@ -40,7 +49,7 @@ const SALERO_CONFIG = {
   if (document.getElementById('service-detail-content-fix-js')) return;
   const script = document.createElement('script');
   script.id = 'service-detail-content-fix-js';
-  script.src = '/assets/js/service-detail-content-fix.js?v=2';
+  script.src = '/assets/js/service-detail-content-fix.js?v=3';
   script.defer = true;
   document.head.appendChild(script);
 })();
