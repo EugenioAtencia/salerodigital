@@ -39,7 +39,7 @@ const SALERO_CONFIG = {
     const accordionCss = document.createElement('link');
     accordionCss.id = 'service-menu-accordion-css';
     accordionCss.rel = 'stylesheet';
-    accordionCss.href = '/assets/css/service-menu-accordion.css?v=1';
+    accordionCss.href = '/assets/css/service-menu-accordion.css?v=2';
     document.head.appendChild(accordionCss);
   }
 })();
