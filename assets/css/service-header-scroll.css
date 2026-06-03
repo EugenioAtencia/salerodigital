@@ -1,0 +1,9 @@
+/* Cabecera en scroll para páginas de El Menú: mismo comportamiento que Sectores */
+.service-detail-page .site-header.is-scrolled,
+.site-header.is-scrolled {
+  background: rgba(246, 241, 232, .60) !important;
+  backdrop-filter: blur(18px) saturate(1.05) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.05) !important;
+  border-bottom-color: rgba(31, 42, 36, .10) !important;
+  box-shadow: 0 18px 45px rgba(31, 42, 36, .06) !important;
+}
