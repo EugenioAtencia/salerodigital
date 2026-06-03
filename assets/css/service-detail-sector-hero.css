@@ -87,7 +87,7 @@
   color:var(--service-muted,#5f6655);
   font-size:clamp(1.05rem,1.8vw,1.36rem);
   line-height:1.62;
-  font-weight:400;
+  font-weight:400 !important;
   background:transparent;
 }
 
