@@ -31,7 +31,7 @@ const SALERO_CONFIG = {
   const link = document.createElement('link');
   link.id = 'service-sector-hero-css';
   link.rel = 'stylesheet';
-  link.href = '/assets/css/service-detail-sector-hero.css?v=6';
+  link.href = '/assets/css/service-detail-sector-hero.css?v=7';
   document.head.appendChild(link);
 })();
 
@@ -40,7 +40,7 @@ const SALERO_CONFIG = {
   if (document.getElementById('service-detail-content-fix-js')) return;
   const script = document.createElement('script');
   script.id = 'service-detail-content-fix-js';
-  script.src = '/assets/js/service-detail-content-fix.js?v=1';
+  script.src = '/assets/js/service-detail-content-fix.js?v=2';
   script.defer = true;
   document.head.appendChild(script);
 })();
