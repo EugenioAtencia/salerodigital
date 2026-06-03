@@ -42,6 +42,14 @@ const SALERO_CONFIG = {
     accordionCss.href = '/assets/css/service-menu-accordion.css?v=3';
     document.head.appendChild(accordionCss);
   }
+
+  if (!document.getElementById('service-fullwidth-sections-css')) {
+    const fullwidthCss = document.createElement('link');
+    fullwidthCss.id = 'service-fullwidth-sections-css';
+    fullwidthCss.rel = 'stylesheet';
+    fullwidthCss.href = '/assets/css/service-fullwidth-sections.css?v=1';
+    document.head.appendChild(fullwidthCss);
+  }
 })();
 
 (function loadServiceDetailContentFix() {
