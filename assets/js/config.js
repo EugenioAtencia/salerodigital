@@ -50,6 +50,14 @@ const SALERO_CONFIG = {
     fullwidthCss.href = '/assets/css/service-fullwidth-sections.css?v=2';
     document.head.appendChild(fullwidthCss);
   }
+
+  if (!document.getElementById('service-header-scroll-css')) {
+    const headerCss = document.createElement('link');
+    headerCss.id = 'service-header-scroll-css';
+    headerCss.rel = 'stylesheet';
+    headerCss.href = '/assets/css/service-header-scroll.css?v=1';
+    document.head.appendChild(headerCss);
+  }
 })();
 
 (function loadServiceDetailContentFix() {
