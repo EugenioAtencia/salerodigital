@@ -2,6 +2,21 @@
    Replica únicamente la composición visual del HERO de Sectores.
    No cambia la fuente global de los H. */
 
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 120;
+    width: 100%;
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transition: background .28s ease, backdrop-filter .28s ease, border-color .28s ease, box-shadow .28s ease;
+}
+
 .service-detail-page .service-detail-hero{
   min-height:92vh;
   display:grid;
