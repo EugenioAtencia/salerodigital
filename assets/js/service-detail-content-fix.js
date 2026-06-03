@@ -1,26 +1,6 @@
 (function fixServiceDetailContentPlacement() {
   if (!window.location.pathname.startsWith('/el-menu/')) return;
 
-  function setFichaNumber(card, number) {
-    if (!card) return;
-
-    let badge = card.querySelector(':scope > .service-ficha-number');
-
-    if (!badge) {
-      const firstSpan = card.querySelector(':scope > span:not(.service-section-kicker)');
-      if (firstSpan) {
-        badge = firstSpan;
-        badge.classList.add('service-ficha-number');
-      } else {
-        badge = document.createElement('span');
-        badge.className = 'service-ficha-number';
-        card.prepend(badge);
-      }
-    }
-
-    badge.textContent = number;
-  }
-
   function moveLeadContentToSecondEditorialCard(secondCard) {
     const lead = document.querySelector('.service-detail-page .service-lead-content');
     if (!lead || !secondCard) return false;
@@ -42,7 +22,69 @@
     return true;
   }
 
-  function buildThreeStrategicCards() {
+  function cardTitle(card, fallback) {
+    const h2 = card ? card.querySelector('h2') : null;
+    return h2 ? h2.textContent.trim() : fallback;
+  }
+
+  function cardBody(card) {
+    if (!card) return '';
+    const clone = card.cloneNode(true);
+    clone.querySelector(':scope > .service-ficha-number')?.remove();
+    clone.querySelector(':scope > span:not(.service-section-kicker)')?.remove();
+    clone.querySelector(':scope > .service-section-kicker')?.remove();
+    clone.querySelector('h2')?.remove();
+    return clone.innerHTML.trim();
+  }
+
+  function activateAccordion(section) {
+    const items = [...section.querySelectorAll('.service-menu-accordion-item')];
+    const openItem = item => {
+      items.forEach(other => {
+        const isOpen = other === item;
+        other.classList.toggle('is-open', isOpen);
+        other.querySelector('button')?.setAttribute('aria-expanded', String(isOpen));
+      });
+    };
+
+    items.forEach(item => {
+      const btn = item.querySelector('button');
+      if (!btn) return;
+
+      btn.addEventListener('click', () => {
+        const wasOpen = item.classList.contains('is-open');
+        items.forEach(other => {
+          other.classList.remove('is-open');
+          other.querySelector('button')?.setAttribute('aria-expanded', 'false');
+        });
+        if (!wasOpen) {
+          item.classList.add('is-open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+
+      btn.addEventListener('mouseenter', () => openItem(item));
+      btn.addEventListener('focus', () => openItem(item));
+    });
+  }
+
+  function renderAccordionItem(item, index) {
+    const titleId = `service-menu-accordion-title-${index}`;
+    const panelId = `service-menu-accordion-panel-${index}`;
+    return `
+      <article class="service-menu-accordion-item">
+        <button type="button" id="${titleId}" aria-expanded="false" aria-controls="${panelId}">
+          <span class="service-menu-accordion-line" aria-hidden="true"></span>
+          <span class="service-menu-accordion-title">${item.title}</span>
+        </button>
+        <div class="service-menu-accordion-content" id="${panelId}" role="region" aria-labelledby="${titleId}">
+          <div class="service-menu-accordion-inner">${item.body}</div>
+        </div>
+      </article>
+    `;
+  }
+
+  function buildAccordionStrategicBlock() {
     const contentGrid = document.querySelector('.service-detail-page .service-content-grid');
     const mainContent = document.querySelector('.service-detail-page .service-main-content');
     const editorialSplit = document.querySelector('.service-detail-page .service-editorial-split');
@@ -51,45 +93,60 @@
     const sidebarCard = sidebar ? sidebar.querySelector('.service-sidebar-card') : null;
 
     if (!contentGrid || !mainContent || editorialCards.length < 2 || !sidebarCard) return false;
-    if (document.querySelector('.service-detail-page .service-three-card-grid')) return true;
+    if (document.querySelector('.service-detail-page .service-menu-accordion-section')) return true;
 
     const problemCard = editorialCards[0];
     const howCard = editorialCards[1];
 
     moveLeadContentToSecondEditorialCard(howCard);
 
-    setFichaNumber(sidebarCard, '01');
-    setFichaNumber(howCard, '02');
-    setFichaNumber(problemCard, '03');
-
-    sidebarCard.classList.add('service-ficha-card', 'service-ficha-card-cata');
-    howCard.classList.add('service-ficha-card', 'service-ficha-card-how');
-    problemCard.classList.add('service-ficha-card', 'service-ficha-card-problem');
-
-    const grid = document.createElement('div');
-    grid.className = 'service-three-card-grid';
-    grid.append(sidebarCard, howCard, problemCard);
+    const items = [
+      {
+        title: cardTitle(sidebarCard, 'Qué miramos antes de darle al botón de anunciar'),
+        body: cardBody(sidebarCard)
+      },
+      {
+        title: cardTitle(howCard, 'Cómo lo trabajamos'),
+        body: cardBody(howCard)
+      },
+      {
+        title: cardTitle(problemCard, 'El problema que resolvemos'),
+        body: cardBody(problemCard)
+      }
+    ].filter(item => item.title && item.body);
 
     const section = document.createElement('section');
-    section.className = 'service-three-card-section';
-    section.append(grid);
+    section.className = 'service-menu-accordion-section';
+    section.innerHTML = `
+      <div class="service-menu-accordion-media" aria-hidden="true"></div>
+      <div class="service-menu-accordion-panel">
+        <span class="service-menu-accordion-eyebrow">Servicio estratégico</span>
+        <h3>Antes de mover ficha, miramos el terreno.</h3>
+        <p class="service-menu-accordion-intro">Una lectura clara para entender qué necesita el negocio, qué canal tiene más sentido y cómo convertir la estrategia en oportunidades reales.</p>
+        <div class="service-menu-accordion-list">
+          ${items.map(renderAccordionItem).join('')}
+        </div>
+      </div>
+    `;
 
     editorialSplit.remove();
     if (sidebar) sidebar.remove();
+    mainContent.querySelector(':scope > .service-section-kicker')?.remove();
 
     const dynamicBlocks = mainContent.querySelector('.service-dynamic-blocks');
     if (dynamicBlocks) dynamicBlocks.prepend(section);
     else mainContent.append(section);
 
-    contentGrid.classList.add('service-three-card-layout');
+    contentGrid.classList.add('service-menu-accordion-layout');
+    activateAccordion(section);
     return true;
   }
 
   function start() {
-    if (buildThreeStrategicCards()) return;
+    if (buildAccordionStrategicBlock()) return;
 
     const observer = new MutationObserver(() => {
-      if (buildThreeStrategicCards()) observer.disconnect();
+      if (buildAccordionStrategicBlock()) observer.disconnect();
     });
 
     observer.observe(document.body, { childList: true, subtree: true });
