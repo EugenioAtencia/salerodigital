@@ -25,6 +25,19 @@ const SALERO_CONFIG = {
   document.head.appendChild(script);
 })();
 
+(function loadSharedHeaderScrollOverride() {
+  const path = window.location.pathname;
+  const shouldLoad = path.startsWith('/el-menu/') || path.startsWith('/casos-de-exito');
+  if (!shouldLoad) return;
+  if (document.getElementById('service-header-scroll-css')) return;
+
+  const headerCss = document.createElement('link');
+  headerCss.id = 'service-header-scroll-css';
+  headerCss.rel = 'stylesheet';
+  headerCss.href = '/assets/css/service-header-scroll.css?v=2';
+  document.head.appendChild(headerCss);
+})();
+
 (function loadServiceSectorHeroOverride() {
   if (!window.location.pathname.startsWith('/el-menu/')) return;
   if (!document.getElementById('service-sector-hero-css')) {
@@ -49,14 +62,6 @@ const SALERO_CONFIG = {
     fullwidthCss.rel = 'stylesheet';
     fullwidthCss.href = '/assets/css/service-fullwidth-sections.css?v=2';
     document.head.appendChild(fullwidthCss);
-  }
-
-  if (!document.getElementById('service-header-scroll-css')) {
-    const headerCss = document.createElement('link');
-    headerCss.id = 'service-header-scroll-css';
-    headerCss.rel = 'stylesheet';
-    headerCss.href = '/assets/css/service-header-scroll.css?v=1';
-    document.head.appendChild(headerCss);
   }
 })();
 
