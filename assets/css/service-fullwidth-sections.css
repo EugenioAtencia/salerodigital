@@ -1,18 +1,52 @@
-/* Ancho completo para Plan de acción y FAQs en servicios de El Menú */
-.service-detail-page .service-action-section {
-  width: auto !important;
-  margin: clamp(4rem, 7vw, 7rem) calc(50% - 50vw) 0 !important;
-  padding: clamp(4rem, 7vw, 6.8rem) max(clamp(1.25rem, 5vw, 5rem), calc((100vw - 1280px) / 2)) !important;
-  border-radius: 0 !important;
-  border-left: 0 !important;
-  border-right: 0 !important;
-  background:
-    radial-gradient(circle at 88% 12%, rgba(200, 255, 90, .12), transparent 24rem),
-    radial-gradient(circle at 8% 92%, rgba(215, 170, 85, .12), transparent 26rem),
-    linear-gradient(180deg, #fffdf7 0%, #f8f1e4 100%) !important;
+/* Integración visual de Plan de acción y FAQs en servicios de El Menú */
+
+.service-detail-page .service-menu-accordion-section {
+  margin-bottom: 0 !important;
 }
 
-.service-detail-page .service-action-section .service-section-kicker,
+.service-detail-page .service-action-section {
+  width: auto !important;
+  margin: 0 calc(50% - 50vw) 0 !important;
+  padding: clamp(4.8rem, 8vw, 8rem) max(clamp(1.25rem, 5vw, 5rem), calc((100vw - 1280px) / 2)) clamp(3rem, 5vw, 4.8rem) !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(200, 255, 90, .15), transparent 26rem),
+    radial-gradient(circle at 88% 80%, rgba(215, 170, 85, .11), transparent 28rem),
+    linear-gradient(180deg, #fffdf7 0%, #f7f0df 100%) !important;
+}
+
+.service-detail-page .service-action-section > .service-section-kicker,
+.service-detail-page .service-action-section .service-section-kicker {
+  width: fit-content !important;
+  max-width: 100% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: .9rem !important;
+  margin: 0 0 clamp(2rem, 4vw, 3.2rem) !important;
+  padding: .85rem 1.25rem !important;
+  border: 1px solid rgba(79, 98, 57, .18) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 253, 247, .72) !important;
+  color: #27311f !important;
+  font-size: .86rem !important;
+  line-height: 1 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+  box-shadow: none !important;
+}
+
+.service-detail-page .service-action-section > .service-section-kicker::before,
+.service-detail-page .service-action-section .service-section-kicker::before {
+  content: "" !important;
+  display: inline-block !important;
+  width: 2.8rem !important;
+  height: .14rem !important;
+  flex: 0 0 2.8rem !important;
+  border-radius: 999px !important;
+  background: #d7aa55 !important;
+}
+
 .service-detail-page .service-action-section .service-block-heading,
 .service-detail-page .service-action-section .service-action-grid {
   width: min(1280px, 100%) !important;
@@ -27,7 +61,7 @@
 .service-detail-page .service-action-section .service-action-grid {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: clamp(1.4rem, 2.4vw, 2.2rem) !important;
+  gap: clamp(1.6rem, 2.8vw, 2.6rem) !important;
   align-items: stretch !important;
 }
 
@@ -46,12 +80,12 @@
 .service-detail-page .service-faq-block {
   width: auto !important;
   margin: 0 calc(50% - 50vw) !important;
-  padding: clamp(4.8rem, 8vw, 8rem) max(clamp(1.25rem, 5vw, 5rem), calc((100vw - 1280px) / 2)) !important;
+  padding: clamp(3.8rem, 6vw, 5.8rem) max(clamp(1.25rem, 5vw, 5rem), calc((100vw - 1280px) / 2)) clamp(5.5rem, 8vw, 8rem) !important;
   border-radius: 0 !important;
   background:
     radial-gradient(circle at 12% 18%, rgba(200, 255, 90, .15), transparent 26rem),
     radial-gradient(circle at 88% 80%, rgba(215, 170, 85, .11), transparent 28rem),
-    linear-gradient(180deg, #fffdf7 0%, #f7f0df 100%) !important;
+    linear-gradient(180deg, #f7f0df 0%, #fffdf7 100%) !important;
 }
 
 .service-detail-page .service-faq-block .service-faq-copy,
