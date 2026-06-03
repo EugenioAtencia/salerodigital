@@ -31,6 +31,6 @@ const SALERO_CONFIG = {
   const link = document.createElement('link');
   link.id = 'service-sector-hero-css';
   link.rel = 'stylesheet';
-  link.href = '/assets/css/service-detail-sector-hero.css?v=5';
+  link.href = '/assets/css/service-detail-sector-hero.css?v=6';
   document.head.appendChild(link);
 })();
