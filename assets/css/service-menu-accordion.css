@@ -8,7 +8,6 @@
 }
 
 .service-detail-page .service-menu-accordion-section {
-  --accordion-bg: url("/assets/img/el-menu-pueblo-andaluz.webp");
   position: relative;
   overflow: hidden;
   min-height: clamp(680px, 82vh, 860px);
@@ -17,27 +16,38 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(420px, 50%);
   align-items: center;
-  background-image:
-    linear-gradient(90deg, rgba(20, 22, 17, .18) 0%, rgba(20, 22, 17, .06) 46%, rgba(20, 22, 17, .18) 100%),
-    var(--accordion-bg),
-    linear-gradient(135deg, #f4efe3, #d8cdb5);
-  background-size: cover;
-  background-position: center;
+  background: #151813;
   color: #fffdf7;
+  isolation: isolate;
+}
+
+.service-detail-page .service-menu-accordion-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: url("/assets/img/el-menu-pueblo-andaluz.webp?v=1");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  opacity: 1;
+  filter: saturate(1.04) contrast(.98) brightness(.96);
 }
 
 .service-detail-page .service-menu-accordion-section::before {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: -1;
   background:
-    radial-gradient(circle at 78% 30%, rgba(200, 255, 90, .18), transparent 24rem),
-    linear-gradient(90deg, rgba(0, 0, 0, .06), rgba(0, 0, 0, .34));
+    radial-gradient(circle at 76% 36%, rgba(200, 255, 90, .12), transparent 25rem),
+    linear-gradient(90deg, rgba(20, 22, 17, .02) 0%, rgba(20, 22, 17, .03) 42%, rgba(20, 22, 17, .28) 100%),
+    linear-gradient(180deg, rgba(20, 22, 17, .03) 0%, rgba(20, 22, 17, .16) 100%);
   pointer-events: none;
 }
 
 .service-detail-page .service-menu-accordion-media {
-  display: block;
+  display: none;
 }
 
 .service-detail-page .service-menu-accordion-panel {
@@ -46,14 +56,14 @@
   width: min(100%, 680px);
   min-height: 50vh;
   justify-self: end;
-  border: 1px solid rgba(255, 253, 247, .22);
+  border: 1px solid rgba(255, 253, 247, .24);
   border-radius: 2rem;
   background:
-    radial-gradient(circle at 100% 100%, rgba(200, 255, 90, .18), transparent 17rem),
-    rgba(21, 24, 19, .66);
+    radial-gradient(circle at 100% 100%, rgba(200, 255, 90, .2), transparent 17rem),
+    rgba(21, 24, 19, .62);
   box-shadow: 0 30px 100px rgba(0, 0, 0, .28);
-  -webkit-backdrop-filter: blur(24px);
-  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
   padding: clamp(1.55rem, 3.2vw, 3rem);
 }
 
@@ -225,10 +235,15 @@
     background: #151813;
   }
 
+  .service-detail-page .service-menu-accordion-section::after,
+  .service-detail-page .service-menu-accordion-section::before {
+    display: none;
+  }
+
   .service-detail-page .service-menu-accordion-media {
     display: block;
     min-height: 48vh;
-    background-image: var(--accordion-bg), linear-gradient(135deg, #f4efe3, #d8cdb5);
+    background-image: url("/assets/img/el-menu-pueblo-andaluz.webp?v=1"), linear-gradient(135deg, #f4efe3, #d8cdb5);
     background-size: cover;
     background-position: center;
   }
