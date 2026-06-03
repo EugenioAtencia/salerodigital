@@ -1,1 +1,260 @@
-PLACEHOLDER
+/* Bloque estratégico tipo acordeón para servicios de El Menú */
+.service-detail-page .service-menu-accordion-layout {
+  display: block;
+}
+
+.service-detail-page .service-menu-accordion-layout .service-main-content {
+  width: 100%;
+}
+
+.service-detail-page .service-menu-accordion-section {
+  --accordion-bg: url("/assets/img/el-menu-pueblo-andaluz.webp");
+  position: relative;
+  overflow: hidden;
+  min-height: clamp(680px, 82vh, 860px);
+  margin: 0 calc(50% - 50vw) clamp(4rem, 8vw, 7rem);
+  padding: clamp(2rem, 5vw, 4.5rem) max(clamp(1.25rem, 5vw, 5rem), calc((100vw - 1280px) / 2));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(420px, 50%);
+  align-items: center;
+  background-image:
+    linear-gradient(90deg, rgba(20, 22, 17, .18) 0%, rgba(20, 22, 17, .06) 46%, rgba(20, 22, 17, .18) 100%),
+    var(--accordion-bg),
+    linear-gradient(135deg, #f4efe3, #d8cdb5);
+  background-size: cover;
+  background-position: center;
+  color: #fffdf7;
+}
+
+.service-detail-page .service-menu-accordion-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 78% 30%, rgba(200, 255, 90, .18), transparent 24rem),
+    linear-gradient(90deg, rgba(0, 0, 0, .06), rgba(0, 0, 0, .34));
+  pointer-events: none;
+}
+
+.service-detail-page .service-menu-accordion-media {
+  display: block;
+}
+
+.service-detail-page .service-menu-accordion-panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 680px);
+  min-height: 50vh;
+  justify-self: end;
+  border: 1px solid rgba(255, 253, 247, .22);
+  border-radius: 2rem;
+  background:
+    radial-gradient(circle at 100% 100%, rgba(200, 255, 90, .18), transparent 17rem),
+    rgba(21, 24, 19, .66);
+  box-shadow: 0 30px 100px rgba(0, 0, 0, .28);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  padding: clamp(1.55rem, 3.2vw, 3rem);
+}
+
+.service-detail-page .service-menu-accordion-eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 1.15rem;
+  padding: .62rem .88rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 253, 247, .22);
+  background: rgba(255, 253, 247, .1);
+  color: rgba(255, 253, 247, .78);
+  font-size: .74rem;
+  line-height: 1;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.service-detail-page .service-menu-accordion-panel h3 {
+  max-width: 10em;
+  margin: 0 0 1rem;
+  color: #fffdf7;
+  font-family: var(--font-serif, "Playfair Display", Georgia, serif);
+  font-weight: 800;
+  font-size: clamp(2.4rem, 4.6vw, 5rem);
+  line-height: .9;
+  letter-spacing: -.065em;
+  text-wrap: balance;
+}
+
+.service-detail-page .service-menu-accordion-intro {
+  max-width: 44rem;
+  margin: 0 0 clamp(1.6rem, 3vw, 2.6rem);
+  color: rgba(255, 253, 247, .72);
+  font-size: clamp(1rem, 1.2vw, 1.15rem);
+  line-height: 1.7;
+  font-weight: 400 !important;
+}
+
+.service-detail-page .service-menu-accordion-list {
+  display: grid;
+  gap: 0;
+}
+
+.service-detail-page .service-menu-accordion-item {
+  border-top: 1px solid rgba(255, 253, 247, .16);
+}
+
+.service-detail-page .service-menu-accordion-item:last-child {
+  border-bottom: 1px solid rgba(255, 253, 247, .16);
+}
+
+.service-detail-page .service-menu-accordion-item button {
+  width: 100%;
+  display: block;
+  cursor: pointer;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #fffdf7;
+  text-align: left;
+  padding: 1.25rem 0;
+}
+
+.service-detail-page .service-menu-accordion-line {
+  display: block;
+  width: 50%;
+  height: 2px;
+  margin-bottom: 1.15rem;
+  background: rgba(255, 253, 247, .78);
+  transform-origin: left center;
+  transition: width .34s ease, background .34s ease;
+}
+
+.service-detail-page .service-menu-accordion-title {
+  display: block;
+  max-width: 16em;
+  color: rgba(255, 253, 247, .86);
+  font-size: clamp(1.2rem, 2vw, 2rem);
+  line-height: 1.12;
+  letter-spacing: -.04em;
+  transition: color .25s ease, transform .25s ease;
+}
+
+.service-detail-page .service-menu-accordion-item.is-open .service-menu-accordion-line,
+.service-detail-page .service-menu-accordion-item:hover .service-menu-accordion-line,
+.service-detail-page .service-menu-accordion-item:focus-within .service-menu-accordion-line {
+  width: 100%;
+  background: #c8ff5a;
+}
+
+.service-detail-page .service-menu-accordion-item.is-open .service-menu-accordion-title,
+.service-detail-page .service-menu-accordion-item:hover .service-menu-accordion-title,
+.service-detail-page .service-menu-accordion-item:focus-within .service-menu-accordion-title {
+  color: #fffdf7;
+  transform: translateX(.25rem);
+}
+
+.service-detail-page .service-menu-accordion-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows .34s ease, opacity .28s ease, padding-bottom .34s ease;
+}
+
+.service-detail-page .service-menu-accordion-item.is-open .service-menu-accordion-content {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  padding-bottom: 1.35rem;
+}
+
+.service-detail-page .service-menu-accordion-inner {
+  overflow: hidden;
+  max-width: 44rem;
+  color: rgba(255, 253, 247, .76);
+}
+
+.service-detail-page .service-menu-accordion-inner p {
+  margin: 0 0 1rem;
+  color: rgba(255, 253, 247, .76);
+  font-size: clamp(.98rem, 1.1vw, 1.08rem);
+  line-height: 1.72;
+  font-weight: 400 !important;
+}
+
+.service-detail-page .service-menu-accordion-inner p:last-child {
+  margin-bottom: 0;
+}
+
+.service-detail-page .service-menu-accordion-inner ul {
+  display: grid;
+  gap: .8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.service-detail-page .service-menu-accordion-inner li {
+  display: flex;
+  gap: .75rem;
+  align-items: flex-start;
+  color: rgba(255, 253, 247, .78);
+  font-size: clamp(.98rem, 1.05vw, 1.05rem);
+  line-height: 1.52;
+}
+
+.service-detail-page .service-menu-accordion-inner li::before {
+  content: "";
+  flex: 0 0 .55rem;
+  width: .55rem;
+  height: .55rem;
+  margin-top: .48rem;
+  border-radius: 999px;
+  background: #c8ff5a;
+  box-shadow: 0 0 0 5px rgba(200, 255, 90, .16);
+}
+
+.service-detail-page .service-menu-accordion-inner .btn {
+  display: none;
+}
+
+@media(max-width: 980px) {
+  .service-detail-page .service-menu-accordion-section {
+    min-height: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 0;
+    background: #151813;
+  }
+
+  .service-detail-page .service-menu-accordion-media {
+    display: block;
+    min-height: 48vh;
+    background-image: var(--accordion-bg), linear-gradient(135deg, #f4efe3, #d8cdb5);
+    background-size: cover;
+    background-position: center;
+  }
+
+  .service-detail-page .service-menu-accordion-panel {
+    width: 100%;
+    min-height: auto;
+    justify-self: stretch;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(200, 255, 90, .15), transparent 16rem),
+      #151813;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    padding: clamp(1.35rem, 6vw, 2.3rem);
+  }
+
+  .service-detail-page .service-menu-accordion-panel h3 {
+    max-width: 9em;
+    font-size: clamp(2.6rem, 11vw, 4.6rem);
+  }
+
+  .service-detail-page .service-menu-accordion-title {
+    max-width: 100%;
+  }
+}
