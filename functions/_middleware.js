@@ -3,6 +3,7 @@ import { renderJsonLd, schemaForPath } from './_shared/schema.js';
 const SITE_ORIGIN = 'https://agenciaconsalero.es';
 const LEGACY_ORIGIN = 'https://salero.webagencia360.com';
 const LEGACY_HOSTNAMES = new Set(['salero.webagencia360.com']);
+const GTM_ID = 'GTM-WSLMDJ8N';
 
 const MONTSERRAT_CSS = '<link rel="stylesheet" href="/assets/css/font-body-montserrat.css?v=3">';
 const SERVICE_RELATED_CSS = '<link rel="stylesheet" href="/assets/css/service-related.css?v=1">';
@@ -169,6 +170,7 @@ export async function onRequest(context) {
   nextHtml = removeLaRecetaLinks(nextHtml);
   nextHtml = optimizeAutoplayVideos(nextHtml);
   nextHtml = injectSeo(nextHtml, SEO_PAGES[normalizedPath]);
+  nextHtml = injectGtm(nextHtml);
 
   if (schema && !nextHtml.includes('id="salero-schema-graph"') && !nextHtml.includes("id='salero-schema-graph'")) {
     const jsonLd = replaceLegacyOrigin(renderJsonLd(schema));
@@ -256,6 +258,27 @@ function injectOrReplaceStylesheet(html = '', hrefPath = '', tag = '') {
 
 function injectBefore(html = '', marker = '', fragment = '') {
   return html.includes(marker) ? html.replace(marker, `${fragment}${marker}`) : `${html}\n${fragment}`;
+}
+
+function injectGtm(html = '') {
+  if (!GTM_ID || html.includes(GTM_ID)) return html;
+
+  const gtmHead = `<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${GTM_ID}');</script>
+<!-- End Google Tag Manager -->`;
+
+  const gtmBody = `<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${GTM_ID}"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->`;
+
+  let next = injectBefore(html, '</head>', `  ${gtmHead}\n`);
+  next = next.replace(/<body([^>]*)>/i, `<body$1>\n  ${gtmBody}`);
+  return next;
 }
 
 function normalizeFooter(html = '') {
