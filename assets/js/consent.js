@@ -1,5 +1,5 @@
 (function () {
-  const STORAGE_KEY = 'salero_cookie_consent_v1';
+  const STORAGE_KEY = 'salero_cookie_consent_v2';
   const CONSENT_EVENT = 'salero_consent_update';
 
   const CONSENT_GRANTED = 'granted';
@@ -7,7 +7,7 @@
 
   const defaultPreferences = {
     analytics: true,
-    marketing: true
+    marketing: false
   };
 
   window.dataLayer = window.dataLayer || [];
@@ -26,10 +26,10 @@
 
   function persistConsent(preferences) {
     const payload = {
-      analytics: Boolean(preferences.analytics),
+      analytics: true,
       marketing: Boolean(preferences.marketing),
       savedAt: new Date().toISOString(),
-      version: 1
+      version: 2
     };
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -39,7 +39,7 @@
   }
 
   function applyConsent(preferences) {
-    const analyticsStatus = preferences.analytics ? CONSENT_GRANTED : CONSENT_DENIED;
+    const analyticsStatus = CONSENT_GRANTED;
     const marketingStatus = preferences.marketing ? CONSENT_GRANTED : CONSENT_DENIED;
 
     window.gtag('consent', 'update', {
@@ -85,7 +85,7 @@
         <p class="salero-consent__eyebrow">Privacidad y cookies</p>
         <h2 id="salero-consent-title">Cookies con criterio</h2>
         <p>
-          Usamos cookies técnicas necesarias y, con tu permiso, cookies de análisis y publicidad para medir resultados y mejorar campañas.
+          Mantenemos la analítica activa para medir navegación y mejorar la web. Puedes aceptar también cookies de publicidad para medir campañas.
         </p>
 
         <div class="salero-consent__settings" data-consent-settings hidden>
@@ -98,15 +98,15 @@
           </label>
 
           <label class="salero-consent__option">
-            <input type="checkbox" data-consent-analytics checked>
+            <input type="checkbox" data-consent-analytics checked disabled>
             <span>
               <strong>Cookies de análisis</strong>
-              <span>Nos ayudan a mejorar contenidos, navegación y rendimiento.</span>
+              <span>Nos ayudan a medir navegación, contenidos y rendimiento.</span>
             </span>
           </label>
 
           <label class="salero-consent__option">
-            <input type="checkbox" data-consent-marketing checked>
+            <input type="checkbox" data-consent-marketing>
             <span>
               <strong>Cookies de publicidad</strong>
               <span>Permiten medir campañas, conversiones y acciones publicitarias.</span>
@@ -115,9 +115,9 @@
         </div>
 
         <div class="salero-consent__actions">
-          <button type="button" data-consent-reject>Rechazar</button>
+          <button type="button" data-consent-analytics-only>Solo analítica</button>
           <button type="button" data-consent-config>Configurar</button>
-          <button type="button" data-consent-accept>Aceptar</button>
+          <button type="button" data-consent-accept>Aceptar publicidad</button>
           <button type="button" data-consent-save hidden>Guardar configuración</button>
         </div>
       </div>
@@ -125,21 +125,19 @@
 
     document.body.appendChild(banner);
 
-    banner.querySelector('[data-consent-reject]').addEventListener('click', function () {
-      persistConsent({ analytics: false, marketing: false });
+    banner.querySelector('[data-consent-analytics-only]').addEventListener('click', function () {
+      persistConsent({ marketing: false });
     });
 
     banner.querySelector('[data-consent-accept]').addEventListener('click', function () {
-      persistConsent({ analytics: true, marketing: true });
+      persistConsent({ marketing: true });
     });
 
     banner.querySelector('[data-consent-config]').addEventListener('click', function () {
       const stored = getStoredConsent();
       const preferences = stored || defaultPreferences;
-      const analytics = banner.querySelector('[data-consent-analytics]');
       const marketing = banner.querySelector('[data-consent-marketing]');
 
-      if (analytics) analytics.checked = Boolean(preferences.analytics);
       if (marketing) marketing.checked = Boolean(preferences.marketing);
 
       showSettings(banner);
@@ -147,7 +145,6 @@
 
     banner.querySelector('[data-consent-save]').addEventListener('click', function () {
       persistConsent({
-        analytics: Boolean(banner.querySelector('[data-consent-analytics]')?.checked),
         marketing: Boolean(banner.querySelector('[data-consent-marketing]')?.checked)
       });
     });
@@ -160,7 +157,7 @@
     button.type = 'button';
     button.className = 'salero-consent-preferences';
     button.setAttribute('data-salero-consent-preferences', '');
-    button.textContent = 'Configurar cookies';
+    button.textContent = 'Cookies';
     button.addEventListener('click', renderBanner);
 
     document.body.appendChild(button);
@@ -175,6 +172,7 @@
       return;
     }
 
+    applyConsent(defaultPreferences);
     renderBanner();
   }
 
