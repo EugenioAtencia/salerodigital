@@ -38,6 +38,10 @@
     showPreferencesButton();
   }
 
+  function minimizeWithAnalyticsOnly() {
+    persistConsent({ marketing: false });
+  }
+
   function applyConsent(preferences) {
     const analyticsStatus = CONSENT_GRANTED;
     const marketingStatus = preferences.marketing ? CONSENT_GRANTED : CONSENT_DENIED;
@@ -70,6 +74,25 @@
 
     if (settings) settings.hidden = false;
     if (save) save.hidden = false;
+  }
+
+  function bindOutsideClickToMinimize(banner) {
+    window.setTimeout(function () {
+      document.addEventListener('pointerdown', function handleOutsideClick(event) {
+        if (!document.body.contains(banner)) {
+          document.removeEventListener('pointerdown', handleOutsideClick, true);
+          return;
+        }
+
+        const clickedInsideBanner = banner.contains(event.target);
+        const clickedPreferencesButton = event.target.closest && event.target.closest('[data-salero-consent-preferences]');
+
+        if (!clickedInsideBanner && !clickedPreferencesButton) {
+          document.removeEventListener('pointerdown', handleOutsideClick, true);
+          minimizeWithAnalyticsOnly();
+        }
+      }, true);
+    }, 250);
   }
 
   function renderBanner() {
@@ -124,6 +147,7 @@
     `;
 
     document.body.appendChild(banner);
+    bindOutsideClickToMinimize(banner);
 
     banner.querySelector('[data-consent-analytics-only]').addEventListener('click', function () {
       persistConsent({ marketing: false });
