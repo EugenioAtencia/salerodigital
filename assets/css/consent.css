@@ -1,0 +1,163 @@
+.salero-consent {
+  position: fixed;
+  inset: auto 20px 20px 20px;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.salero-consent[hidden],
+.salero-consent-preferences[hidden] {
+  display: none !important;
+}
+
+.salero-consent__panel {
+  width: min(920px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  padding: 28px;
+  border: 1px solid rgba(36, 52, 32, 0.16);
+  border-radius: 28px;
+  background: #fffdf7;
+  color: #243420;
+  box-shadow: 0 26px 90px rgba(20, 28, 17, 0.28);
+  pointer-events: auto;
+}
+
+.salero-consent__eyebrow {
+  margin: 0 0 8px;
+  color: #6f7c4f;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.salero-consent h2 {
+  margin: 0 0 12px;
+  color: #243420;
+  font-family: inherit;
+  font-size: clamp(26px, 4vw, 42px);
+  line-height: 1;
+}
+
+.salero-consent p {
+  margin: 0;
+  max-width: 760px;
+  color: #3d4838;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.salero-consent__settings {
+  display: grid;
+  gap: 12px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(36, 52, 32, 0.12);
+}
+
+.salero-consent__option {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 14px;
+  border: 1px solid rgba(36, 52, 32, 0.12);
+  border-radius: 18px;
+  background: rgba(111, 124, 79, 0.06);
+}
+
+.salero-consent__option input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: #243420;
+}
+
+.salero-consent__option strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #243420;
+  font-size: 14px;
+}
+
+.salero-consent__option span {
+  display: block;
+  color: #53604c;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.salero-consent__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.salero-consent button,
+.salero-consent-preferences {
+  min-height: 44px;
+  border: 1px solid rgba(36, 52, 32, 0.22);
+  border-radius: 999px;
+  padding: 12px 18px;
+  background: #fffdf7;
+  color: #243420;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.salero-consent button:hover,
+.salero-consent-preferences:hover {
+  transform: translateY(-1px);
+}
+
+.salero-consent [data-consent-accept],
+.salero-consent [data-consent-save] {
+  border-color: #243420;
+  background: #243420;
+  color: #fffdf7;
+}
+
+.salero-consent [data-consent-config] {
+  background: rgba(111, 124, 79, 0.08);
+}
+
+.salero-consent-preferences {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 9998;
+  box-shadow: 0 14px 40px rgba(20, 28, 17, 0.16);
+}
+
+@media (max-width: 640px) {
+  .salero-consent {
+    inset: auto 12px 12px 12px;
+  }
+
+  .salero-consent__panel {
+    max-height: calc(100vh - 24px);
+    padding: 22px;
+    border-radius: 22px;
+  }
+
+  .salero-consent__actions {
+    flex-direction: column;
+  }
+
+  .salero-consent button {
+    width: 100%;
+  }
+
+  .salero-consent-preferences {
+    left: 12px;
+    bottom: 12px;
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+}
