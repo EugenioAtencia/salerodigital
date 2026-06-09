@@ -13,6 +13,8 @@ const SERVICE_MOBILE_NAV_CSS = '<link rel="stylesheet" href="/assets/css/service
 const NAV_SERVICE_DROPDOWN_JS = '<script src="/assets/js/nav-service-dropdown.js?v=1" defer></script>';
 const CASE_RECIPE_FIX_CSS = '<link rel="stylesheet" href="/assets/css/caso-receta-carousel-fix.css?v=3">';
 const BLOG_FAQ_TYPOGRAPHY_CSS = '<link rel="stylesheet" href="/assets/css/ba-faq-typography.css?v=2">';
+const CONSENT_CSS = '<link rel="stylesheet" href="/assets/css/consent.css?v=1">';
+const CONSENT_JS = '<script src="/assets/js/consent.js?v=1" defer></script>';
 
 const REMOVED_MENU_PACKS = new Set([
   '/nuestros-menus/media-racion/',
@@ -166,6 +168,7 @@ export async function onRequest(context) {
   nextHtml = injectServiceAssets(nextHtml, normalizedPath);
   nextHtml = versionCaseRecipeFix(nextHtml);
   nextHtml = injectBlogFaqTypography(nextHtml, normalizedPath);
+  nextHtml = injectConsentAssets(nextHtml);
   nextHtml = normalizeFooter(nextHtml);
   nextHtml = removeLaRecetaLinks(nextHtml);
   nextHtml = optimizeAutoplayVideos(nextHtml);
@@ -247,6 +250,13 @@ function injectBlogFaqTypography(html = '', path = '') {
   return injectOrReplaceStylesheet(html, '/assets/css/ba-faq-typography.css', BLOG_FAQ_TYPOGRAPHY_CSS);
 }
 
+function injectConsentAssets(html = '') {
+  let next = html;
+  next = injectOrReplaceStylesheet(next, '/assets/css/consent.css', CONSENT_CSS);
+  if (!next.includes('/assets/js/consent.js')) next = injectBefore(next, '</body>', `  ${CONSENT_JS}\n`);
+  return next;
+}
+
 function hasFaqMarkup(html = '') {
   return /ba-faq|faq|pregunta|preguntas frecuentes|accordion/i.test(html);
 }
@@ -263,6 +273,23 @@ function injectBefore(html = '', marker = '', fragment = '') {
 function injectGtm(html = '') {
   if (!GTM_ID || html.includes(GTM_ID)) return html;
 
+  const consentDefault = `<!-- Google Consent Mode v2 -->
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {
+  ad_storage: 'denied',
+  ad_user_data: 'denied',
+  ad_personalization: 'denied',
+  analytics_storage: 'denied',
+  personalization_storage: 'denied',
+  functionality_storage: 'granted',
+  security_storage: 'granted',
+  wait_for_update: 500
+});
+</script>
+<!-- End Google Consent Mode v2 -->`;
+
   const gtmHead = `<!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -276,7 +303,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->`;
 
-  let next = injectBefore(html, '</head>', `  ${gtmHead}\n`);
+  let next = injectBefore(html, '</head>', `  ${consentDefault}\n  ${gtmHead}\n`);
   next = next.replace(/<body([^>]*)>/i, `<body$1>\n  ${gtmBody}`);
   return next;
 }
