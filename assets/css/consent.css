@@ -1,10 +1,9 @@
 .salero-consent {
   position: fixed;
-  left: 50%;
-  bottom: 16px;
+  left: 18px;
+  bottom: 18px;
   z-index: 9999;
-  width: min(760px, calc(100vw - 32px));
-  transform: translateX(-50%);
+  width: min(360px, calc(100vw - 36px));
   pointer-events: none;
 }
 
@@ -15,14 +14,14 @@
 
 .salero-consent__panel {
   width: 100%;
-  max-height: calc(100vh - 32px);
+  max-height: calc(100vh - 36px);
   overflow: auto;
-  padding: 12px 14px;
+  padding: 16px;
   border: 1px solid rgba(36, 52, 32, 0.12);
-  border-radius: 18px;
-  background: rgba(255, 253, 247, 0.95);
+  border-radius: 20px;
+  background: rgba(255, 253, 247, 0.96);
   color: #243420;
-  box-shadow: 0 14px 42px rgba(20, 28, 17, 0.14);
+  box-shadow: 0 18px 48px rgba(20, 28, 17, 0.16);
   backdrop-filter: blur(14px);
   pointer-events: auto;
 }
@@ -32,26 +31,24 @@
 }
 
 .salero-consent h2 {
-  margin: 0 0 4px;
+  margin: 0 0 7px;
   color: #243420;
   font-family: inherit;
-  font-size: 16px;
-  line-height: 1.15;
+  font-size: 22px;
+  line-height: 1;
 }
 
 .salero-consent p {
   margin: 0;
-  max-width: none;
   color: #3d4838;
   font-size: 12px;
-  line-height: 1.35;
+  line-height: 1.42;
 }
 
 .salero-consent__settings {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-  margin-top: 10px;
+  gap: 7px;
+  margin-top: 12px;
   padding-top: 10px;
   border-top: 1px solid rgba(36, 52, 32, 0.08);
 }
@@ -59,7 +56,7 @@
 .salero-consent__option {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 7px;
+  gap: 8px;
   align-items: start;
   padding: 8px;
   border: 1px solid rgba(36, 52, 32, 0.09);
@@ -90,10 +87,10 @@
 }
 
 .salero-consent__actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 7px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .salero-consent button,
@@ -101,7 +98,7 @@
   min-height: 32px;
   border: 1px solid rgba(36, 52, 32, 0.18);
   border-radius: 999px;
-  padding: 7px 12px;
+  padding: 7px 10px;
   background: #fffdf7;
   color: #243420;
   font: inherit;
@@ -117,6 +114,7 @@
 
 .salero-consent [data-consent-accept],
 .salero-consent [data-consent-save] {
+  grid-column: 1 / -1;
   border-color: #243420;
   background: #243420;
   color: #fffdf7;
@@ -141,49 +139,29 @@
   opacity: 1;
 }
 
-@media (min-width: 760px) {
-  .salero-consent__panel {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    column-gap: 14px;
-    align-items: center;
-  }
-
-  .salero-consent__settings {
-    grid-column: 1 / -1;
-  }
-
-  .salero-consent__actions {
-    justify-content: flex-end;
-    margin-top: 0;
-    white-space: nowrap;
-  }
-
-  .salero-consent__settings + .salero-consent__actions,
-  .salero-consent__panel:has(.salero-consent__settings:not([hidden])) .salero-consent__actions {
-    grid-column: 1 / -1;
-    margin-top: 10px;
-  }
-}
-
 @media (max-width: 640px) {
   .salero-consent {
+    left: 10px;
     bottom: 10px;
-    width: calc(100vw - 20px);
+    width: min(340px, calc(100vw - 20px));
   }
 
   .salero-consent__panel {
-    padding: 12px;
-    border-radius: 16px;
+    padding: 14px;
+    border-radius: 17px;
   }
 
-  .salero-consent__settings {
-    grid-template-columns: 1fr;
+  .salero-consent h2 {
+    font-size: 20px;
   }
 
   .salero-consent__actions {
-    display: grid;
     grid-template-columns: 1fr;
+  }
+
+  .salero-consent [data-consent-accept],
+  .salero-consent [data-consent-save] {
+    grid-column: auto;
   }
 
   .salero-consent button {
