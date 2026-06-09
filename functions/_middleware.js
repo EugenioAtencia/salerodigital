@@ -13,8 +13,8 @@ const SERVICE_MOBILE_NAV_CSS = '<link rel="stylesheet" href="/assets/css/service
 const NAV_SERVICE_DROPDOWN_JS = '<script src="/assets/js/nav-service-dropdown.js?v=1" defer></script>';
 const CASE_RECIPE_FIX_CSS = '<link rel="stylesheet" href="/assets/css/caso-receta-carousel-fix.css?v=3">';
 const BLOG_FAQ_TYPOGRAPHY_CSS = '<link rel="stylesheet" href="/assets/css/ba-faq-typography.css?v=2">';
-const CONSENT_CSS = '<link rel="stylesheet" href="/assets/css/consent.css?v=3">';
-const CONSENT_JS = '<script src="/assets/js/consent.js?v=2" defer></script>';
+const CONSENT_CSS = '<link rel="stylesheet" href="/assets/css/consent.css?v=4">';
+const CONSENT_JS = '<script src="/assets/js/consent.js?v=3" defer></script>';
 
 const REMOVED_MENU_PACKS = new Set([
   '/nuestros-menus/media-racion/',
@@ -281,7 +281,7 @@ gtag('consent', 'default', {
   ad_storage: 'denied',
   ad_user_data: 'denied',
   ad_personalization: 'denied',
-  analytics_storage: 'denied',
+  analytics_storage: 'granted',
   personalization_storage: 'denied',
   functionality_storage: 'granted',
   security_storage: 'granted',
