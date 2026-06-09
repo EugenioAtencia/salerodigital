@@ -6,8 +6,8 @@
   const CONSENT_DENIED = 'denied';
 
   const defaultPreferences = {
-    analytics: false,
-    marketing: false
+    analytics: true,
+    marketing: true
   };
 
   window.dataLayer = window.dataLayer || [];
@@ -85,7 +85,7 @@
         <p class="salero-consent__eyebrow">Privacidad y cookies</p>
         <h2 id="salero-consent-title">Cookies con criterio</h2>
         <p>
-          Usamos cookies técnicas necesarias para que la web funcione. Con tu permiso, también usamos cookies de análisis y publicidad para medir resultados y mejorar nuestras campañas.
+          Usamos cookies técnicas necesarias y, con tu permiso, cookies de análisis y publicidad para medir resultados y mejorar campañas.
         </p>
 
         <div class="salero-consent__settings" data-consent-settings hidden>
@@ -93,23 +93,23 @@
             <input type="checkbox" checked disabled>
             <span>
               <strong>Cookies técnicas necesarias</strong>
-              <span>Permiten que la web funcione correctamente y no se pueden desactivar desde este panel.</span>
+              <span>Permiten que la web funcione correctamente.</span>
             </span>
           </label>
 
           <label class="salero-consent__option">
-            <input type="checkbox" data-consent-analytics>
+            <input type="checkbox" data-consent-analytics checked>
             <span>
               <strong>Cookies de análisis</strong>
-              <span>Nos ayudan a entender cómo se usa la web para mejorar contenidos, navegación y rendimiento.</span>
+              <span>Nos ayudan a mejorar contenidos, navegación y rendimiento.</span>
             </span>
           </label>
 
           <label class="salero-consent__option">
-            <input type="checkbox" data-consent-marketing>
+            <input type="checkbox" data-consent-marketing checked>
             <span>
               <strong>Cookies de publicidad</strong>
-              <span>Permiten medir campañas, conversiones y acciones publicitarias como Google Ads o remarketing.</span>
+              <span>Permiten medir campañas, conversiones y acciones publicitarias.</span>
             </span>
           </label>
         </div>
@@ -134,12 +134,13 @@
     });
 
     banner.querySelector('[data-consent-config]').addEventListener('click', function () {
-      const stored = getStoredConsent() || defaultPreferences;
+      const stored = getStoredConsent();
+      const preferences = stored || defaultPreferences;
       const analytics = banner.querySelector('[data-consent-analytics]');
       const marketing = banner.querySelector('[data-consent-marketing]');
 
-      if (analytics) analytics.checked = Boolean(stored.analytics);
-      if (marketing) marketing.checked = Boolean(stored.marketing);
+      if (analytics) analytics.checked = Boolean(preferences.analytics);
+      if (marketing) marketing.checked = Boolean(preferences.marketing);
 
       showSettings(banner);
     });
