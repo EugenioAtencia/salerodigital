@@ -1,0 +1,8 @@
+/el-menu/:slug/ /el-menu/detalle/index.html 200
+/el-menu/:slug /el-menu/detalle/index.html 200
+/sectores/:slug/ /sectores/detalle/index.html 200
+/sectores/:slug /sectores/detalle/index.html 200
+/nuestros-menus/:slug/ /nuestros-menus/detalle/index.html 200
+/nuestros-menus/:slug /nuestros-menus/detalle/index.html 200
+/casos-de-exito/:slug/ /casos-de-exito/detalle/index.html 200
+/casos-de-exito/:slug /casos-de-exito/detalle/index.html 200
