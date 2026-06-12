@@ -1,5 +1,5 @@
 const SALERO_CONFIG = {
-  apiBase: '/api/wp/v2',
+  apiBase: 'https://cms.webagencia360.com/wp-json/wp/v2',
   cmsApiBase: 'https://cms.webagencia360.com/wp-json/wp/v2',
   siteOrigin: 'https://agenciaconsalero.es',
   legacyOrigin: 'https://salero.webagencia360.com',
