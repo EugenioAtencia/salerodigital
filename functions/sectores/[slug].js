@@ -1,5 +1,4 @@
-export async function onRequest(context) {
-  const url = new URL(context.request.url);
-  url.pathname = '/sectores/detalle/index.html';
-  return context.env.ASSETS.fetch(new Request(url.toString(), context.request));
+export async function onRequest() {
+  const html = '<!doctype html><html lang="es"><head><title>Sector | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/assets/css/main.css?v=50"><link rel="stylesheet" href="/assets/css/sector-detail.css?v=8"><link rel="stylesheet" href="/assets/css/sector-action-layout.css?v=4"><link rel="stylesheet" href="/assets/css/sector-faq-layout.css?v=4"><link rel="stylesheet" href="/assets/css/sector-final-layout.css?v=4"></head><body class="sector-detail-page"><main data-detail data-type="sector"><div class="container section"><div class="loading">Cargando sector desde el CMS...</div></div></main><script src="/assets/js/config.js?v=7" defer></script><script src="/assets/js/api.js?v=4" defer></script><script src="/assets/js/helpers.js?v=41" defer></script><script src="/assets/js/detail.js?v=4" defer></script></body></html>';
+  return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store, max-age=0, must-revalidate' } });
 }
