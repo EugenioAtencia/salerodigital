@@ -10,6 +10,7 @@ const SERVICES = {
     metaTitle: 'Cimientos Digitales, desarrollo web senior | Salero Digital',
     metaDescription: 'Desarrollo web senior para negocios locales: webs rápidas, seguras, orientadas a conversión y preparadas para SEO desde la base.',
     claim: 'Construimos la sede central de tu negocio en internet: una web rápida, clara, segura y pensada para convertir visitas en oportunidades reales.',
+    heroVideo: 'https://cms.webagencia360.com/wp-content/uploads/2026/05/CIMIENTOS-DIGITALES-PARA-PEQUENOS-COMERCIOS.mp4',
     cardTitle: 'La web como sede central, no como simple escaparate.',
     cardItems: ['Velocidad y estabilidad', 'Contenido claro y comercial', 'Base preparada para SEO y captación'],
     intro: 'Una web no debería ser solo una tarjeta de visita bonita. Para un negocio local, una pyme o una marca con ambición comercial, la web es el lugar donde se decide si el usuario confía, entiende lo que ofreces y da el siguiente paso.',
