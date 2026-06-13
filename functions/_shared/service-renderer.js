@@ -1,3 +1,4 @@
+const CMS_API_BASE = 'https://cms.webagencia360.com/wp-json/wp/v2';
 const SITE_ORIGIN = 'https://agenciaconsalero.es';
 const WHATSAPP_URL = 'https://wa.me/34665688916?text=Hola%2C%20quiero%20hacer%20una%20cata%20digital%20con%20Salero%20Digital.';
 
@@ -61,6 +62,7 @@ const SERVICES = {
     metaTitle: 'Gestión de redes sociales | Salero Digital',
     metaDescription: 'Gestión de redes sociales y contenido para marcas que quieren comunicar mejor, generar confianza y activar comunidad con estrategia.',
     claim: 'No publicamos por publicar. Creamos contenido con tono, intención y presencia para que tu marca se entienda, se recuerde y genere confianza.',
+    heroVideo: 'https://cms.webagencia360.com/wp-content/uploads/2026/05/gracia-y-presencia-en-redes-sociales.mp4',
     cardTitle: 'Contenido con duende, pero también con dirección estratégica.',
     cardItems: ['Estrategia de contenidos', 'Calendario editorial', 'Copywriting y creatividad'],
     intro: 'Las redes sociales no son solo un escaparate. Son un canal para generar confianza, enseñar el trabajo real, conectar con la comunidad y mantener viva la marca en la mente del cliente.',
@@ -110,29 +112,53 @@ const SERVICES = {
 
 export async function handleServiceRequest(context) {
   const slug = sanitizeSlug(context.params.slug || '');
-  const service = SERVICES[slug];
-
-  if (!slug || !service) {
-    return htmlResponse(renderErrorPage('Servicio no encontrado', 'No existe ningún servicio publicado con esa dirección.'), 404);
-  }
-
+  const baseService = SERVICES[slug];
+  if (!slug || !baseService) return htmlResponse(renderErrorPage('Servicio no encontrado', 'No existe ningún servicio publicado con esa dirección.'), 404);
+  const service = await enrichServiceMedia(slug, baseService);
   return htmlResponse(renderServicePage(slug, service), 200);
 }
 
+async function enrichServiceMedia(slug, service) {
+  try {
+    const item = await fetchServiceWithTimeout(slug, 1500);
+    const acf = item ? (item.salero_acf || item.acf || {}) : {};
+    const heroVideo = mediaUrl(acf.hero_video) || service.heroVideo || '';
+    const heroPoster = mediaUrl(acf.hero_poster) || mediaUrl(acf.hero_image) || mediaUrl(acf.imagen_hero) || featuredImage(item) || service.heroPoster || '';
+    return { ...service, heroVideo, heroPoster };
+  } catch (error) {
+    return service;
+  }
+}
+
+async function fetchServiceWithTimeout(slug, timeoutMs = 1500) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort('CMS media timeout'), timeoutMs);
+  try {
+    const url = new URL(`${CMS_API_BASE}/servicios`);
+    url.searchParams.set('slug', slug);
+    url.searchParams.set('_embed', '1');
+    url.searchParams.set('_t', String(Date.now()));
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      signal: controller.signal,
+      headers: { Accept: 'application/json', 'User-Agent': 'SaleroDigital-Service-Media-SSR' },
+      cf: { cacheTtl: 0, cacheEverything: false }
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    return Array.isArray(data) && data.length ? data[0] : null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function htmlResponse(html, status = 200) {
-  return new Response(html, {
-    status,
-    headers: {
-      'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': 'no-store, max-age=0, must-revalidate'
-    }
-  });
+  return new Response(html, { status, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store, max-age=0, must-revalidate' } });
 }
 
 function renderServicePage(slug, service) {
   const canonical = `${SITE_ORIGIN}/el-menu/${slug}/`;
   const jsonLd = renderJsonLd(slug, service, canonical);
-
   return `<!doctype html>
 <html lang="es">
 <head>
@@ -153,6 +179,7 @@ function renderServicePage(slug, service) {
 ${renderHeader()}
   <main id="service-detail-root" class="service-detail-root" data-detail data-type="service" data-slug="${escapeAttr(slug)}">
     <section class="service-detail-hero service-kind-${escapeAttr(service.kind)}" aria-labelledby="service-detail-title">
+      ${renderHeroMedia(service)}
       <div class="service-detail-veil" aria-hidden="true"></div>
       <div class="service-detail-gradient" aria-hidden="true"></div>
       <div class="container service-detail-hero-inner">
@@ -173,7 +200,6 @@ ${renderHeader()}
         </aside>
       </div>
     </section>
-
     <section class="service-content-section" id="contenido-servicio">
       <div class="container service-content-grid">
         <article class="service-main-content">
@@ -184,39 +210,11 @@ ${renderHeader()}
             ${renderEditorialCard('metodo', '02', 'Cómo lo trabajamos', service.approach)}
           </div>
         </article>
-        <aside class="service-sidebar">
-          <div class="service-sidebar-card">
-            <span class="service-section-kicker">Cata digital</span>
-            <h2>${escapeHtml(service.sidebarTitle)}</h2>
-            ${renderList(service.sidebarItems)}
-            <a class="btn btn-primary" href="/hablamos/">${escapeHtml(service.ctaLabel)}</a>
-          </div>
-        </aside>
+        <aside class="service-sidebar"><div class="service-sidebar-card"><span class="service-section-kicker">Cata digital</span><h2>${escapeHtml(service.sidebarTitle)}</h2>${renderList(service.sidebarItems)}<a class="btn btn-primary" href="/hablamos/">${escapeHtml(service.ctaLabel)}</a></div></aside>
       </div>
-      <div class="container service-action-container">
-        <section class="service-action-section">
-          <div class="service-block-heading"><span class="service-section-kicker">Plan de acción</span><h2>Una receta clara para pasar de presencia digital a oportunidades reales</h2></div>
-          <div class="service-action-grid">
-            ${renderActionCard('incluye', '01', 'Qué incluye', service.includes)}
-            ${renderActionCard('beneficios', '02', 'Beneficios que buscamos', service.benefits)}
-            ${renderActionCard('proceso', '03', 'Proceso de trabajo', service.process)}
-          </div>
-        </section>
-        ${renderFaqBlock(service.faqs)}
-      </div>
+      <div class="container service-action-container"><section class="service-action-section"><div class="service-block-heading"><span class="service-section-kicker">Plan de acción</span><h2>Una receta clara para pasar de presencia digital a oportunidades reales</h2></div><div class="service-action-grid">${renderActionCard('incluye', '01', 'Qué incluye', service.includes)}${renderActionCard('beneficios', '02', 'Beneficios que buscamos', service.benefits)}${renderActionCard('proceso', '03', 'Proceso de trabajo', service.process)}</div></section>${renderFaqBlock(service.faqs)}</div>
     </section>
-
-    <section class="service-final-cta" aria-labelledby="service-final-title">
-      <div class="container service-final-card">
-        <span class="service-section-kicker">Con salero y con método</span>
-        <h2 id="service-final-title">${escapeHtml(service.finalTitle)}</h2>
-        <p>${escapeHtml(service.finalText)}</p>
-        <div class="service-detail-actions">
-          <a class="btn btn-primary" href="/hablamos/">${escapeHtml(service.ctaLabel)}</a>
-          <a class="btn btn-secondary" href="${escapeAttr(WHATSAPP_URL)}" target="_blank" rel="noopener">Hablar por WhatsApp</a>
-        </div>
-      </div>
-    </section>
+    <section class="service-final-cta" aria-labelledby="service-final-title"><div class="container service-final-card"><span class="service-section-kicker">Con salero y con método</span><h2 id="service-final-title">${escapeHtml(service.finalTitle)}</h2><p>${escapeHtml(service.finalText)}</p><div class="service-detail-actions"><a class="btn btn-primary" href="/hablamos/">${escapeHtml(service.ctaLabel)}</a><a class="btn btn-secondary" href="${escapeAttr(WHATSAPP_URL)}" target="_blank" rel="noopener">Hablar por WhatsApp</a></div></div></section>
   </main>
 ${renderFooter()}
   <script src="/assets/js/config.js?v=7" defer></script>
@@ -225,103 +223,35 @@ ${renderFooter()}
 </html>`;
 }
 
-function renderHeader() {
-  return `  <header class="site-header">
-    <div class="container header-inner">
-      <a class="logo logo-wordmark" href="/" aria-label="Salero Digital"><span>Salero Digital</span></a>
-      <nav class="nav" aria-label="Menú principal">
-        <a href="/el-menu/" class="is-active" aria-current="page">El Menú</a>
-        <a href="/nuestros-menus/">Nuestros menús</a>
-        <a href="/sectores/">Sectores</a>
-        <a href="/la-receta/">La Receta</a>
-        <a href="/la-rebotica/">La Rebotica</a>
-        <a class="nav-mobile-contact" href="/hablamos/">¿Hablamos?</a>
-        <a class="nav-mobile-cta" href="/hablamos/">Pide tu cata digital</a>
-      </nav>
-      <div class="header-actions">
-        <a class="nav-contact" href="/hablamos/">¿Hablamos?</a>
-        <a class="btn btn-primary" href="/hablamos/">Pide tu cata digital</a>
-        <button class="menu-toggle" type="button" data-menu-toggle aria-label="Abrir menú">☰</button>
-      </div>
-    </div>
-  </header>`;
+function renderHeroMedia(service) {
+  if (service.heroVideo) return `<video class="service-detail-hero-video" autoplay muted loop playsinline preload="metadata" ${service.heroPoster ? `poster="${escapeAttr(service.heroPoster)}"` : ''} aria-hidden="true"><source src="${escapeAttr(service.heroVideo)}" type="video/mp4"></video>`;
+  if (service.heroPoster) return `<img class="service-detail-hero-image" src="${escapeAttr(service.heroPoster)}" alt="${escapeAttr(service.title)}" loading="eager">`;
+  return '';
 }
 
-function renderFooter() {
-  return `  <footer class="footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div><h2>Salero Digital</h2><p>Agencia de aquí, para los de aquí. Estrategia, web, SEO, redes y campañas para negocios que quieren dejar de estar sosos en internet.</p></div>
-        <div><h3>El Menú</h3><nav class="footer-nav"><a href="/el-menu/cimientos-digitales/">Cimientos Digitales</a><a href="/el-menu/el-pregonero/">El Pregonero</a><a href="/el-menu/gracia-y-presencia/">Gracia y Presencia</a><a href="/el-menu/el-empujon/">El Empujón</a></nav></div>
-        <div><h3>Sectores</h3><nav class="footer-nav"><a href="/sectores/marketing-para-almazaras-aceite/">Almazaras y aceite</a><a href="/sectores/marketing-para-comercios-pymes/">Comercios y pymes</a><a href="/sectores/marketing-para-hosteleria-turismo/">Hostelería y turismo</a></nav></div>
-        <div><h3>¿Hablamos?</h3><p>Morón de la Frontera, Sierra Sur y Campiña.</p><a href="/hablamos/">Pide tu cata digital</a></div>
-      </div>
-      <div class="footer-bottom"><span>© 2026 Salero Digital</span><span>Digitalizamos con salero, pero con los pies en la tierra.</span></div>
-    </div>
-  </footer>
-  <a class="whatsapp-float" href="${escapeAttr(WHATSAPP_URL)}" target="_blank" rel="noopener">¿Te hace un café y hablamos?</a>`;
+function mediaUrl(value) {
+  if (!value) return '';
+  if (typeof value === 'string') return value.trim();
+  if (Array.isArray(value)) return mediaUrl(value[0]);
+  if (typeof value === 'object') return value.url || value.source_url || value.guid?.rendered || value.sizes?.full || value.sizes?.large || value.sizes?.medium_large || '';
+  return '';
 }
 
-function renderEditorialCard(key, number, title, value) {
-  return `<article class="service-editorial-card service-editorial-${escapeAttr(key)}"><span>${escapeHtml(number)}</span><h2>${escapeHtml(title)}</h2><p>${escapeHtml(value)}</p></article>`;
+function featuredImage(item = {}) {
+  if (!item) return '';
+  if (item.featured_image_url) return item.featured_image_url;
+  const media = item._embedded && item._embedded['wp:featuredmedia'];
+  return media && media[0] && media[0].source_url ? media[0].source_url : '';
 }
 
-function renderActionCard(key, number, title, items) {
-  return `<article class="service-action-card service-action-${escapeAttr(key)}"><span>${escapeHtml(number)}</span><h2>${escapeHtml(title)}</h2>${renderList(items)}</article>`;
-}
-
-function renderFaqBlock(faqs) {
-  return `<section class="service-faq-block"><div class="service-faq-copy"><span class="service-section-kicker">Preguntas frecuentes</span><h2>Dudas normales antes de dar el paso</h2><p>Antes de proponerte una solución, aclaramos qué puedes esperar, cómo se trabaja y qué sentido tiene este servicio para tu negocio.</p></div><div class="service-faq-accordion">${faqs.map((faq, index) => `<details ${index === 0 ? 'open' : ''}><summary><span>${escapeHtml(faq[0])}</span></summary><div class="service-faq-answer"><p>${escapeHtml(faq[1])}</p></div></details>`).join('')}</div></section>`;
-}
-
-function renderList(items = []) {
-  return items && items.length ? `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : '';
-}
-
-function renderJsonLd(slug, service, canonical) {
-  const data = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'WebPage',
-        '@id': `${canonical}#webpage`,
-        url: canonical,
-        name: service.title,
-        description: service.metaDescription,
-        isPartOf: { '@type': 'WebSite', '@id': `${SITE_ORIGIN}/#website`, name: 'Salero Digital', url: SITE_ORIGIN },
-        about: { '@type': 'Service', name: service.label, provider: { '@type': 'Organization', name: 'Salero Digital', url: SITE_ORIGIN } }
-      },
-      {
-        '@type': 'BreadcrumbList',
-        '@id': `${canonical}#breadcrumb`,
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${SITE_ORIGIN}/` },
-          { '@type': 'ListItem', position: 2, name: 'El Menú', item: `${SITE_ORIGIN}/el-menu/` },
-          { '@type': 'ListItem', position: 3, name: service.title, item: canonical }
-        ]
-      }
-    ]
-  };
-  return `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`;
-}
-
-function renderErrorPage(title, message) {
-  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/main.css?v=50"></head><body>${renderHeader()}<main class="container section"><div class="error"><h1>${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p></div></main>${renderFooter()}</body></html>`;
-}
-
-function sanitizeSlug(value = '') {
-  return String(value || '').trim().replace(/^\/+|\/+$/g, '').split('/')[0];
-}
-
-function escapeHtml(value = '') {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
-function escapeAttr(value = '') {
-  return escapeHtml(value);
-}
+function renderHeader() { return `  <header class="site-header"><div class="container header-inner"><a class="logo logo-wordmark" href="/" aria-label="Salero Digital"><span>Salero Digital</span></a><nav class="nav" aria-label="Menú principal"><a href="/el-menu/" class="is-active" aria-current="page">El Menú</a><a href="/nuestros-menus/">Nuestros menús</a><a href="/sectores/">Sectores</a><a href="/la-receta/">La Receta</a><a href="/la-rebotica/">La Rebotica</a><a class="nav-mobile-contact" href="/hablamos/">¿Hablamos?</a><a class="nav-mobile-cta" href="/hablamos/">Pide tu cata digital</a></nav><div class="header-actions"><a class="nav-contact" href="/hablamos/">¿Hablamos?</a><a class="btn btn-primary" href="/hablamos/">Pide tu cata digital</a><button class="menu-toggle" type="button" data-menu-toggle aria-label="Abrir menú">☰</button></div></div></header>`; }
+function renderFooter() { return `  <footer class="footer"><div class="container"><div class="footer-grid"><div><h2>Salero Digital</h2><p>Agencia de aquí, para los de aquí. Estrategia, web, SEO, redes y campañas para negocios que quieren dejar de estar sosos en internet.</p></div><div><h3>El Menú</h3><nav class="footer-nav"><a href="/el-menu/cimientos-digitales/">Cimientos Digitales</a><a href="/el-menu/el-pregonero/">El Pregonero</a><a href="/el-menu/gracia-y-presencia/">Gracia y Presencia</a><a href="/el-menu/el-empujon/">El Empujón</a></nav></div><div><h3>Sectores</h3><nav class="footer-nav"><a href="/sectores/marketing-para-almazaras-aceite/">Almazaras y aceite</a><a href="/sectores/marketing-para-comercios-pymes/">Comercios y pymes</a><a href="/sectores/marketing-para-hosteleria-turismo/">Hostelería y turismo</a></nav></div><div><h3>¿Hablamos?</h3><p>Morón de la Frontera, Sierra Sur y Campiña.</p><a href="/hablamos/">Pide tu cata digital</a></div></div><div class="footer-bottom"><span>© 2026 Salero Digital</span><span>Digitalizamos con salero, pero con los pies en la tierra.</span></div></div></footer><a class="whatsapp-float" href="${escapeAttr(WHATSAPP_URL)}" target="_blank" rel="noopener">¿Te hace un café y hablamos?</a>`; }
+function renderEditorialCard(key, number, title, value) { return `<article class="service-editorial-card service-editorial-${escapeAttr(key)}"><span>${escapeHtml(number)}</span><h2>${escapeHtml(title)}</h2><p>${escapeHtml(value)}</p></article>`; }
+function renderActionCard(key, number, title, items) { return `<article class="service-action-card service-action-${escapeAttr(key)}"><span>${escapeHtml(number)}</span><h2>${escapeHtml(title)}</h2>${renderList(items)}</article>`; }
+function renderFaqBlock(faqs) { return `<section class="service-faq-block"><div class="service-faq-copy"><span class="service-section-kicker">Preguntas frecuentes</span><h2>Dudas normales antes de dar el paso</h2><p>Antes de proponerte una solución, aclaramos qué puedes esperar, cómo se trabaja y qué sentido tiene este servicio para tu negocio.</p></div><div class="service-faq-accordion">${faqs.map((faq, index) => `<details ${index === 0 ? 'open' : ''}><summary><span>${escapeHtml(faq[0])}</span></summary><div class="service-faq-answer"><p>${escapeHtml(faq[1])}</p></div></details>`).join('')}</div></section>`; }
+function renderList(items = []) { return items && items.length ? `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : ''; }
+function renderJsonLd(slug, service, canonical) { const data = { '@context': 'https://schema.org', '@graph': [{ '@type': 'WebPage', '@id': `${canonical}#webpage`, url: canonical, name: service.title, description: service.metaDescription, isPartOf: { '@type': 'WebSite', '@id': `${SITE_ORIGIN}/#website`, name: 'Salero Digital', url: SITE_ORIGIN }, about: { '@type': 'Service', name: service.label, provider: { '@type': 'Organization', name: 'Salero Digital', url: SITE_ORIGIN } } }, { '@type': 'BreadcrumbList', '@id': `${canonical}#breadcrumb`, itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Inicio', item: `${SITE_ORIGIN}/` }, { '@type': 'ListItem', position: 2, name: 'El Menú', item: `${SITE_ORIGIN}/el-menu/` }, { '@type': 'ListItem', position: 3, name: service.title, item: canonical }] }] }; return `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`; }
+function renderErrorPage(title, message) { return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/main.css?v=50"></head><body>${renderHeader()}<main class="container section"><div class="error"><h1>${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p></div></main>${renderFooter()}</body></html>`; }
+function sanitizeSlug(value = '') { return String(value || '').trim().replace(/^\/+|\/+$/g, '').split('/')[0]; }
+function escapeHtml(value = '') { return String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;'); }
+function escapeAttr(value = '') { return escapeHtml(value); }
