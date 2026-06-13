@@ -1,50 +1,122 @@
-const CMS_API_BASE = 'https://cms.webagencia360.com/wp-json/wp/v2';
-const SITE_ORIGIN = 'https://salero.webagencia360.com';
+const SITE_ORIGIN = 'https://agenciaconsalero.es';
+const WHATSAPP_URL = 'https://wa.me/34665688916?text=Hola%2C%20quiero%20hacer%20una%20cata%20digital%20con%20Salero%20Digital.';
+
+const SERVICES = {
+  'cimientos-digitales': {
+    kind: 'web',
+    label: 'Desarrollo web senior',
+    title: 'Cimientos Digitales',
+    metaTitle: 'Cimientos Digitales, desarrollo web senior | Salero Digital',
+    metaDescription: 'Desarrollo web senior para negocios locales: webs rápidas, seguras, orientadas a conversión y preparadas para SEO desde la base.',
+    claim: 'Construimos la sede central de tu negocio en internet: una web rápida, clara, segura y pensada para convertir visitas en oportunidades reales.',
+    cardTitle: 'La web como sede central, no como simple escaparate.',
+    cardItems: ['Velocidad y estabilidad', 'Contenido claro y comercial', 'Base preparada para SEO y captación'],
+    intro: 'Una web no debería ser solo una tarjeta de visita bonita. Para un negocio local, una pyme o una marca con ambición comercial, la web es el lugar donde se decide si el usuario confía, entiende lo que ofreces y da el siguiente paso.',
+    problem: 'Muchos negocios tienen webs lentas, desordenadas o creadas solo para “estar”. El problema no es tener una web antigua, sino tener una web que no explica bien la propuesta de valor, no genera confianza y no facilita la conversión.',
+    approach: 'Trabajamos la web como un activo de negocio. Primero revisamos objetivos, público, servicios prioritarios y recorrido de conversión. Después definimos estructura, contenidos, diseño, rendimiento y medición.',
+    includes: ['Arquitectura de páginas y secciones', 'Diseño responsive orientado a conversión', 'Optimización de velocidad y rendimiento', 'Estructura SEO base', 'Integración de formularios, llamadas y WhatsApp'],
+    benefits: ['Mejor primera impresión ante clientes nuevos', 'Más claridad en servicios, productos y propuesta comercial', 'Base técnica sólida para SEO, campañas y analítica', 'Experiencia móvil más rápida y profesional'],
+    process: ['Cata digital y revisión de necesidades', 'Definición de estructura y mensajes clave', 'Diseño y desarrollo de la web', 'Optimización técnica y revisión SEO', 'Publicación, medición y mejora continua'],
+    sidebarTitle: 'Qué miramos antes de construir la web',
+    sidebarItems: ['Objetivos comerciales', 'Servicios prioritarios', 'Arquitectura de contenidos', 'Rendimiento móvil', 'Medición y conversiones'],
+    ctaLabel: 'Quiero una web con buenos cimientos',
+    finalTitle: 'Tu web debe sostener la estrategia, no solo decorar internet.',
+    finalText: 'Revisamos tu punto de partida y planteamos una base digital clara, rápida y preparada para crecer.',
+    faqs: [
+      ['¿Hacéis webs corporativas y tiendas online?', 'Sí. Podemos trabajar webs corporativas, landings de captación y proyectos ecommerce según la necesidad real del negocio.'],
+      ['¿La web queda preparada para SEO?', 'Sí. La estructura, los encabezados, los contenidos principales, el rendimiento y la indexabilidad se trabajan desde el inicio.'],
+      ['¿También os encargáis del mantenimiento?', 'Sí. Podemos plantear mantenimiento técnico, soporte y mejoras evolutivas para que la web no se quede abandonada.']
+    ]
+  },
+  'el-pregonero': {
+    kind: 'seo',
+    label: 'SEO local y posicionamiento',
+    title: 'El Pregonero',
+    metaTitle: 'El Pregonero, SEO local y posicionamiento | Salero Digital',
+    metaDescription: 'SEO local para negocios que quieren aparecer mejor en Google, Google Maps y búsquedas de proximidad con una estrategia clara.',
+    claim: 'Hacemos que tu negocio se escuche donde importa: en Google, en Maps y en las búsquedas que pueden acabar en llamada, visita o contacto.',
+    cardTitle: 'Para que te encuentren los que ya están buscando.',
+    cardItems: ['Google Maps más trabajado', 'Páginas con intención SEO', 'Informes claros y accionables'],
+    intro: 'El Pregonero es el servicio de SEO local y posicionamiento de Salero Digital. Está pensado para negocios que ya tienen oficio, producto o servicio, pero no aparecen con suficiente fuerza cuando sus clientes buscan en Google.',
+    problem: 'Muchos negocios dependen del boca a boca, de redes sociales o de campañas puntuales, pero descuidan la búsqueda local. Si la ficha de Google está incompleta o la web no responde a búsquedas reales, el cliente encuentra antes a otro proveedor.',
+    approach: 'Analizamos cómo te buscan, dónde apareces, qué competidores te rodean y qué señales necesita Google para entender mejor tu negocio. A partir de ahí trabajamos ficha, arquitectura web, contenidos e intención de búsqueda.',
+    includes: ['Auditoría SEO inicial', 'Optimización de Google Business Profile', 'Keyword research local y sectorial', 'Mejora de páginas estratégicas', 'Seguimiento de posiciones, clics y oportunidades'],
+    benefits: ['Más presencia en búsquedas locales relevantes', 'Mayor confianza antes del contacto', 'Captación orgánica más estable', 'Menos dependencia de campañas pagadas para todo'],
+    process: ['Diagnóstico de visibilidad actual', 'Análisis de competencia local', 'Priorización de palabras clave y páginas', 'Optimización técnica y editorial', 'Seguimiento mensual con conclusiones claras'],
+    sidebarTitle: 'Qué revisamos antes de pregonar',
+    sidebarItems: ['Ficha de Google', 'Palabras clave locales', 'Competidores cercanos', 'Páginas prioritarias', 'Datos de Search Console'],
+    ctaLabel: 'Quiero mejorar mi visibilidad local',
+    finalTitle: 'Si tu negocio merece encontrarse, hay que ponérselo fácil a Google.',
+    finalText: 'Ordenamos tu presencia local para que tus clientes te encuentren, te entiendan y confíen antes de contactar.',
+    faqs: [
+      ['¿Cuánto tarda en notarse el SEO local?', 'Depende del punto de partida y de la competencia. Es un trabajo de medio plazo, aunque algunas mejoras pueden generar señales antes.'],
+      ['¿El SEO sustituye a Google Ads?', 'No necesariamente. El SEO construye visibilidad estable y Google Ads puede acelerar captación. Bien combinados se refuerzan.'],
+      ['¿También optimizáis la ficha de Google Maps?', 'Sí. Para negocios locales, Google Business Profile suele ser una pieza crítica.']
+    ]
+  },
+  'gracia-y-presencia': {
+    kind: 'social',
+    label: 'Social media y contenido',
+    title: 'Gracia y Presencia',
+    metaTitle: 'Gestión de redes sociales | Salero Digital',
+    metaDescription: 'Gestión de redes sociales y contenido para marcas que quieren comunicar mejor, generar confianza y activar comunidad con estrategia.',
+    claim: 'No publicamos por publicar. Creamos contenido con tono, intención y presencia para que tu marca se entienda, se recuerde y genere confianza.',
+    cardTitle: 'Contenido con duende, pero también con dirección estratégica.',
+    cardItems: ['Estrategia de contenidos', 'Calendario editorial', 'Copywriting y creatividad'],
+    intro: 'Las redes sociales no son solo un escaparate. Son un canal para generar confianza, enseñar el trabajo real, conectar con la comunidad y mantener viva la marca en la mente del cliente.',
+    problem: 'Muchos negocios publican sin estrategia, sin calendario, sin tono definido y sin saber qué objetivo tiene cada contenido. Eso provoca perfiles apagados, poca interacción y una imagen que no representa el verdadero valor de la empresa.',
+    approach: 'Definimos pilares de contenido, tono de marca, formatos, frecuencia y objetivos por canal. A partir de ahí planificamos piezas que combinan confianza, explicación, producto, servicio, autoridad y llamada a la acción.',
+    includes: ['Estrategia de contenidos por canal', 'Calendario editorial', 'Copies para redes sociales', 'Ideas visuales y guiones para reels', 'Revisión de resultados'],
+    benefits: ['Más coherencia en la comunicación', 'Mayor conexión con clientes reales', 'Mejor percepción de marca', 'Contenido con intención comercial sin perder naturalidad'],
+    process: ['Diagnóstico de presencia actual', 'Definición de pilares de contenido', 'Planificación mensual', 'Producción de copies e ideas', 'Revisión y mejora continua'],
+    sidebarTitle: 'Qué miramos antes de proponerte una receta',
+    sidebarItems: ['Tono actual de la marca', 'Tipo de contenido que mejor encaja', 'Frecuencia sostenible', 'Interacción de la comunidad', 'Oportunidades de venta y confianza'],
+    ctaLabel: 'Quiero redes sociales con más presencia',
+    finalTitle: 'Tu marca puede tener presencia sin perder su forma de ser.',
+    finalText: 'Ordenamos tus redes para que cada publicación tenga sentido, intención y una forma de hablar reconocible.',
+    faqs: [
+      ['¿Gestionáis Instagram y Facebook?', 'Sí. Podemos gestionar Instagram, Facebook y otros canales según el tipo de negocio y dónde esté realmente su público.'],
+      ['¿También hacéis vídeos?', 'Podemos plantear estrategia de vídeo, guiones, ideas de reels y planificación de contenidos audiovisuales.'],
+      ['¿Puedo aprobar los contenidos antes de publicar?', 'Sí. Podemos trabajar con revisión previa para que el cliente tenga control sobre el tono y los mensajes.']
+    ]
+  },
+  'el-empujon': {
+    kind: 'ads',
+    label: 'Publicidad y captación',
+    title: 'El Empujón',
+    metaTitle: 'El Empujón, campañas de publicidad digital | Salero Digital',
+    metaDescription: 'Campañas de Google Ads y Meta Ads para negocios locales que necesitan captar llamadas, mensajes y oportunidades comerciales.',
+    claim: 'Campañas para negocios que necesitan activar visibilidad, llamadas, mensajes y oportunidades comerciales sin esperar meses.',
+    cardTitle: 'Cuando hace falta acelerar, conviene empujar con cabeza.',
+    cardItems: ['Google Ads con intención', 'Meta Ads para impacto', 'Medición de conversiones'],
+    intro: 'El Empujón es el servicio de publicidad digital de Salero Digital. Está pensado para negocios que necesitan activar demanda, promocionar una campaña o captar oportunidades con más velocidad.',
+    problem: 'Muchas campañas se lanzan con prisas, sin medir bien el margen, la zona, el tipo de cliente o el mensaje. El resultado suele ser inversión dispersa y pocas oportunidades reales.',
+    approach: 'Planteamos campañas con foco comercial: objetivo claro, segmentación precisa, creatividad alineada con el negocio, medición útil y optimización continua.',
+    includes: ['Configuración de campañas en Google Ads y Meta Ads', 'Segmentación por zona, perfil e intención', 'Creatividades y mensajes orientados a conversión', 'Control de presupuesto y seguimiento de resultados'],
+    benefits: ['Más llamadas, mensajes y solicitudes cualificadas', 'Mayor control sobre la inversión publicitaria', 'Impacto rápido en campañas locales', 'Datos claros para decidir si escalar o corregir'],
+    process: ['Cata comercial y definición del objetivo', 'Configuración técnica y medición', 'Lanzamiento de campañas', 'Optimización semanal según resultados'],
+    sidebarTitle: 'Qué revisamos antes de invertir',
+    sidebarItems: ['Objetivo real de la campaña', 'Zona de captación prioritaria', 'Oferta y margen', 'Canales adecuados', 'Eventos de medición'],
+    ctaLabel: 'Quiero activar una campaña',
+    finalTitle: 'Tu negocio no necesita más ruido. Necesita un empujón bien dirigido.',
+    finalText: 'Revisamos el punto de partida y definimos qué inversión, mensaje y canal tienen más sentido.',
+    faqs: [
+      ['¿Con cuánto presupuesto se puede empezar?', 'Depende del objetivo, la zona y la competencia. Antes de invertir conviene definir una hipótesis realista.'],
+      ['¿Hacéis Google Ads y Meta Ads?', 'Sí. Elegimos el canal según la intención de búsqueda, el tipo de cliente y el momento de compra.'],
+      ['¿Medís llamadas y formularios?', 'Sí. La medición es clave para saber qué campañas generan oportunidades reales.']
+    ]
+  }
+};
 
 export async function handleServiceRequest(context) {
   const slug = sanitizeSlug(context.params.slug || '');
+  const service = SERVICES[slug];
 
-  if (!slug) {
-    return htmlResponse(renderErrorPage('Servicio no encontrado', 'No se ha recibido un slug válido para cargar esta landing de servicio.'), 404);
+  if (!slug || !service) {
+    return htmlResponse(renderErrorPage('Servicio no encontrado', 'No existe ningún servicio publicado con esa dirección.'), 404);
   }
 
-  try {
-    const item = await fetchService(slug);
-
-    if (!item) {
-      return htmlResponse(renderErrorPage('Contenido no encontrado', `No existe ningún servicio publicado con el slug ${escapeHtml(slug)}.`), 404);
-    }
-
-    return htmlResponse(renderServicePage(slug, item), 200);
-  } catch (error) {
-    return htmlResponse(renderErrorPage('No se pudo cargar el contenido desde WordPress', String(error && error.message ? error.message : error)), 502);
-  }
-}
-
-async function fetchService(slug) {
-  const url = new URL(`${CMS_API_BASE}/servicios`);
-  url.searchParams.set('slug', slug);
-  url.searchParams.set('_embed', '1');
-  url.searchParams.set('_t', String(Date.now()));
-
-  const response = await fetch(url.toString(), {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      'User-Agent': 'SaleroDigital-Cloudflare-SSR'
-    },
-    cf: {
-      cacheTtl: 0,
-      cacheEverything: false
-    }
-  });
-
-  if (!response.ok) {
-    throw new Error(`WordPress respondió con estado ${response.status}`);
-  }
-
-  const data = await response.json();
-  return Array.isArray(data) && data.length ? data[0] : null;
+  return htmlResponse(renderServicePage(slug, service), 200);
 }
 
 function htmlResponse(html, status = 200) {
@@ -57,45 +129,17 @@ function htmlResponse(html, status = 200) {
   });
 }
 
-function renderServicePage(slug, item) {
-  const acf = getAcf(item);
-  const kind = serviceKind(slug, item);
-  const fallback = serviceFallback(kind);
-
-  const name = stripHtml(fieldValue(acf, ['nombre_creativo', 'hero_title', 'titulo_hero', 'titulo_principal'], fallback.name || itemTitle(item) || 'Servicio digital'));
-  const technicalName = stripHtml(fieldValue(acf, ['nombre_tecnico', 'subtitulo_tecnico', 'categoria_servicio'], fallback.technicalName || serviceLabel(kind)));
-  const claim = fieldValue(acf, ['claim', 'hero_text', 'texto_hero', 'subtitulo_hero', 'subtitulo_comercial'], fallback.claim || excerpt(item));
-  const metaTitleBase = stripHtml(fieldValue(acf, ['meta_title', 'seo_title', 'title_seo', 'seo_head_title', 'og_title'], fallback.metaTitle || name));
-  const metaTitle = withBrand(metaTitleBase);
-  const metaDescription = stripHtml(fieldValue(acf, ['meta_description', 'seo_description', 'description_seo', 'seo_head_description', 'og_description'], fallback.metaDescription || claim || excerpt(item))).slice(0, 165);
+function renderServicePage(slug, service) {
   const canonical = `${SITE_ORIGIN}/el-menu/${slug}/`;
-
-  const ctaLabel = fieldValue(acf, ['cta_final_texto', 'cta_label', 'cta_texto', 'boton_texto'], fallback.ctaLabel || 'Pide tu cata digital');
-  const ctaUrl = normalizeUrl(fieldValue(acf, ['cta_final_url', 'cta_url', 'boton_url'], '/hablamos/'));
-  const videoUrl = fieldUrl(fieldValue(acf, ['hero_video', 'video_hero', 'service_hero_video'], fallback.fallbackVideo || ''));
-  const posterUrl = fieldUrl(fieldValue(acf, ['hero_poster', 'poster_hero', 'service_hero_poster', 'imagen_hero', 'hero_image'], fallback.fallbackPoster || featuredImage(item) || ''));
-  const cardTitle = fieldValue(acf, ['hero_card_title', 'destacado_titulo', 'card_title'], fallback.cardTitle || 'Una receta digital con método, criterio y foco comercial.');
-  const cardItems = fieldList(fieldValue(acf, ['hero_card_items', 'destacado_items', 'puntos_hero', 'card_items'], fallback.cardItems || []));
-  const sidebarTitle = fieldValue(acf, ['sidebar_title', 'cata_titulo'], fallback.sidebarTitle || 'Qué revisamos antes de empezar');
-  const sidebarItems = fieldList(fieldValue(acf, ['sidebar_items', 'cata_items', 'que_miramos'], fallback.sidebarItems || []));
-
-  const mainDescription = fieldValue(acf, ['descripcion_principal', 'descripcion_servicio', 'texto_principal'], '') || renderedContent(item) || fallback.description;
-  const problem = fieldValue(acf, ['problema_que_resuelve', 'problema_servicio', 'reto_servicio'], fallback.problem);
-  const approach = fieldValue(acf, ['como_lo_trabajamos', 'enfoque_salero', 'metodo_servicio', 'solucion_salero'], fallback.approach);
-  const includes = fieldList(fieldValue(acf, ['que_incluye', 'incluye', 'servicios_incluidos'], fallback.includes));
-  const benefits = fieldList(fieldValue(acf, ['beneficios', 'ventajas', 'resultados_buscados'], fallback.benefits));
-  const process = fieldList(fieldValue(acf, ['proceso_trabajo', 'proceso', 'fases_trabajo'], fallback.process));
-  const faqs = parseFaqs(fieldValue(acf, ['faqs_repeater', 'preguntas_frecuentes', 'faqs_items', 'faqs'], fallback.faqs));
-  const finalText = fieldValue(acf, ['cta_final_texto_largo', 'final_text', 'texto_cta_final'], fallback.finalText);
-  const jsonLd = renderJsonLd({ slug, name, technicalName, claim, metaDescription, canonical, faqs });
+  const jsonLd = renderJsonLd(slug, service, canonical);
 
   return `<!doctype html>
 <html lang="es">
 <head>
-  <title>${escapeHtml(metaTitle)}</title>
+  <title>${escapeHtml(service.metaTitle)}</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="${escapeAttr(metaDescription)}">
+  <meta name="description" content="${escapeAttr(service.metaDescription)}">
   <link rel="canonical" href="${escapeAttr(canonical)}">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -108,25 +152,24 @@ function renderServicePage(slug, item) {
 <body class="service-detail-page">
 ${renderHeader()}
   <main id="service-detail-root" class="service-detail-root" data-detail data-type="service" data-slug="${escapeAttr(slug)}">
-    <section class="service-detail-hero service-kind-${escapeAttr(kind)}" aria-labelledby="service-detail-title">
-      ${renderHeroMedia(videoUrl, posterUrl, name)}
+    <section class="service-detail-hero service-kind-${escapeAttr(service.kind)}" aria-labelledby="service-detail-title">
       <div class="service-detail-veil" aria-hidden="true"></div>
       <div class="service-detail-gradient" aria-hidden="true"></div>
       <div class="container service-detail-hero-inner">
         <div class="service-detail-copy">
           <a class="service-detail-back" href="/el-menu/">El Menú</a>
-          <span class="service-detail-kicker">${escapeHtml(technicalName)}</span>
-          <h1 id="service-detail-title">${escapeHtml(name)}</h1>
-          ${claim ? `<p>${escapeHtml(stripHtml(claim))}</p>` : ''}
+          <span class="service-detail-kicker">${escapeHtml(service.label)}</span>
+          <h1 id="service-detail-title">${escapeHtml(service.title)}</h1>
+          <p>${escapeHtml(service.claim)}</p>
           <div class="service-detail-actions" aria-label="Acciones principales">
-            <a class="btn btn-primary" href="${escapeAttr(ctaUrl)}">${escapeHtml(stripHtml(ctaLabel))}</a>
+            <a class="btn btn-primary" href="/hablamos/">${escapeHtml(service.ctaLabel)}</a>
             <a class="btn btn-secondary service-btn-glass" href="#contenido-servicio">Ver servicio</a>
           </div>
         </div>
         <aside class="service-detail-hero-card" aria-label="Resumen del servicio">
-          <span class="service-card-label">${escapeHtml(serviceLabel(kind))}</span>
-          <h2>${escapeHtml(stripHtml(cardTitle))}</h2>
-          ${cardItems.length ? `<ul>${cardItems.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : ''}
+          <span class="service-card-label">${escapeHtml(service.label)}</span>
+          <h2>${escapeHtml(service.cardTitle)}</h2>
+          ${renderList(service.cardItems)}
         </aside>
       </div>
     </section>
@@ -135,35 +178,42 @@ ${renderHeader()}
       <div class="container service-content-grid">
         <article class="service-main-content">
           <span class="service-section-kicker">Servicio estratégico</span>
-          <div class="service-rich-content service-lead-content">${formatText(mainDescription)}</div>
+          <div class="service-rich-content service-lead-content"><p>${escapeHtml(service.intro)}</p></div>
           <div class="service-editorial-split">
-            ${renderEditorialCard('problema', '01', 'El problema que resolvemos', problem)}
-            ${renderEditorialCard('metodo', '02', 'Cómo lo trabajamos', approach)}
+            ${renderEditorialCard('problema', '01', 'El problema que resolvemos', service.problem)}
+            ${renderEditorialCard('metodo', '02', 'Cómo lo trabajamos', service.approach)}
           </div>
         </article>
         <aside class="service-sidebar">
           <div class="service-sidebar-card">
             <span class="service-section-kicker">Cata digital</span>
-            <h2>${escapeHtml(stripHtml(sidebarTitle))}</h2>
-            ${sidebarItems.length ? `<ul>${sidebarItems.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : ''}
-            <a class="btn btn-primary" href="${escapeAttr(ctaUrl)}">${escapeHtml(stripHtml(ctaLabel))}</a>
+            <h2>${escapeHtml(service.sidebarTitle)}</h2>
+            ${renderList(service.sidebarItems)}
+            <a class="btn btn-primary" href="/hablamos/">${escapeHtml(service.ctaLabel)}</a>
           </div>
         </aside>
       </div>
       <div class="container service-action-container">
-        ${renderActionSection(includes, benefits, process)}
-        ${renderFaqBlock(faqs)}
+        <section class="service-action-section">
+          <div class="service-block-heading"><span class="service-section-kicker">Plan de acción</span><h2>Una receta clara para pasar de presencia digital a oportunidades reales</h2></div>
+          <div class="service-action-grid">
+            ${renderActionCard('incluye', '01', 'Qué incluye', service.includes)}
+            ${renderActionCard('beneficios', '02', 'Beneficios que buscamos', service.benefits)}
+            ${renderActionCard('proceso', '03', 'Proceso de trabajo', service.process)}
+          </div>
+        </section>
+        ${renderFaqBlock(service.faqs)}
       </div>
     </section>
 
     <section class="service-final-cta" aria-labelledby="service-final-title">
       <div class="container service-final-card">
         <span class="service-section-kicker">Con salero y con método</span>
-        <h2 id="service-final-title">${escapeHtml(fallback.finalTitle)}</h2>
-        ${finalText ? `<p>${escapeHtml(stripHtml(finalText))}</p>` : ''}
+        <h2 id="service-final-title">${escapeHtml(service.finalTitle)}</h2>
+        <p>${escapeHtml(service.finalText)}</p>
         <div class="service-detail-actions">
-          <a class="btn btn-primary" href="${escapeAttr(ctaUrl)}">${escapeHtml(stripHtml(ctaLabel))}</a>
-          <a class="btn btn-secondary" href="https://wa.me/34665688916?text=Hola%2C%20quiero%20hacer%20una%20cata%20digital%20con%20Salero%20Digital." target="_blank" rel="noopener">Hablar por WhatsApp</a>
+          <a class="btn btn-primary" href="/hablamos/">${escapeHtml(service.ctaLabel)}</a>
+          <a class="btn btn-secondary" href="${escapeAttr(WHATSAPP_URL)}" target="_blank" rel="noopener">Hablar por WhatsApp</a>
         </div>
       </div>
     </section>
@@ -203,419 +253,64 @@ function renderFooter() {
       <div class="footer-grid">
         <div><h2>Salero Digital</h2><p>Agencia de aquí, para los de aquí. Estrategia, web, SEO, redes y campañas para negocios que quieren dejar de estar sosos en internet.</p></div>
         <div><h3>El Menú</h3><nav class="footer-nav"><a href="/el-menu/cimientos-digitales/">Cimientos Digitales</a><a href="/el-menu/el-pregonero/">El Pregonero</a><a href="/el-menu/gracia-y-presencia/">Gracia y Presencia</a><a href="/el-menu/el-empujon/">El Empujón</a></nav></div>
-        <div><h3>Secciones</h3><nav class="footer-nav"><a href="/nuestros-menus/">Nuestros menús</a><a href="/sectores/">Sectores</a><a href="/la-receta/">La Receta</a><a href="/la-rebotica/">La Rebotica</a></nav></div>
-        <div><h3>Contacto</h3><p>Morón de la Frontera, Sierra Sur y Campiña.</p><a href="/hablamos/">Pide tu cata digital</a></div>
+        <div><h3>Sectores</h3><nav class="footer-nav"><a href="/sectores/marketing-para-almazaras-aceite/">Almazaras y aceite</a><a href="/sectores/marketing-para-comercios-pymes/">Comercios y pymes</a><a href="/sectores/marketing-para-hosteleria-turismo/">Hostelería y turismo</a></nav></div>
+        <div><h3>¿Hablamos?</h3><p>Morón de la Frontera, Sierra Sur y Campiña.</p><a href="/hablamos/">Pide tu cata digital</a></div>
       </div>
       <div class="footer-bottom"><span>© 2026 Salero Digital</span><span>Digitalizamos con salero, pero con los pies en la tierra.</span></div>
     </div>
   </footer>
-  <a class="whatsapp-float" href="https://wa.me/34665688916?text=Hola%2C%20quiero%20hacer%20una%20cata%20digital%20con%20Salero%20Digital." target="_blank" rel="noopener">¿Te hace un café y hablamos?</a>`;
-}
-
-function renderHeroMedia(videoUrl, posterUrl, title) {
-  if (videoUrl) {
-    return `<video class="service-detail-hero-video" autoplay muted loop playsinline preload="metadata" ${posterUrl ? `poster="${escapeAttr(posterUrl)}"` : ''} aria-hidden="true"><source src="${escapeAttr(videoUrl)}" type="video/mp4"></video>`;
-  }
-
-  if (posterUrl) {
-    return `<img class="service-detail-hero-image" src="${escapeAttr(posterUrl)}" alt="${escapeAttr(stripHtml(title))}" loading="eager">`;
-  }
-
-  return '';
+  <a class="whatsapp-float" href="${escapeAttr(WHATSAPP_URL)}" target="_blank" rel="noopener">¿Te hace un café y hablamos?</a>`;
 }
 
 function renderEditorialCard(key, number, title, value) {
-  if (!value) return '';
-  return `<article class="service-editorial-card service-editorial-${escapeAttr(key)}"><span>${escapeHtml(number)}</span><h2>${escapeHtml(title)}</h2>${formatText(value)}</article>`;
-}
-
-function renderActionSection(includes, benefits, process) {
-  const cards = [
-    renderActionCard('incluye', '01', 'Qué incluye', includes),
-    renderActionCard('beneficios', '02', 'Beneficios que buscamos', benefits),
-    renderActionCard('proceso', '03', 'Proceso de trabajo', process)
-  ].filter(Boolean).join('');
-
-  if (!cards) return '';
-
-  return `<section class="service-action-section"><div class="service-block-heading"><span class="service-section-kicker">Plan de acción</span><h2>Una receta clara para pasar de presencia digital a oportunidades reales</h2></div><div class="service-action-grid">${cards}</div></section>`;
+  return `<article class="service-editorial-card service-editorial-${escapeAttr(key)}"><span>${escapeHtml(number)}</span><h2>${escapeHtml(title)}</h2><p>${escapeHtml(value)}</p></article>`;
 }
 
 function renderActionCard(key, number, title, items) {
-  if (!items || !items.length) return '';
-  return `<article class="service-action-card service-action-${escapeAttr(key)}"><span>${escapeHtml(number)}</span><h2>${escapeHtml(title)}</h2><ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></article>`;
+  return `<article class="service-action-card service-action-${escapeAttr(key)}"><span>${escapeHtml(number)}</span><h2>${escapeHtml(title)}</h2>${renderList(items)}</article>`;
 }
 
 function renderFaqBlock(faqs) {
-  if (!faqs.length) return '';
-  return `<section class="service-faq-block"><div class="service-faq-copy"><span class="service-section-kicker">Preguntas frecuentes</span><h2>Dudas normales antes de dar el paso</h2><p>Antes de proponerte una solución, aclaramos qué puedes esperar, cómo se trabaja y qué sentido tiene este servicio para tu negocio.</p></div><div class="service-faq-accordion">${faqs.map((faq, index) => `<details ${index === 0 ? 'open' : ''}><summary><span>${escapeHtml(faq.q)}</span></summary><div class="service-faq-answer">${formatText(faq.a)}</div></details>`).join('')}</div></section>`;
+  return `<section class="service-faq-block"><div class="service-faq-copy"><span class="service-section-kicker">Preguntas frecuentes</span><h2>Dudas normales antes de dar el paso</h2><p>Antes de proponerte una solución, aclaramos qué puedes esperar, cómo se trabaja y qué sentido tiene este servicio para tu negocio.</p></div><div class="service-faq-accordion">${faqs.map((faq, index) => `<details ${index === 0 ? 'open' : ''}><summary><span>${escapeHtml(faq[0])}</span></summary><div class="service-faq-answer"><p>${escapeHtml(faq[1])}</p></div></details>`).join('')}</div></section>`;
 }
 
-function renderJsonLd({ slug, name, technicalName, claim, metaDescription, canonical, faqs }) {
-  const graph = [
-    {
-      '@type': 'WebPage',
-      '@id': `${canonical}#webpage`,
-      url: canonical,
-      name,
-      description: metaDescription || stripHtml(claim || ''),
-      isPartOf: {
-        '@type': 'WebSite',
-        '@id': `${SITE_ORIGIN}/#website`,
-        name: 'Salero Digital',
-        url: SITE_ORIGIN
-      },
-      about: {
-        '@type': 'Service',
-        name: technicalName || name,
-        provider: {
-          '@type': 'Organization',
-          name: 'Salero Digital',
-          url: SITE_ORIGIN
-        }
-      }
-    },
-    {
-      '@type': 'BreadcrumbList',
-      '@id': `${canonical}#breadcrumb`,
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${SITE_ORIGIN}/` },
-        { '@type': 'ListItem', position: 2, name: 'El Menú', item: `${SITE_ORIGIN}/el-menu/` },
-        { '@type': 'ListItem', position: 3, name, item: canonical }
-      ]
-    }
-  ];
+function renderList(items = []) {
+  return items && items.length ? `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : '';
+}
 
-  if (faqs.length) {
-    graph.push({
-      '@type': 'FAQPage',
-      '@id': `${canonical}#faq`,
-      mainEntity: faqs.map(faq => ({
-        '@type': 'Question',
-        name: faq.q,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: stripHtml(faq.a)
-        }
-      }))
-    });
-  }
-
+function renderJsonLd(slug, service, canonical) {
   const data = {
     '@context': 'https://schema.org',
-    '@graph': graph
+    '@graph': [
+      {
+        '@type': 'WebPage',
+        '@id': `${canonical}#webpage`,
+        url: canonical,
+        name: service.title,
+        description: service.metaDescription,
+        isPartOf: { '@type': 'WebSite', '@id': `${SITE_ORIGIN}/#website`, name: 'Salero Digital', url: SITE_ORIGIN },
+        about: { '@type': 'Service', name: service.label, provider: { '@type': 'Organization', name: 'Salero Digital', url: SITE_ORIGIN } }
+      },
+      {
+        '@type': 'BreadcrumbList',
+        '@id': `${canonical}#breadcrumb`,
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${SITE_ORIGIN}/` },
+          { '@type': 'ListItem', position: 2, name: 'El Menú', item: `${SITE_ORIGIN}/el-menu/` },
+          { '@type': 'ListItem', position: 3, name: service.title, item: canonical }
+        ]
+      }
+    ]
   };
-
   return `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`;
 }
 
 function renderErrorPage(title, message) {
-  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/main.css?v=50"></head><body>${renderHeader()}<main class="container section"><div class="error"><h1>${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p></div></main>${renderFooter()}<script src="/assets/js/config.js?v=7" defer></script><script src="/assets/js/helpers.js?v=41" defer></script></body></html>`;
+  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/main.css?v=50"></head><body>${renderHeader()}<main class="container section"><div class="error"><h1>${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p></div></main>${renderFooter()}</body></html>`;
 }
 
-function getAcf(item = {}) {
-  return item.salero_acf || item.acf || {};
-}
-
-function itemTitle(item = {}) {
-  return item.title && item.title.rendered ? stripHtml(item.title.rendered) : '';
-}
-
-function renderedContent(item = {}) {
-  return item.content && item.content.rendered ? String(item.content.rendered).trim() : '';
-}
-
-function excerpt(item = {}) {
-  if (item.excerpt && item.excerpt.rendered) return stripHtml(item.excerpt.rendered);
-  const acf = getAcf(item);
-  return acf.claim || acf.subtitulo_comercial || acf.meta_description || '';
-}
-
-function featuredImage(item = {}) {
-  if (item.featured_image_url) return item.featured_image_url;
-  const media = item._embedded && item._embedded['wp:featuredmedia'];
-  return media && media[0] && media[0].source_url ? media[0].source_url : '';
-}
-
-function serviceKind(slug = '', item = {}) {
-  const text = `${slug} ${item.slug || ''} ${itemTitle(item)}`.toLowerCase();
-  if (text.includes('cimientos') || text.includes('web') || text.includes('desarrollo')) return 'web';
-  if (text.includes('pregonero') || text.includes('seo') || text.includes('posicionamiento')) return 'seo';
-  if (text.includes('gracia') || text.includes('presencia') || text.includes('redes') || text.includes('social')) return 'social';
-  if (text.includes('empujon') || text.includes('ads') || text.includes('publicidad') || text.includes('campaña')) return 'ads';
-  return 'generico';
-}
-
-function serviceLabel(kind = 'generico') {
-  if (kind === 'web') return 'Desarrollo web senior';
-  if (kind === 'seo') return 'SEO local y posicionamiento';
-  if (kind === 'social') return 'Social media y contenido';
-  if (kind === 'ads') return 'Publicidad y captación';
-  return 'Servicio digital';
-}
-
-function serviceFallback(kind = 'generico') {
-  const base = {
-    ctaLabel: 'Pide tu cata digital',
-    sidebarTitle: 'Qué miramos antes de proponerte una receta',
-    sidebarItems: ['Estado actual de tu presencia digital', 'Oportunidades reales de captación', 'Canales prioritarios para tu negocio', 'Nivel de competencia directa', 'Primeras acciones con impacto medible'],
-    cardTitle: 'Una receta digital con método, criterio y foco comercial.',
-    cardItems: ['Diagnóstico inicial claro', 'Ejecución senior', 'Medición en cristiano'],
-    finalTitle: 'Tu negocio ya tiene oficio. Ahora toca darle el punto digital que le falta.',
-    finalText: 'Cuéntanos dónde estás, qué quieres conseguir y revisamos qué servicio tiene más sentido para empezar. Sin presión, sin humo y con los pies en la tierra.',
-    faqs: [
-      { pregunta: '¿Por dónde empezamos?', respuesta: 'Empezamos con una cata digital para revisar tu situación actual, detectar prioridades y decidir qué acciones tienen más sentido para tu negocio.' },
-      { pregunta: '¿Se puede contratar este servicio por separado?', respuesta: 'Sí. Cada servicio puede trabajarse de forma independiente, aunque recomendamos conectarlo con el resto de la estrategia para que el resultado sea más sólido.' },
-      { pregunta: '¿Trabajáis con negocios locales?', respuesta: 'Sí. La propuesta de Salero Digital está pensada especialmente para negocios de cercanía, pymes y empresas que quieren competir mejor en su zona sin perder su identidad.' }
-    ]
-  };
-
-  if (kind === 'web') {
-    return {
-      ...base,
-      name: 'Cimientos Digitales',
-      technicalName: 'Desarrollo web senior',
-      metaTitle: 'Cimientos Digitales, desarrollo web senior',
-      metaDescription: 'Desarrollo web senior para negocios locales: webs rápidas, seguras, orientadas a conversión y preparadas para SEO desde la base.',
-      claim: 'Construimos la sede central de tu negocio en internet: una web rápida, clara, segura y pensada para convertir visitas en oportunidades reales.',
-      description: 'Una web no debería ser solo una tarjeta de visita bonita. Para un negocio local, una pyme o una marca con ambición comercial, la web es el lugar donde se decide si el usuario confía, entiende lo que ofreces y da el siguiente paso. Cimientos Digitales está pensado para construir esa base con criterio senior: arquitectura clara, carga rápida, diseño cuidado, estructura SEO, mensajes comerciales y una experiencia móvil que no haga perder clientes por el camino.',
-      problem: 'Muchos negocios tienen webs lentas, desordenadas o creadas solo para “estar”. El problema no es tener una web antigua, sino tener una web que no explica bien la propuesta de valor, no genera confianza y no facilita la conversión. Cuando eso ocurre, el tráfico que llega desde Google, redes o campañas se desaprovecha.',
-      approach: 'Trabajamos la web como un activo de negocio. Primero revisamos objetivos, público, servicios prioritarios y recorrido de conversión. Después definimos estructura, contenidos, diseño, rendimiento y medición. El resultado debe ser una web estable, entendible, editable cuando haga falta y preparada para acompañar campañas, SEO local y captación.',
-      includes: ['Arquitectura de páginas y secciones', 'Diseño responsive orientado a conversión', 'Optimización de velocidad y rendimiento', 'Estructura SEO base', 'Integración de formularios, llamadas y WhatsApp', 'Mantenimiento y soporte técnico si el proyecto lo requiere'],
-      benefits: ['Mejor primera impresión ante clientes nuevos', 'Más claridad en servicios, productos y propuesta comercial', 'Menos dependencia de soluciones improvisadas', 'Base técnica sólida para SEO, campañas y analítica', 'Experiencia móvil más rápida y profesional'],
-      process: ['Cata digital y revisión de necesidades', 'Definición de estructura y mensajes clave', 'Diseño y desarrollo de la web', 'Optimización técnica y revisión SEO', 'Publicación, medición y mejora continua'],
-      cardTitle: 'La web como sede central, no como simple escaparate.',
-      cardItems: ['Velocidad y estabilidad', 'Contenido claro y comercial', 'Base preparada para SEO y captación'],
-      faqs: [
-        { pregunta: '¿Hacéis webs corporativas y tiendas online?', respuesta: 'Sí. Podemos trabajar webs corporativas, landings de captación y proyectos ecommerce según la necesidad real del negocio.' },
-        { pregunta: '¿La web queda preparada para SEO?', respuesta: 'Sí. La estructura, los encabezados, los contenidos principales, el rendimiento y la indexabilidad se trabajan desde el inicio para no construir sobre una base débil.' },
-        { pregunta: '¿También os encargáis del mantenimiento?', respuesta: 'Sí. Podemos plantear mantenimiento técnico, revisiones, soporte y mejoras evolutivas para que la web no se quede abandonada después de publicarla.' }
-      ]
-    };
-  }
-
-  if (kind === 'seo') {
-    return {
-      ...base,
-      name: 'El Pregonero',
-      technicalName: 'SEO local y posicionamiento',
-      metaTitle: 'El Pregonero, SEO local y posicionamiento',
-      metaDescription: 'SEO local para negocios que quieren aparecer mejor en Google, Google Maps y búsquedas de proximidad con una estrategia clara.',
-      claim: 'Hacemos que tu negocio se escuche donde importa: en Google, en Maps y en las búsquedas que pueden acabar en llamada, visita o contacto.',
-      description: 'El Pregonero es el servicio de SEO local y posicionamiento de Salero Digital. Está pensado para negocios que ya tienen oficio, producto o servicio, pero no aparecen con suficiente fuerza cuando sus clientes buscan en Google. No se trata de perseguir palabras clave sin criterio, sino de ordenar la visibilidad digital para que el negocio sea más fácil de encontrar, más fácil de entender y más fiable frente a la competencia.',
-      problem: 'Muchos negocios dependen del boca a boca, de redes sociales o de campañas puntuales, pero descuidan la búsqueda local. Si la ficha de Google Business Profile está incompleta, la web no está optimizada o las páginas no responden a búsquedas reales, el cliente acaba encontrando antes a otro proveedor.',
-      approach: 'Analizamos cómo te buscan, dónde apareces, qué competidores te rodean y qué señales necesita Google para entender mejor tu negocio. A partir de ahí trabajamos ficha de Google, arquitectura web, contenidos, enlaces internos, intención de búsqueda y medición. El objetivo es que la visibilidad tenga sentido comercial, no solo posiciones bonitas en un informe.',
-      includes: ['Auditoría SEO inicial', 'Optimización de Google Business Profile', 'Keyword research local y sectorial', 'Mejora de páginas estratégicas', 'Contenido orientado a intención de búsqueda', 'Seguimiento de posiciones, clics y oportunidades'],
-      benefits: ['Más presencia en búsquedas locales relevantes', 'Mejor comprensión de tus servicios por parte de Google', 'Mayor confianza antes del contacto', 'Captación orgánica más estable', 'Menos dependencia de campañas pagadas para todo'],
-      process: ['Diagnóstico de visibilidad actual', 'Análisis de competencia local', 'Priorización de palabras clave y páginas', 'Optimización técnica y editorial', 'Seguimiento mensual con conclusiones claras'],
-      cardTitle: 'Para que te encuentren los que te buscan y también los que aún no te conocen.',
-      cardItems: ['Google Maps más trabajado', 'Páginas con intención SEO', 'Informes claros y accionables'],
-      faqs: [
-        { pregunta: '¿Cuánto tarda en notarse el SEO local?', respuesta: 'Depende del punto de partida y de la competencia. Normalmente se trabaja a medio plazo, aunque algunas mejoras técnicas y de ficha pueden empezar a generar señales antes.' },
-        { pregunta: '¿El SEO sustituye a Google Ads?', respuesta: 'No necesariamente. El SEO construye visibilidad estable y Google Ads puede acelerar captación. Bien combinados, ambos canales se refuerzan.' },
-        { pregunta: '¿También optimizáis la ficha de Google Maps?', respuesta: 'Sí. Para negocios locales, Google Business Profile suele ser una pieza crítica porque influye en llamadas, rutas, reseñas y confianza.' }
-      ]
-    };
-  }
-
-  if (kind === 'social') {
-    return {
-      ...base,
-      name: 'Gracia y Presencia',
-      technicalName: 'Social media y contenido',
-      metaTitle: 'Gracia y Presencia, social media y contenido',
-      metaDescription: 'Gestión de redes sociales y contenido para marcas que quieren comunicar mejor, generar confianza y activar comunidad con estrategia.',
-      claim: 'No publicamos por publicar. Creamos contenido con tono, intención y presencia para que tu marca se entienda, se recuerde y genere confianza.',
-      description: 'Gracia y Presencia es el servicio de redes sociales y contenido de Salero Digital. Está pensado para negocios que necesitan mostrar mejor lo que hacen, explicar su valor y mantenerse presentes sin caer en publicaciones genéricas. La clave no es llenar el calendario, sino construir una comunicación coherente con la marca, útil para la audiencia y alineada con los objetivos comerciales.',
-      problem: 'Muchas empresas publican cuando pueden, repiten mensajes parecidos o dependen de creatividades sin estrategia. Eso provoca perfiles irregulares, poca diferenciación y una comunidad que mira pero no actúa. La presencia digital necesita ritmo, pero también criterio.',
-      approach: 'Definimos pilares de contenido, tono de marca, formatos, frecuencia y objetivos por canal. A partir de ahí planificamos piezas que combinan confianza, explicación, producto, servicio, autoridad, cercanía y llamada a la acción. La creatividad debe tener gracia, pero también una función dentro del embudo.',
-      includes: ['Estrategia de contenidos por canal', 'Calendario editorial', 'Copies para Instagram, Facebook, TikTok o LinkedIn', 'Ideas visuales y guiones para Reels', 'Creatividades y formatos adaptados', 'Revisión de resultados y mejora de líneas de contenido'],
-      benefits: ['Marca más reconocible y coherente', 'Más confianza antes de la compra o consulta', 'Contenido menos improvisado', 'Mejor aprovechamiento de fotos, vídeos y proyectos reales', 'Comunicación alineada con campañas, web y SEO'],
-      process: ['Definición de objetivos y público', 'Creación de pilares editoriales', 'Planificación mensual', 'Producción y publicación de contenidos', 'Lectura de resultados y ajustes'],
-      cardTitle: 'Contenido con duende, pero también con dirección estratégica.',
-      cardItems: ['Tono de marca reconocible', 'Ideas visuales con intención', 'Calendario alineado con negocio'],
-      faqs: [
-        { pregunta: '¿Trabajáis solo publicaciones o también Reels?', respuesta: 'Podemos trabajar publicaciones, carruseles, stories, Reels, guiones y planificación visual según el canal y los recursos disponibles.' },
-        { pregunta: '¿Necesitáis material del cliente?', respuesta: 'Lo ideal es combinar material real del negocio con creatividad diseñada. El contenido real aporta cercanía y credibilidad.' },
-        { pregunta: '¿Las redes sirven para vender?', respuesta: 'Sí, pero no siempre de forma directa e inmediata. Bien trabajadas, ayudan a generar confianza, explicar valor, activar demanda y apoyar campañas comerciales.' }
-      ]
-    };
-  }
-
-  if (kind === 'ads') {
-    return {
-      ...base,
-      name: 'El Empujón',
-      technicalName: 'Campañas de Google Ads y Social Ads',
-      metaTitle: 'El Empujón, campañas Google Ads y Social Ads',
-      metaDescription: 'Campañas de Google Ads y Social Ads para captar llamadas, leads, visitas y oportunidades con inversión controlada y medición clara.',
-      claim: 'Para cuando tu negocio necesita visibilidad y oportunidades con más velocidad: campañas bien segmentadas, medibles y conectadas con objetivos reales.',
-      description: 'El Empujón es el servicio de campañas de publicidad digital de Salero Digital. Está pensado para negocios que necesitan activar demanda, generar contactos, vender una línea concreta o reforzar una temporada. No se trata de meter dinero en anuncios y esperar, sino de diseñar campañas con segmentación, mensaje, landing, medición y criterio comercial.',
-      problem: 'Muchas campañas fallan porque se lanzan sin una propuesta clara, sin segmentación real, sin seguimiento de conversiones o con una landing que no convierte. El resultado es inversión dispersa, clics de poca calidad y dudas sobre si la publicidad funciona o no.',
-      approach: 'Partimos del objetivo de negocio: llamadas, formularios, WhatsApp, visitas a tienda, reservas o ventas. Después definimos canal, audiencia, presupuesto, creatividad, palabras clave, landing y eventos de conversión. La campaña debe poder medirse en cristiano: qué se ha invertido, qué ha generado y qué conviene ajustar.',
-      includes: ['Configuración de campañas en Google Ads o Meta Ads', 'Segmentación geográfica y por intención', 'Estructura de anuncios y mensajes', 'Creatividades y copies orientados a conversión', 'Configuración de eventos de medición', 'Optimización y reporting periódico'],
-      benefits: ['Más velocidad para captar oportunidades', 'Control de inversión y presupuesto', 'Mensajes adaptados al público correcto', 'Medición de llamadas, formularios o contactos', 'Aprendizaje rápido para mejorar campañas futuras'],
-      process: ['Definición de objetivo comercial', 'Preparación de cuenta, públicos y medición', 'Creación de campañas y anuncios', 'Lanzamiento controlado', 'Optimización según datos reales'],
-      cardTitle: 'Publicidad digital para dar impulso sin perder el control.',
-      cardItems: ['Google Ads y Meta Ads', 'Captación de leads y llamadas', 'Medición clara de resultados'],
-      faqs: [
-        { pregunta: '¿Puedo hacer campañas solo en mi zona?', respuesta: 'Sí. Podemos segmentar campañas por pueblos, comarcas, provincias o radios concretos para no desperdiciar inversión fuera del área útil.' },
-        { pregunta: '¿La inversión publicitaria está incluida?', respuesta: 'Normalmente se separa el fee de gestión de la inversión en medios. Así queda claro qué parte corresponde al trabajo estratégico y qué parte va directamente a Google o Meta.' },
-        { pregunta: '¿Qué se puede medir en una campaña?', respuesta: 'Podemos medir clics, llamadas, formularios, contactos por WhatsApp, visitas a páginas clave y otros eventos de conversión según la estructura del proyecto.' }
-      ]
-    };
-  }
-
-  return base;
-}
-
-function fieldValue(source = {}, keys = [], fallback = '') {
-  for (const key of keys) {
-    const value = source[key];
-    if (value === undefined || value === null) continue;
-    if (typeof value === 'string' && value.trim() === '') continue;
-    if (Array.isArray(value) && !value.length) continue;
-    return value;
-  }
-  return fallback;
-}
-
-function fieldUrl(value) {
-  if (!value) return '';
-  if (typeof value === 'string') return value.trim();
-  if (typeof value === 'number') return '';
-  if (Array.isArray(value)) return fieldUrl(value[0]);
-  if (typeof value === 'object') return value.url || value.source_url || (value.guid && value.guid.rendered) || (value.sizes && (value.sizes.large || value.sizes.full || value.sizes.medium_large)) || '';
-  return '';
-}
-
-function fieldList(value) {
-  if (!value) return [];
-
-  if (Array.isArray(value)) {
-    return value.flatMap(item => {
-      if (typeof item === 'string') return splitListText(stripHtml(item).trim());
-
-      if (item && typeof item === 'object') {
-        const text = stripHtml(
-          item.punto ||
-          item.item ||
-          item.texto ||
-          item.text ||
-          item.label ||
-          item.titulo ||
-          item.title ||
-          item.nombre ||
-          item.value ||
-          item.descripcion ||
-          item.description ||
-          ''
-        ).trim();
-
-        return splitListText(text);
-      }
-
-      return [];
-    }).filter(Boolean);
-  }
-
-  return splitListText(stripHtml(String(value)).trim());
-}
-
-function splitListText(text = '') {
-  const clean = String(text || '').trim();
-  if (!clean) return [];
-
-  const primary = clean
-    .split(/\n+|;|\|/)
-    .map(item => item.replace(/^[-•–]\s*/, '').trim())
-    .filter(Boolean);
-
-  if (primary.length > 1) return primary;
-
-  const sentenceSplit = clean
-    .split(/(?<=\.)\s+(?=[A-ZÁÉÍÓÚÑ])/)
-    .map(item => item.replace(/^[-•–]\s*/, '').trim())
-    .filter(Boolean);
-
-  return sentenceSplit.length > 1 ? sentenceSplit : primary;
-}
-
-function parseFaqs(value) {
-  if (!value) return [];
-
-  if (Array.isArray(value)) {
-    return value.map(item => {
-      if (typeof item === 'string') return parseFaqs(item)[0] || null;
-      if (!item || typeof item !== 'object') return null;
-      const q = item.pregunta || item.faq_pregunta || item.question || item.titulo || item.title || item.nombre || item.label || '';
-      const a = item.respuesta || item.faq_respuesta || item.answer || item.texto || item.content || item.descripcion || item.description || '';
-      return q ? { q: stripHtml(String(q)).trim(), a: String(a || '').trim() } : null;
-    }).filter(Boolean);
-  }
-
-  if (typeof value === 'object') {
-    const q = value.pregunta || value.faq_pregunta || value.question || value.titulo || value.title || '';
-    const a = value.respuesta || value.faq_respuesta || value.answer || value.texto || value.content || '';
-    return q ? [{ q: stripHtml(String(q)).trim(), a: String(a || '').trim() }] : [];
-  }
-
-  const text = String(value || '').trim();
-  if (!text) return [];
-
-  const blocks = text.split(/(?=###\s)/).map(block => block.trim()).filter(Boolean);
-  if (blocks.length > 1 || text.startsWith('###')) {
-    return blocks.map(block => {
-      const lines = block.split(/\n+/).map(line => line.trim()).filter(Boolean);
-      const q = (lines.shift() || '').replace(/^###\s*/, '').trim();
-      return q ? { q, a: lines.join('\n\n') } : null;
-    }).filter(Boolean);
-  }
-
-  const rows = text.split(/\n+/).map(row => row.trim()).filter(Boolean).filter(row => row.includes('|'));
-  if (rows.length) {
-    return rows.map(row => {
-      const parts = row.split('|');
-      const q = (parts.shift() || '').trim();
-      const a = parts.join('|').trim();
-      return q ? { q, a } : null;
-    }).filter(Boolean);
-  }
-
-  return [{ q: 'Pregunta frecuente', a: text }];
-}
-
-function normalizeUrl(value = '') {
-  if (!value) return '/hablamos/';
-  if (typeof value !== 'string') return '/hablamos/';
-  if (value.startsWith('http')) return value;
-  if (value.startsWith('/')) return value;
-  return `/${value.replace(/^\/+|\/+$/g, '')}/`;
-}
-
-function withBrand(title = '') {
-  const clean = stripHtml(title || '').trim();
-  if (!clean) return 'Salero Digital';
-  return clean.toLowerCase().includes('salero digital') ? clean : `${clean} | Salero Digital`;
-}
-
-function formatText(value = '') {
-  const text = String(value || '').trim();
-  if (!text) return '';
-  if (hasHtml(text)) return text;
-  return text.split(/\n{2,}/).map(paragraph => `<p>${escapeHtml(paragraph).replace(/\n/g, '<br>')}</p>`).join('');
-}
-
-function hasHtml(value = '') {
-  return /<\/?[a-z][\s\S]*>/i.test(String(value));
-}
-
-function stripHtml(value = '') {
-  return String(value || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
-}
-
-function sanitizeSlug(value) {
-  return String(value || '').trim().replace(/^\/+|\/+$/g, '').replace(/[^a-zA-Z0-9-_]/g, '');
+function sanitizeSlug(value = '') {
+  return String(value || '').trim().replace(/^\/+|\/+$/g, '').split('/')[0];
 }
 
 function escapeHtml(value = '') {
