@@ -1,5 +1,5 @@
-import { handleSectorStoryRequest } from '../../_shared/sector-story-transformer.js';
+import { handleSafeSectorRequest } from '../../_shared/sector-safe-handler.js';
 
 export async function onRequest(context) {
-  return handleSectorStoryRequest(context);
+  return handleSafeSectorRequest(context);
 }
