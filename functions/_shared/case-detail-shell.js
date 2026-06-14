@@ -21,7 +21,9 @@ function renderShell() {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/main.css?v=50">
-  <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=1">
+  <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=20">
+  <link rel="stylesheet" href="/assets/css/caso-receta-carousel.css?v=8">
+  <link rel="stylesheet" href="/assets/css/caso-receta-carousel-fix.css?v=2">
 </head>
 <body class="caso-detalle-page">
   <header class="site-header">
@@ -36,7 +38,7 @@ function renderShell() {
     </div>
   </header>
 
-  <main id="caso-detalle-root" data-caso-detalle>
+  <main id="caso-detalle-root" class="caso-detalle-root" data-caso-detalle>
     <section class="caso-detail-loading">
       <div class="container">
         <span class="eyebrow">Caso de éxito</span>
@@ -87,7 +89,8 @@ function renderShell() {
   <script src="/assets/js/config.js?v=7" defer></script>
   <script src="/assets/js/api.js?v=52" defer></script>
   <script src="/assets/js/helpers.js?v=41" defer></script>
-  <script src="/assets/js/caso-de-exito-detalle-v2.js?v=2" defer></script>
+  <script src="/assets/js/caso-de-exito-detalle-v3.js?v=1" defer></script>
+  <script src="/assets/js/caso-receta-carousel.js?v=2" defer></script>
 </body>
 </html>`;
 }
