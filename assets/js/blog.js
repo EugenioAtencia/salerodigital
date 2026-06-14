@@ -15,23 +15,6 @@
     loading: false
   };
 
-  function apiBase() {
-    const candidates = [
-      window.SALERO_API_BASE,
-      window.SALERO_CONFIG && window.SALERO_CONFIG.apiBase,
-      window.SALERO_CONFIG && window.SALERO_CONFIG.apiBaseUrl,
-      window.SALERO_CONFIG && window.SALERO_CONFIG.wpApiBase,
-      window.SALERO_CMS && window.SALERO_CMS.apiBase
-    ].filter(Boolean);
-
-    let base = (candidates[0] || 'https://cms.webagencia360.com/wp-json/wp/v2').replace(/\/$/, '');
-
-    if (base.endsWith('/wp-json')) base += '/wp/v2';
-    if (!base.endsWith('/wp/v2')) base += '/wp-json/wp/v2';
-
-    return base;
-  }
-
   function stripHtml(value) {
     const tmp = document.createElement('div');
     tmp.innerHTML = value || '';
@@ -58,11 +41,15 @@
 
   function postCategories(post) {
     const terms = post._embedded && post._embedded['wp:term'];
-    if (!Array.isArray(terms)) return [];
-    return (terms[0] || []).map((cat) => ({ id: String(cat.id), name: cat.name, slug: cat.slug }));
+    if (Array.isArray(terms)) return (terms[0] || []).map((cat) => ({ id: String(cat.id), name: cat.name, slug: cat.slug }));
+    if (Array.isArray(post.categories_data)) return post.categories_data.map((cat) => ({ id: String(cat.id || cat.slug || cat.name), name: cat.name || cat.label || cat.slug, slug: cat.slug || cat.name }));
+    return [];
   }
 
   function featuredImage(post) {
+    const direct = post.featured_image_url || post.salero_featured_image || '';
+    if (direct) return { url: direct, alt: stripHtml(post.title && post.title.rendered) || 'Imagen del artículo' };
+
     const media = post._embedded && post._embedded['wp:featuredmedia'] && post._embedded['wp:featuredmedia'][0];
     if (!media) return null;
     const sizes = media.media_details && media.media_details.sizes;
@@ -155,52 +142,36 @@
     statusEl.hidden = !message;
   }
 
-  async function fetchPosts(page) {
-    const params = new URLSearchParams({
-      _embed: '1',
-      per_page: String(state.perPage),
-      page: String(page),
-      orderby: 'date',
-      order: 'desc',
-      status: 'publish',
-      _t: String(Date.now())
-    });
-
-    const url = `${apiBase()}/posts?${params.toString()}`;
-    const response = await fetch(url, {
-      cache: 'no-store',
-      headers: { Accept: 'application/json' }
-    });
-
-    if (!response.ok) {
-      throw new Error(`No se pudieron cargar los artículos. Estado ${response.status}`);
+  async function fetchPosts() {
+    if (typeof getCollection === 'function') {
+      const data = await getCollection('posts', {
+        orderby: 'date',
+        order: 'desc',
+        status: 'publish'
+      });
+      return Array.isArray(data) ? data : [];
     }
-
-    state.totalPages = Number(response.headers.get('X-WP-TotalPages')) || page;
-    return response.json();
+    throw new Error('No está disponible getCollection para cargar artículos estáticos.');
   }
 
   async function loadPosts() {
     if (state.loading) return;
     state.loading = true;
-    setStatus(state.page === 1 ? 'Cargando artículos desde el CMS...' : 'Cargando más artículos...');
+    setStatus('Cargando artículos...');
     if (loadMoreBtn) loadMoreBtn.hidden = true;
 
     try {
-      const posts = await fetchPosts(state.page);
-      state.posts = state.posts.concat(posts);
+      const posts = await fetchPosts();
+      state.posts = posts;
+      state.totalPages = 1;
       renderFilters();
       renderPosts();
       setStatus('');
-
-      if (loadMoreBtn) {
-        loadMoreBtn.hidden = state.page >= state.totalPages;
-      }
     } catch (error) {
       postsRoot.innerHTML = `
         <div class="rb-error">
-          <strong>No hemos podido cargar los artículos desde el CMS.</strong><br>
-          Revisa el endpoint de WordPress, CORS o la caché de Cloudflare. ${error.message ? `<span>${error.message}</span>` : ''}
+          <strong>No hemos podido cargar los artículos.</strong><br>
+          Revisa si existe el JSON estático de La Rebotica. ${error.message ? `<span>${error.message}</span>` : ''}
         </div>
       `;
       setStatus('', true);
@@ -213,7 +184,6 @@
     filterbar.addEventListener('click', (event) => {
       const button = event.target.closest('[data-category]');
       if (!button) return;
-
       state.activeCategory = button.dataset.category;
       filterbar.querySelectorAll('.rb-filter').forEach((item) => item.classList.toggle('is-active', item === button));
       renderPosts();
@@ -221,12 +191,7 @@
   }
 
   if (loadMoreBtn) {
-    loadMoreBtn.addEventListener('click', () => {
-      if (state.page < state.totalPages) {
-        state.page += 1;
-        loadPosts();
-      }
-    });
+    loadMoreBtn.addEventListener('click', () => loadPosts());
   }
 
   loadPosts();
