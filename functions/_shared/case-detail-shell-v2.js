@@ -1,0 +1,35 @@
+export async function handleCaseDetailShell() {
+  return new Response(`<!doctype html>
+<html lang="es">
+<head>
+  <title>Caso de éxito | Salero Digital</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Caso de éxito de Salero Digital.">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/main.css?v=50">
+  <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=20">
+  <link rel="stylesheet" href="/assets/css/caso-receta-carousel.css?v=8">
+  <link rel="stylesheet" href="/assets/css/caso-receta-carousel-fix.css?v=2">
+</head>
+<body class="caso-detalle-page">
+  <header class="site-header"><div class="container header-inner"><a class="logo logo-wordmark" href="/" aria-label="Salero Digital"><span>Salero Digital</span></a><nav class="nav" aria-label="Menú principal"></nav><div class="header-actions"><a class="nav-contact" href="/hablamos/">¿Hablamos?</a><a class="btn btn-primary" href="/hablamos/">Pide tu cata digital</a><button class="menu-toggle" type="button" data-menu-toggle aria-label="Abrir menú">☰</button></div></div></header>
+  <main id="caso-detalle-root" class="caso-detalle-root" data-caso-detalle><section class="caso-detail-loading"><div class="container"><span class="eyebrow">Caso de éxito</span><h1>Cargando caso...</h1></div></section></main>
+  <footer class="footer"><div class="container"><div class="footer-bottom"><span>© 2026 Salero Digital</span><span>Digitalizamos con salero, pero con los pies en la tierra.</span></div></div></footer>
+  <a class="whatsapp-float" href="https://wa.me/34665688916?text=Hola%2C%20quiero%20hacer%20una%20cata%20digital%20con%20Salero%20Digital." target="_blank" rel="noopener">¿Te hace un café y hablamos?</a>
+  <script src="/assets/js/config.js?v=7" defer></script>
+  <script src="/assets/js/api.js?v=52" defer></script>
+  <script src="/assets/js/helpers.js?v=41" defer></script>
+  <script src="/assets/js/caso-de-exito-detalle-v4.js?v=1" defer></script>
+</body>
+</html>`, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store, max-age=0, must-revalidate'
+    }
+  });
+}
