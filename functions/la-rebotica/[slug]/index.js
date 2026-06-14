@@ -1,4 +1,4 @@
-import { handleBlogPostRequest } from '../../_shared/blog-renderer-static.js';
+import { handleBlogPostRequest } from '../../_shared/blog-renderer.js';
 
 export async function onRequest(context) {
   return handleBlogPostRequest(context);
