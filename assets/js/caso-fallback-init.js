@@ -3,6 +3,7 @@
   if (!root) return;
 
   const mediaCache = new Map();
+  const cmsOrigin = 'https://cms.webagencia360.com';
 
   function normalize(value = '') {
     return String(value || '')
@@ -18,16 +19,24 @@
 
   function mediaUrl(media) {
     if (!media) return '';
-    if (typeof media === 'string' && /^https?:\/\//i.test(media)) return media;
+    if (typeof media === 'string') {
+      const clean = media.trim();
+      const absoluteMatch = clean.match(/https?:\/\/[^\s"'<>]+/i);
+      if (absoluteMatch) return absoluteMatch[0];
+      if (clean.startsWith('/wp-content/') || clean.startsWith('/uploads/')) return `${cmsOrigin}${clean}`;
+      if (clean.startsWith('wp-content/') || clean.startsWith('uploads/')) return `${cmsOrigin}/${clean}`;
+      return '';
+    }
     if (media && typeof media === 'object') {
-      if (media.url) return media.url;
-      if (media.source_url) return media.source_url;
-      if (media.guid && media.guid.rendered) return media.guid.rendered;
+      if (media.url) return mediaUrl(media.url);
+      if (media.source_url) return mediaUrl(media.source_url);
+      if (media.guid && media.guid.rendered) return mediaUrl(media.guid.rendered);
+      if (media.mime_type && media.source_url) return mediaUrl(media.source_url);
       if (media.media_details && media.media_details.sizes) {
         const sizes = media.media_details.sizes;
-        if (sizes.large && sizes.large.source_url) return sizes.large.source_url;
-        if (sizes.medium_large && sizes.medium_large.source_url) return sizes.medium_large.source_url;
-        if (sizes.full && sizes.full.source_url) return sizes.full.source_url;
+        if (sizes.large && sizes.large.source_url) return mediaUrl(sizes.large.source_url);
+        if (sizes.medium_large && sizes.medium_large.source_url) return mediaUrl(sizes.medium_large.source_url);
+        if (sizes.full && sizes.full.source_url) return mediaUrl(sizes.full.source_url);
       }
     }
     return '';
@@ -79,6 +88,10 @@
     return mediaUrl(media);
   }
 
+  function isVideoUrl(url = '') {
+    return /\.(mp4|webm|mov)(\?|#|$)/i.test(url);
+  }
+
   async function resolveHeroMedia() {
     const grid = document.querySelector('.caso-detail-hero-grid');
     if (!grid || grid.dataset.heroMediaResolved === 'true') return;
@@ -91,9 +104,42 @@
     const acf = getAcf(item);
     const title = acf.cliente_nombre || acf.nombre_caso || acf.cliente || 'Caso de éxito';
     const featured = featuredImage(item);
-    const image = await firstMedia(item, ['imagen_principal', 'imagen_caso', 'imagen_destacada', 'imagen_campana', 'cover_image'], featured);
-    const video = await firstMedia(item, ['video_principal', 'video_principal_url', 'video_caso', 'video_campana', 'video']);
-    const poster = await firstMedia(item, ['video_poster', 'poster_video', 'poster', 'imagen_principal', 'imagen_caso'], image || featured);
+    const video = await firstMedia(item, [
+      'hero_video',
+      'video_hero',
+      'video_fondo',
+      'fondo_video',
+      'background_video',
+      'hero_background_video',
+      'video_portada',
+      'portada_video',
+      'video_principal',
+      'video_principal_url',
+      'video_principal_caso',
+      'video_caso',
+      'video_campana',
+      'video'
+    ]);
+    const image = await firstMedia(item, [
+      'hero_poster',
+      'poster_hero',
+      'hero_image',
+      'imagen_hero',
+      'imagen_principal',
+      'imagen_caso',
+      'imagen_destacada',
+      'imagen_campana',
+      'cover_image'
+    ], featured);
+    const poster = await firstMedia(item, [
+      'hero_poster',
+      'poster_hero',
+      'video_poster',
+      'poster_video',
+      'poster',
+      'imagen_principal',
+      'imagen_caso'
+    ], image || featured);
 
     if (!image && !video) return;
 
@@ -104,9 +150,10 @@
       grid.appendChild(mediaCard);
     }
 
-    mediaCard.innerHTML = video
-      ? `<video autoplay muted loop playsinline preload="metadata"${poster ? ` poster="${poster}"` : ''}><source src="${video}" type="video/mp4"></video>`
-      : `<img src="${image}" alt="${String(title).replace(/"/g, '&quot;')}" loading="eager">`;
+    const shouldRenderVideo = video && isVideoUrl(video);
+    mediaCard.innerHTML = shouldRenderVideo
+      ? `<video autoplay muted loop playsinline preload="auto"${poster ? ` poster="${poster}"` : ''}><source src="${video}" type="video/mp4"></video>`
+      : `<img src="${image || poster}" alt="${String(title).replace(/"/g, '&quot;')}" loading="eager">`;
 
     grid.classList.remove('is-no-media');
     grid.dataset.heroMediaResolved = 'true';
