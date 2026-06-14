@@ -1,4 +1,4 @@
-const CMS_ORIGIN = 'https://cms.webagencia360.com';
+const CMS_ORIGIN = 'https://agenciaconsalero.es';
 const SITE_ORIGIN = 'https://agenciaconsalero.es';
 
 export async function handleCasoRequest(context) {
