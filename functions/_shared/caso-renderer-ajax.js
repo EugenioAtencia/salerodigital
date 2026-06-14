@@ -1,0 +1,200 @@
+const CMS_ORIGIN = 'https://cms.webagencia360.com';
+const SITE_ORIGIN = 'https://agenciaconsalero.es';
+
+export async function handleCasoRequest(context) {
+  const slug = getSlug(context);
+
+  if (!slug) {
+    return htmlResponse(renderErrorPage('Caso no encontrado', 'No se ha recibido un slug válido para cargar este caso de éxito.'), 404);
+  }
+
+  try {
+    const item = await fetchCasoFromAjax(slug);
+    if (!item) {
+      return htmlResponse(renderErrorPage('Caso no encontrado', `No existe ningún caso publicado con el slug ${escapeHtml(slug)}.`), 404);
+    }
+
+    return htmlResponse(renderCasoPage(slug, item), 200);
+  } catch (error) {
+    return htmlResponse(renderErrorPage('No se pudo cargar el caso desde WordPress', error && error.message ? error.message : String(error)), 500);
+  }
+}
+
+function getSlug(context) {
+  const raw = context.params && (context.params.slug || context.params.path || '');
+  const value = Array.isArray(raw) ? raw[0] : String(raw || '').split('/')[0];
+  return sanitizeSlug(value);
+}
+
+async function fetchCasoFromAjax(slug) {
+  const url = new URL(`${CMS_ORIGIN}/wp-admin/admin-ajax.php`);
+  url.searchParams.set('action', 'salero_case_json');
+  url.searchParams.set('slug', slug);
+  url.searchParams.set('_t', String(Date.now()));
+
+  const response = await fetch(url.toString(), {
+    headers: { Accept: 'application/json', 'User-Agent': 'SaleroDigital-Casos-SSR-Ajax' },
+    cf: { cacheTtl: 0, cacheEverything: false }
+  });
+
+  const text = await response.text();
+  const trimmed = text.trim();
+
+  if (!response.ok) {
+    throw new Error(`WordPress devolvió HTTP ${response.status}`);
+  }
+
+  if (!trimmed.startsWith('{')) {
+    throw new Error(`El endpoint admin-ajax no devolvió JSON: ${trimmed.slice(0, 120).replace(/\s+/g, ' ')}`);
+  }
+
+  const json = JSON.parse(trimmed);
+  if (!json || json.success !== true || !json.data) {
+    throw new Error('El endpoint admin-ajax respondió, pero no devolvió success true con data.');
+  }
+
+  return json.data;
+}
+
+function renderCasoPage(slug, item) {
+  const acf = item.salero_acf || item.acf || {};
+  const title = textField(acf, ['cliente_nombre', 'nombre_caso', 'nombre_cliente', 'cliente'], textFromValue(item.title) || 'Caso de éxito');
+  const visualLabel = textField(acf, ['visual_label', 'etiqueta_visual'], 'Caso de éxito');
+  const sector = textField(acf, ['sector', 'sector_cliente', 'tipo_de_cliente'], 'Proyecto digital');
+  const service = textField(acf, ['servicio_principal', 'servicio', 'servicios'], 'Estrategia digital');
+  const proof = textField(acf, ['dato_destacado', 'mejora_conseguida', 'que_demuestra_resumen', 'resumen_prueba'], 'Proyecto real de Salero Digital');
+  const summary = textField(acf, ['descripcion_corta', 'resumen'], proof);
+  const metaTitle = textField(acf, ['seo_title', 'meta_title', 'title_seo'], `${title} | Caso de éxito`);
+  const metaDescription = textField(acf, ['seo_description', 'meta_description'], summary).slice(0, 165);
+  const canonical = `${SITE_ORIGIN}/casos-de-exito/${slug}/`;
+
+  const videoUrl = mediaUrl(valueField(acf, ['hero_video', 'video_hero', 'video_fondo', 'fondo_video', 'background_video', 'hero_background_video', 'video_portada', 'portada_video', 'video_principal', 'video_principal_url', 'video_principal_caso', 'video_caso', 'video_campana', 'video'], '')) || (slug === 'muebles-sarria' ? 'https://cms.webagencia360.com/wp-content/uploads/2026/05/AQMPbTuJE7wCMpXcqX-P7dl5D-RhLpg4GyGgG7iH0g9ozcAoIfFUNl6vouwcoKqbFsL_TVojBz9xFlNS76ujCIAe.mp4' : '');
+  const posterUrl = mediaUrl(valueField(acf, ['hero_poster', 'poster_hero', 'video_poster', 'poster_video', 'poster', 'imagen_principal', 'imagen_caso'], ''));
+  const imageUrl = mediaUrl(valueField(acf, ['hero_image', 'imagen_hero', 'imagen_principal', 'imagen_caso', 'imagen_destacada', 'imagen_campana', 'cover_image'], ''));
+
+  const reto = htmlField(acf, ['reto', 'reto_inicial']);
+  const solucion = htmlField(acf, ['solucion', 'estrategia_aplicada', 'acciones_realizadas', 'receta_aplicada']);
+  const resultado = htmlField(acf, ['resultado', 'resultados']);
+  const aprendizaje = htmlField(acf, ['que_demuestra_este_caso', 'que_demuestra', 'aprendizaje', 'lectura_estrategica']);
+  const servicios = normalizeServices(valueField(acf, ['servicios_trabajados', 'servicios_implicados', 'servicios_aplicados'], []));
+  const herramientas = fieldList(valueField(acf, ['herramientas', 'herramientas_usadas'], []));
+  const metricas = Array.isArray(acf.metricas) ? acf.metricas : [];
+  const galeria = Array.isArray(acf.galeria_caso) ? acf.galeria_caso : [];
+
+  const ctaText = textField(acf, ['cta_texto'], 'Quiero una estrategia parecida');
+  const ctaUrl = normalizeUrl(textField(acf, ['cta_url'], '/hablamos/'));
+  const ctaSecondary = textField(acf, ['cta_secundario'], 'Cuéntanos tu punto de partida y vemos cómo convertirlo en una experiencia digital con intención, estructura y salero.');
+
+  return `<!doctype html>
+<html lang="es">
+<head>
+  <title>${escapeHtml(metaTitle)} | Salero Digital</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="${escapeAttr(metaDescription)}">
+  <link rel="canonical" href="${escapeAttr(canonical)}">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/main.css?v=50">
+  <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=20">
+  <link rel="stylesheet" href="/assets/css/caso-receta-carousel.css?v=8">
+  <link rel="stylesheet" href="/assets/css/caso-receta-carousel-fix.css?v=2">
+</head>
+<body class="caso-detalle-page caso-${escapeAttr(slug)}">
+${renderHeader()}
+  <main id="caso-detalle-root" class="caso-detalle-root" data-caso-slug="${escapeAttr(slug)}">
+    <section class="caso-detail-hero caso-detail-hero-media">
+      ${renderHeroBackdrop({ videoUrl, posterUrl, imageUrl, title })}
+      <div class="caso-detail-grain" aria-hidden="true"></div>
+      <div class="caso-detail-hero-overlay" aria-hidden="true"></div>
+      <div class="container caso-detail-hero-inner">
+        <nav class="caso-breadcrumb" aria-label="Migas de pan"><a href="/">Inicio</a><span aria-hidden="true">/</span><a href="/casos-de-exito/">Casos de éxito</a><span aria-hidden="true">/</span><a href="${escapeAttr(canonical)}" aria-current="page">${escapeHtml(title)}</a></nav>
+        <div class="caso-hero-layout"><div class="caso-detail-copy"><div class="caso-detail-tags caso-detail-tags-hero" aria-label="Resumen del caso"><span class="is-sal">${escapeHtml(visualLabel)}</span><span class="is-lima">${escapeHtml(sector)}</span><span class="is-lima">${escapeHtml(service)}</span></div><h1>${escapeHtml(title)}</h1>${summary ? `<p class="lead">${escapeHtml(summary)}</p>` : ''}<div class="caso-detail-actions"><a class="btn btn-primary" href="${escapeAttr(ctaUrl)}">${escapeHtml(ctaText)}</a><a class="btn btn-secondary" href="#caso-receta">Ver la receta</a></div></div></div>
+      </div>
+    </section>
+    <section class="caso-proof-band" aria-label="Resumen del caso"><div class="container caso-proof-grid"><article><span>Sector</span><strong>${escapeHtml(sector)}</strong></article><article><span>Servicio principal</span><strong>${escapeHtml(service)}</strong></article><article><span>Qué demuestra</span><strong>${escapeHtml(proof)}</strong></article></div></section>
+    <section class="caso-detail-body" id="caso-receta"><div class="container caso-detail-body-grid"><aside class="caso-detail-sticky"><span class="eyebrow">La receta</span><h2>Menos escaparate y más argumento.</h2><div class="caso-detail-summary-card"><p>Este caso no va solo de enseñar una web bonita. Va de explicar el contexto, la decisión estratégica y la solución digital que había detrás.</p><dl><div><dt>Proyecto</dt><dd>${escapeHtml(title)}</dd></div><div><dt>Prueba</dt><dd>${escapeHtml(proof)}</dd></div></dl></div></aside><div class="caso-detail-content" aria-label="Secuencia de la receta aplicada">${renderSection('El reto', reto, 'reto', '01')}${renderSection('La receta aplicada', solucion, 'solucion', '02')}${renderSection('El resultado', resultado, 'resultado', '03')}${renderSection('Qué demuestra este caso', aprendizaje, 'aprendizaje', '04')}${renderListSection('Servicios trabajados', servicios, 'servicios')}${renderListSection('Herramientas usadas', herramientas, 'herramientas')}${renderMetrics(metricas)}</div></div></section>
+    ${renderGallery(galeria, { imageUrl, videoUrl, posterUrl, title })}
+    <section class="caso-detail-cta"><div class="container"><div class="caso-detail-cta-card"><span class="eyebrow">El siguiente caso puede ser el tuyo</span><h2>¿Quieres una solución digital con este nivel de intención?</h2>${ctaSecondary ? `<p>${escapeHtml(ctaSecondary)}</p>` : ''}<div class="hero-actions"><a class="btn btn-primary" href="${escapeAttr(ctaUrl)}">${escapeHtml(ctaText)}</a><a class="btn btn-secondary" href="/casos-de-exito/">Ver más casos</a></div></div></div></section>
+  </main>
+${renderFooter()}
+  <script src="/assets/js/helpers.js?v=41"></script>
+  <script src="/assets/js/caso-receta-carousel.js?v=2"></script>
+</body>
+</html>`;
+}
+
+function renderHeroBackdrop({ videoUrl, posterUrl, imageUrl, title }) {
+  const media = videoUrl ? `<video autoplay muted loop playsinline preload="metadata" ${posterUrl ? `poster="${escapeAttr(posterUrl)}"` : ''}><source src="${escapeAttr(videoUrl)}" type="video/mp4"></video>` : imageUrl ? `<img src="${escapeAttr(imageUrl)}" alt="${escapeAttr(title)}" loading="eager">` : '';
+  return `<div class="caso-hero-backdrop" aria-hidden="true">${media}</div>`;
+}
+
+function renderSection(title, html, modifier = '', number = '') {
+  if (!html) return '';
+  return `<section class="caso-detail-section caso-detail-section-${escapeAttr(modifier)}"><span class="caso-section-number">${escapeHtml(number)}</span><h3>${escapeHtml(title)}</h3>${html}</section>`;
+}
+
+function renderListSection(title, list, modifier = '') {
+  if (!Array.isArray(list) || !list.length) return '';
+  return `<section class="caso-detail-section caso-detail-list-section caso-detail-section-${escapeAttr(modifier)}"><h3>${escapeHtml(title)}</h3><ul>${list.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></section>`;
+}
+
+function renderMetrics(metricas) {
+  if (!Array.isArray(metricas) || !metricas.length) return '';
+  const html = metricas.map(metric => {
+    const label = textField(metric, ['metrica', 'label', 'nombre'], '');
+    const value = textField(metric, ['valor', 'value', 'dato'], '');
+    const desc = textField(metric, ['descripcion', 'description'], '');
+    if (!label && !value && !desc) return '';
+    return `<article class="caso-metric"><strong>${escapeHtml(value || label)}</strong>${label && value ? `<span>${escapeHtml(label)}</span>` : ''}${desc ? `<p>${escapeHtml(desc)}</p>` : ''}</article>`;
+  }).filter(Boolean).join('');
+  return html ? `<section class="caso-detail-section caso-detail-section-metricas"><h3>Métricas destacadas</h3><div class="caso-metrics">${html}</div></section>` : '';
+}
+
+function renderGallery(galeria, primary = {}) {
+  const galleryItems = Array.isArray(galeria) ? [...galeria] : [];
+  if (primary.videoUrl || primary.imageUrl) galleryItems.unshift({ tipo_medio: primary.videoUrl ? 'video' : 'imagen', video: primary.videoUrl || '', imagen: primary.imageUrl || primary.posterUrl || '', alt: primary.title || 'Imagen principal del proyecto' });
+  const seen = new Set();
+  const html = galleryItems.map(item => {
+    const tipo = textField(item, ['tipo_medio', 'tipo'], 'imagen');
+    const img = mediaUrl(valueField(item, ['imagen'], ''));
+    const vid = mediaUrl(valueField(item, ['video'], ''));
+    const alt = textField(item, ['alt'], primary.title || 'Imagen del proyecto');
+    const key = vid || img;
+    if (!key || seen.has(key)) return '';
+    seen.add(key);
+    if (tipo === 'video' && vid) return `<article class="caso-gallery-item"><video controls preload="metadata" ${img ? `poster="${escapeAttr(img)}"` : ''}><source src="${escapeAttr(vid)}" type="video/mp4"></video></article>`;
+    if (img) return `<article class="caso-gallery-item"><img src="${escapeAttr(img)}" alt="${escapeAttr(alt)}" loading="lazy"></article>`;
+    return '';
+  }).filter(Boolean).join('');
+  return html ? `<section class="caso-gallery-section"><div class="container"><div class="caso-gallery-heading"><span class="eyebrow">Material visual</span><h2>Píldoras de Sal</h2></div><div class="caso-gallery-grid">${html}</div></div></section>` : '';
+}
+
+function renderHeader() {
+  return `  <header class="site-header"><div class="container header-inner"><a class="logo logo-wordmark" href="/" aria-label="Salero Digital"><span>Salero Digital</span></a><nav class="nav" aria-label="Menú principal"></nav><div class="header-actions"><a class="nav-contact" href="/hablamos/">¿Hablamos?</a><a class="btn btn-primary" href="/hablamos/">Pide tu cata digital</a><button class="menu-toggle" type="button" data-menu-toggle aria-label="Abrir menú">☰</button></div></div></header>`;
+}
+
+function renderFooter() {
+  return `  <footer class="footer"><div class="container"><div class="footer-grid"><div><h2>Salero Digital</h2><p>Tu marca, con salero. Agencia digital para negocios que quieren dejar de estar sosos en internet.</p></div><div><h3>El Menú</h3><nav class="footer-nav"><a href="/el-menu/cimientos-digitales/">Cimientos Digitales</a><a href="/el-menu/el-pregonero/">El Pregonero</a><a href="/el-menu/gracia-y-presencia/">Gracia y Presencia</a><a href="/el-menu/el-empujon/">El Empujón</a></nav></div><div><h3>Sectores</h3><nav class="footer-nav"><a href="/sectores/marketing-para-almazaras-aceite/">Almazaras y aceite</a><a href="/sectores/marketing-para-comercios-pymes/">Comercios y pymes</a><a href="/sectores/marketing-para-hosteleria-turismo/">Hostelería y turismo</a></nav></div><div><h3>¿Hablamos?</h3><p>Morón de la Frontera, Sierra Sur y Campiña.</p><a href="/hablamos/">Pide tu cata digital</a></div></div><div class="footer-bottom"><span>© 2026 Salero Digital</span><span>Digitalizamos con salero, pero con los pies en la tierra.</span></div></div></footer><a class="whatsapp-float" href="https://wa.me/34665688916?text=Hola%2C%20quiero%20hacer%20una%20cata%20digital%20con%20Salero%20Digital." target="_blank" rel="noopener">¿Te hace un café y hablamos?</a>`;
+}
+
+function renderErrorPage(title, message) {
+  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/assets/css/main.css?v=50"></head><body>${renderHeader()}<main class="container" style="padding:9rem 0"><span class="eyebrow">Caso de éxito</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p><p><a class="btn btn-primary" href="/casos-de-exito/">Volver a casos de éxito</a></p></main>${renderFooter()}<script src="/assets/js/helpers.js?v=41"></script></body></html>`;
+}
+
+function valueField(source = {}, keys = [], fallback = '') { for (const key of keys) { if (source && typeof source[key] !== 'undefined' && source[key] !== null && source[key] !== '' && source[key] !== false) return source[key]; } return fallback; }
+function textField(source = {}, keys = [], fallback = '') { return stripHtml(textFromValue(valueField(source, keys, fallback))).trim(); }
+function htmlField(source = {}, keys = []) { return htmlFromValue(valueField(source, keys, '')); }
+function textFromValue(value) { if (value === null || typeof value === 'undefined' || value === false) return ''; if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value); if (Array.isArray(value)) return value.map(textFromValue).filter(Boolean).join(', '); if (typeof value === 'object') return textFromValue(value.rendered || value.raw || value.title || value.name || value.label || value.value || value.text || value.url || value.source_url || ''); return ''; }
+function htmlFromValue(value) { if (!value) return ''; if (typeof value === 'object' && value.rendered) return value.rendered; const text = textFromValue(value).trim(); if (!text) return ''; if (/<[a-z][\s\S]*>/i.test(text)) return text; return text.split(/\n{2,}/).map(paragraph => `<p>${escapeHtml(paragraph).replace(/\n/g, '<br>')}</p>`).join(''); }
+function fieldList(value) { if (!value) return []; if (Array.isArray(value)) return value.map(textFromValue).map(item => item.trim()).filter(Boolean); return textFromValue(value).split(/\n|,/).map(item => item.trim()).filter(Boolean); }
+function normalizeServices(value) { const map = { web: 'Web', seo: 'SEO', ads: 'Publicidad digital', redes: 'Redes sociales', contenido: 'Contenido', email: 'Email marketing', sms: 'SMS', whatsapp: 'WhatsApp', automatizacion: 'Automatización', analitica: 'Analítica', soporte: 'Soporte técnico', streaming: 'Streaming' }; return fieldList(value).map(item => map[item] || item); }
+function mediaUrl(media) { if (!media) return ''; if (typeof media === 'string') { const clean = media.trim(); const absoluteMatch = clean.match(/https?:\/\/[^\s"'<>]+/i); if (absoluteMatch) return absoluteMatch[0].replace('http://cms.webagencia360.com', 'https://cms.webagencia360.com'); if (clean.startsWith('/wp-content/') || clean.startsWith('/uploads/')) return `${CMS_ORIGIN}${clean}`; if (clean.startsWith('wp-content/') || clean.startsWith('uploads/')) return `${CMS_ORIGIN}/${clean}`; return ''; } if (typeof media === 'object') { if (media.url) return mediaUrl(media.url); if (media.source_url) return mediaUrl(media.source_url); if (media.sizes && media.sizes.large) return mediaUrl(media.sizes.large); if (media.sizes && media.sizes.full) return mediaUrl(media.sizes.full); } return ''; }
+function normalizeUrl(value = '') { const clean = textFromValue(value).trim(); return clean || '/hablamos/'; }
+function sanitizeSlug(value = '') { return String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9-]+/g, '-').replace(/^-|-$/g, ''); }
+function stripHtml(value = '') { return String(value || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' '); }
+function escapeHtml(value = '') { return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
+function escapeAttr(value = '') { return escapeHtml(value); }
+function htmlResponse(html, status = 200) { return new Response(html, { status, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store, max-age=0, must-revalidate' } }); }
