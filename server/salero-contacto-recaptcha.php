@@ -1,13 +1,10 @@
 <?php
 /**
  * Handler de contacto para Salero Digital.
- * Ubicación recomendada en producción:
- * https://cms.webagencia360.com/salero-contacto.php
+ * Versión robusta con validación reCAPTCHA vía WordPress HTTP API, cURL y file_get_contents como fallback.
  *
- * Requisitos:
- * 1. Sustituir PENDIENTE_SECRET_KEY_RECAPTCHA por la clave secreta real de Google reCAPTCHA.
- * 2. Subir este archivo a la raíz del WordPress CMS con el nombre salero-contacto.php.
- * 3. Comprobar que wp_mail() funciona correctamente en el CMS.
+ * Subir a la raíz del WordPress CMS con el nombre:
+ * salero-contacto.php
  */
 
 declare(strict_types=1);
@@ -18,12 +15,25 @@ $successUrl = $siteBaseUrl . '/hablamos/gracias/';
 $errorUrl = $siteBaseUrl . '/hablamos/?error=envio#contacto-salero';
 $spamUrl = $siteBaseUrl . '/hablamos/?error=spam#contacto-salero';
 $captchaUrl = $siteBaseUrl . '/hablamos/?error=captcha#contacto-salero';
+
+/**
+ * Poner aquí la SECRET KEY real de la clave reCAPTCHA checkbox.
+ * No poner aquí la site key pública.
+ */
 $recaptchaSecret = '6LfBKSEtAAAAAGZXfyXn1UUBuDk1F_kmL58e2eTC';
 
 function redirect_to(string $url): void
 {
     header('Location: ' . $url, true, 303);
     exit;
+}
+
+function redirect_captcha(string $reason): void
+{
+    global $captchaUrl;
+    $separator = str_contains($captchaUrl, '?') ? '&' : '?';
+    $url = str_replace('#contacto-salero', '', $captchaUrl) . $separator . 'reason=' . rawurlencode($reason) . '#contacto-salero';
+    redirect_to($url);
 }
 
 function post_value(string $key): string
@@ -66,45 +76,112 @@ function is_valid_email_address(string $email): bool
     return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
 }
 
-function verify_recaptcha(string $token, string $secret): bool
+/**
+ * Cargar WordPress antes de validar reCAPTCHA para poder usar wp_remote_post().
+ */
+$wpLoadPaths = [
+    __DIR__ . '/wp-load.php',
+    dirname(__DIR__) . '/wp-load.php',
+];
+
+foreach ($wpLoadPaths as $wpLoadPath) {
+    if (file_exists($wpLoadPath)) {
+        require_once $wpLoadPath;
+        break;
+    }
+}
+
+function verify_recaptcha_detailed(string $token, string $secret): array
 {
     if ($secret === '' || $secret === 'PENDIENTE_SECRET_KEY_RECAPTCHA') {
-        error_log('reCAPTCHA error: secret vacía o placeholder');
-        return false;
+        return ['success' => false, 'reason' => 'secret-placeholder'];
     }
 
     if ($token === '') {
-        error_log('reCAPTCHA error: token vacío');
-        return false;
+        return ['success' => false, 'reason' => 'token-vacio'];
     }
 
-    $payload = http_build_query([
+    $url = 'https://www.google.com/recaptcha/api/siteverify';
+    $payload = [
         'secret' => $secret,
         'response' => $token,
         'remoteip' => $_SERVER['REMOTE_ADDR'] ?? '',
-    ]);
+    ];
 
-    $context = stream_context_create([
-        'http' => [
-            'method' => 'POST',
-            'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
-            'content' => $payload,
-            'timeout' => 8,
-        ],
-    ]);
+    $rawResponse = false;
+    $transport = 'none';
 
-    $response = file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, $context);
+    if (function_exists('wp_remote_post')) {
+        $wpResponse = wp_remote_post($url, [
+            'timeout' => 10,
+            'body' => $payload,
+        ]);
 
-    if ($response === false) {
-        error_log('reCAPTCHA error: no se pudo contactar con Google siteverify');
-        return false;
+        if (!is_wp_error($wpResponse)) {
+            $rawResponse = wp_remote_retrieve_body($wpResponse);
+            $transport = 'wp_remote_post';
+        } else {
+            error_log('reCAPTCHA wp_remote_post error: ' . $wpResponse->get_error_message());
+        }
     }
 
-    error_log('reCAPTCHA response: ' . $response);
+    if ($rawResponse === false && function_exists('curl_init')) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => http_build_query($payload),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 10,
+            CURLOPT_HTTPHEADER => ['Content-Type: application/x-www-form-urlencoded'],
+        ]);
 
-    $result = json_decode($response, true);
+        $rawResponse = curl_exec($ch);
+        if ($rawResponse === false) {
+            error_log('reCAPTCHA cURL error: ' . curl_error($ch));
+        } else {
+            $transport = 'curl';
+        }
+        curl_close($ch);
+    }
 
-    return is_array($result) && !empty($result['success']);
+    if ($rawResponse === false) {
+        $context = stream_context_create([
+            'http' => [
+                'method' => 'POST',
+                'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+                'content' => http_build_query($payload),
+                'timeout' => 10,
+            ],
+        ]);
+
+        $rawResponse = file_get_contents($url, false, $context);
+        if ($rawResponse !== false) {
+            $transport = 'file_get_contents';
+        }
+    }
+
+    if ($rawResponse === false || $rawResponse === '') {
+        error_log('reCAPTCHA error: sin respuesta de Google siteverify');
+        return ['success' => false, 'reason' => 'sin-respuesta-google'];
+    }
+
+    error_log('reCAPTCHA transport: ' . $transport . ' response: ' . $rawResponse);
+
+    $result = json_decode((string) $rawResponse, true);
+    if (!is_array($result)) {
+        return ['success' => false, 'reason' => 'respuesta-json-invalida'];
+    }
+
+    if (!empty($result['success'])) {
+        return ['success' => true, 'reason' => 'ok'];
+    }
+
+    $codes = $result['error-codes'] ?? ['sin-codigo-google'];
+    if (is_array($codes)) {
+        return ['success' => false, 'reason' => implode('-', $codes)];
+    }
+
+    return ['success' => false, 'reason' => (string) $codes];
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -117,8 +194,9 @@ if (post_value('website') !== '') {
 }
 
 $recaptchaToken = post_value('g-recaptcha-response');
-if (!verify_recaptcha($recaptchaToken, $recaptchaSecret)) {
-    redirect_to($captchaUrl);
+$recaptchaCheck = verify_recaptcha_detailed($recaptchaToken, $recaptchaSecret);
+if (empty($recaptchaCheck['success'])) {
+    redirect_captcha($recaptchaCheck['reason'] ?? 'desconocido');
 }
 
 $nombre = clean_text(post_value('Nombre'));
@@ -195,19 +273,6 @@ $headers = [
     'From: Salero Digital <no-reply@webagencia360.com>',
     'Reply-To: ' . $nombre . ' <' . $email . '>',
 ];
-
-// Intentar cargar WordPress para usar wp_mail().
-$wpLoadPaths = [
-    __DIR__ . '/wp-load.php',
-    dirname(__DIR__) . '/wp-load.php',
-];
-
-foreach ($wpLoadPaths as $wpLoadPath) {
-    if (file_exists($wpLoadPath)) {
-        require_once $wpLoadPath;
-        break;
-    }
-}
 
 $sent = false;
 
