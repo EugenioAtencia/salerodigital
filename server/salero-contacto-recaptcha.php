@@ -69,10 +69,12 @@ function is_valid_email_address(string $email): bool
 function verify_recaptcha(string $token, string $secret): bool
 {
     if ($secret === '' || $secret === 'PENDIENTE_SECRET_KEY_RECAPTCHA') {
+        error_log('reCAPTCHA error: secret vacía o placeholder');
         return false;
     }
 
     if ($token === '') {
+        error_log('reCAPTCHA error: token vacío');
         return false;
     }
 
@@ -92,11 +94,16 @@ function verify_recaptcha(string $token, string $secret): bool
     ]);
 
     $response = file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, $context);
+
     if ($response === false) {
+        error_log('reCAPTCHA error: no se pudo contactar con Google siteverify');
         return false;
     }
 
+    error_log('reCAPTCHA response: ' . $response);
+
     $result = json_decode($response, true);
+
     return is_array($result) && !empty($result['success']);
 }
 
