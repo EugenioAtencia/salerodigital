@@ -5,7 +5,7 @@
  * https://cms.webagencia360.com/salero-contacto.php
  *
  * Requisitos:
- * 1. Sustituir PENDIENTE_SECRET_KEY_RECAPTCHA por la clave secreta real de Google reCAPTCHA v2.
+ * 1. Sustituir PENDIENTE_SECRET_KEY_RECAPTCHA por la clave secreta real de Google reCAPTCHA.
  * 2. Subir este archivo a la raíz del WordPress CMS con el nombre salero-contacto.php.
  * 3. Comprobar que wp_mail() funciona correctamente en el CMS.
  */
@@ -13,11 +13,12 @@
 declare(strict_types=1);
 
 $destinationEmail = 'info@eugenioatencia.com';
-$successUrl = 'https://salero.webagencia360.com/hablamos/gracias/';
-$errorUrl = 'https://salero.webagencia360.com/hablamos/?error=envio#contacto-salero';
-$spamUrl = 'https://salero.webagencia360.com/hablamos/?error=spam#contacto-salero';
-$captchaUrl = 'https://salero.webagencia360.com/hablamos/?error=captcha#contacto-salero';
-$recaptchaSecret = '6LdqIiEtAAAAAD9KYMcjWWizjVekFZ8EBBlXkoJ-';
+$siteBaseUrl = 'https://agenciaconsalero.es';
+$successUrl = $siteBaseUrl . '/hablamos/gracias/';
+$errorUrl = $siteBaseUrl . '/hablamos/?error=envio#contacto-salero';
+$spamUrl = $siteBaseUrl . '/hablamos/?error=spam#contacto-salero';
+$captchaUrl = $siteBaseUrl . '/hablamos/?error=captcha#contacto-salero';
+$recaptchaSecret = 'PENDIENTE_SECRET_KEY_RECAPTCHA';
 
 function redirect_to(string $url): void
 {
@@ -100,7 +101,7 @@ function verify_recaptcha(string $token, string $secret): bool
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    redirect_to('https://salero.webagencia360.com/hablamos/');
+    redirect_to($siteBaseUrl . '/hablamos/');
 }
 
 // Honeypot antispam: este campo debe venir vacío.
@@ -141,7 +142,7 @@ if ($privacidad !== 'Sí') {
 }
 
 $subject = 'Nueva cata digital desde Salero Digital';
-$origin = $_SERVER['HTTP_REFERER'] ?? 'https://salero.webagencia360.com/hablamos/';
+$origin = $_SERVER['HTTP_REFERER'] ?? $siteBaseUrl . '/hablamos/';
 $ip = $_SERVER['REMOTE_ADDR'] ?? 'No disponible';
 $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'No disponible';
 
