@@ -107,7 +107,7 @@
           </div>
 
           <div class="contact-form-card">
-            <form id="contact-form-salero" class="contact-form" action="https://cms.webagencia360.com/salero-contacto.php" method="POST">
+            <form class="contact-form" action="https://cms.webagencia360.com/salero-contacto.php" method="POST">
               <div style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
                 <label for="website">No rellenar este campo</label>
                 <input id="website" type="text" name="website" tabindex="-1" autocomplete="off">
@@ -193,7 +193,11 @@
                 </label>
               </div>
 
-              <button class="btn btn-primary g-recaptcha" type="submit" data-sitekey="6LdmJiEtAAAAAOlNx-5B_j3gm8TE1Y6q0pJ2W1YB" data-callback="onSubmit" data-action="submit">Enviar solicitud</button>
+              <div class="contact-form-field is-full contact-recaptcha-field">
+                <div class="g-recaptcha" data-sitekey="RECAPTCHA_SITE_KEY_CHECKBOX"></div>
+              </div>
+
+              <button class="btn btn-primary" type="submit">Enviar solicitud</button>
               <p class="contact-form-note">
                 Al enviar, accederás a una página de gracias. La solicitud llegará al correo de contacto de Salero Digital.
               </p>
@@ -307,14 +311,6 @@
 
   <a class="whatsapp-float" href="https://wa.me/34665688916?text=Hola%2C%20quiero%20hacer%20una%20cata%20digital%20con%20Salero%20Digital." target="_blank" rel="noopener">¿Te hace un café y hablamos?</a>
 
-  <script>
-    function onSubmit(token) {
-      var form = document.getElementById('contact-form-salero');
-      if (form) {
-        form.submit();
-      }
-    }
-  </script>
   <script src="/assets/js/helpers.js?v=39" defer></script>
 </body>
 </html>
