@@ -68,7 +68,7 @@ function is_valid_email_address(string $email): bool
 
 function verify_recaptcha(string $token, string $secret): bool
 {
-    if ($secret === '' || $secret === '6LdmJiEtAAAAAD-ohhMqlihuKlaUCezb4u99tXXG') {
+    if ($secret === '' || $secret === 'PENDIENTE_SECRET_KEY_RECAPTCHA') {
         return false;
     }
 
