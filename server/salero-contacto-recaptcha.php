@@ -17,7 +17,7 @@ $successUrl = 'https://salero.webagencia360.com/hablamos/gracias/';
 $errorUrl = 'https://salero.webagencia360.com/hablamos/?error=envio#contacto-salero';
 $spamUrl = 'https://salero.webagencia360.com/hablamos/?error=spam#contacto-salero';
 $captchaUrl = 'https://salero.webagencia360.com/hablamos/?error=captcha#contacto-salero';
-$recaptchaSecret = 'PENDIENTE_SECRET_KEY_RECAPTCHA';
+$recaptchaSecret = 'AIzaSyBk1HSXRCNip044nwY7pj8mt_DC72vWv-M';
 
 function redirect_to(string $url): void
 {
