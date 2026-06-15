@@ -22,15 +22,21 @@ $captchaUrl = $siteBaseUrl . '/hablamos/?error=captcha#contacto-salero';
  */
 $recaptchaSecret = '6LfBKSEtAAAAAGZXfyXn1UUBuDk1F_kmL58e2eTC';
 
-$handlerVersion = 'salero-contacto-debug-2026-06-15';
+$handlerVersion = 'salero-contacto-debug-visible-v2-2026-06-15';
 
 if (isset($_GET['debug'])) {
     header('Content-Type: text/plain; charset=UTF-8');
+
     echo 'version=' . $handlerVersion . PHP_EOL;
     echo 'file=' . __FILE__ . PHP_EOL;
+    echo 'method=' . ($_SERVER['REQUEST_METHOD'] ?? 'no-method') . PHP_EOL;
     echo 'php=' . PHP_VERSION . PHP_EOL;
     echo 'curl=' . (function_exists('curl_init') ? 'yes' : 'no') . PHP_EOL;
     echo 'allow_url_fopen=' . (ini_get('allow_url_fopen') ? 'yes' : 'no') . PHP_EOL;
+    echo 'wp_load_exists_here=' . (file_exists(__DIR__ . '/wp-load.php') ? 'yes' : 'no') . PHP_EOL;
+    echo 'secret_configurada=' . ($recaptchaSecret !== '' ? 'yes' : 'no') . PHP_EOL;
+    echo 'secret_length=' . strlen($recaptchaSecret) . PHP_EOL;
+
     exit;
 }
 
