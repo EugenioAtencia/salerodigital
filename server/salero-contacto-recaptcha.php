@@ -18,7 +18,7 @@ $successUrl = $siteBaseUrl . '/hablamos/gracias/';
 $errorUrl = $siteBaseUrl . '/hablamos/?error=envio#contacto-salero';
 $spamUrl = $siteBaseUrl . '/hablamos/?error=spam#contacto-salero';
 $captchaUrl = $siteBaseUrl . '/hablamos/?error=captcha#contacto-salero';
-$recaptchaSecret = '6LfBKSEtAAAAAH9VUHLLx3xkj3zUne199FwEAiJB';
+$recaptchaSecret = '6LfBKSEtAAAAAGZXfyXn1UUBuDk1F_kmL58e2eTC';
 
 function redirect_to(string $url): void
 {
