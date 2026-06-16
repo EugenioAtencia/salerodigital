@@ -1,4 +1,181 @@
-export async function onRequest() {
-  const html = '<!doctype html><html lang="es"><head><title>Sector | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Estrategias digitales sectoriales de Salero Digital."><link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/assets/css/main.css?v=50"><link rel="stylesheet" href="/assets/css/sector-detail.css?v=8"><link rel="stylesheet" href="/assets/css/sector-action-layout.css?v=4"><link rel="stylesheet" href="/assets/css/sector-faq-layout.css?v=4"><link rel="stylesheet" href="/assets/css/sector-final-layout.css?v=4"></head><body class="sector-detail-page"><header class="site-header"><div class="container header-inner"><a class="logo logo-wordmark" href="/" aria-label="Salero Digital"><span>Salero Digital</span></a><nav class="nav" aria-label="Menú principal"><a href="/el-menu/">El Menú</a><a href="/nuestros-menus/">Nuestros menús</a><a href="/sectores/" class="is-active" aria-current="page">Sectores</a><a href="/casos-de-exito/">Casos de éxito</a><a href="/la-rebotica/">La Rebotica</a><a class="nav-mobile-contact" href="/hablamos/">¿Hablamos?</a><a class="nav-mobile-cta" href="/hablamos/">Pide tu cata digital</a></nav><div class="header-actions"><a class="nav-contact" href="/hablamos/">¿Hablamos?</a><a class="btn btn-primary" href="/hablamos/">Pide tu cata digital</a><button class="menu-toggle" type="button" data-menu-toggle aria-label="Abrir menú">☰</button></div></div></header><main data-detail data-type="sector"><div class="container section"><div class="loading">Cargando sector desde el CMS...</div></div></main><footer class="footer"><div class="container"><div class="footer-grid"><div><h2>Salero Digital</h2><p>Agencia de aquí, para los de aquí. Estrategia, web, SEO, redes y campañas para negocios que quieren dejar de estar sosos en internet.</p></div><div><h3>Secciones</h3><nav class="footer-nav"><a href="/nuestros-menus/">Nuestros menús</a><a href="/el-menu/">El Menú</a><a href="/sectores/">Sectores</a><a href="/casos-de-exito/">Casos de éxito</a></nav></div><div><h3>Contacto</h3><p>Morón de la Frontera, Sierra Sur y Campiña.</p><a href="/hablamos/">Pide tu cata digital</a></div></div><div class="footer-bottom"><span>© 2026 Salero Digital</span><span>Digitalizamos con salero, pero con los pies en la tierra.</span></div></div></footer><a class="whatsapp-float" href="https://wa.me/34665688916?text=Hola%2C%20quiero%20hacer%20una%20cata%20digital%20con%20Salero%20Digital." target="_blank" rel="noopener">¿Te hace un café y hablamos?</a><script src="/assets/js/config.js?v=7" defer></script><script src="/assets/js/api.js?v=4" defer></script><script src="/assets/js/helpers.js?v=41" defer></script><script src="/assets/js/detail.js?v=4" defer></script></body></html>';
-  return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store, max-age=0, must-revalidate' } });
+const API_BASE = 'https://cms.webagencia360.com/wp-json/wp/v2';
+const SITE_ORIGIN = 'https://agenciaconsalero.es';
+
+export async function onRequestGet({ request, params, env }) {
+  const slug = String(params.slug || '').replace(/^\/+|\/+$/g, '');
+
+  if (!slug || slug === 'detalle') {
+    return env.ASSETS.fetch(request);
+  }
+
+  const assetRequest = new Request(new URL('/sectores/detalle/index.html', request.url).toString(), {
+    method: 'GET',
+    headers: { accept: 'text/html' }
+  });
+
+  const templateResponse = await env.ASSETS.fetch(assetRequest);
+  if (!templateResponse.ok) return templateResponse;
+
+  let html = await templateResponse.text();
+
+  try {
+    const sector = await fetchSector(slug);
+    if (!sector) return tagged(html, 'edge-sector-not-found');
+
+    html = renderSector(html, sector, slug);
+    return new Response(html, {
+      status: 200,
+      headers: {
+        'content-type': 'text/html; charset=UTF-8',
+        'cache-control': 'public, max-age=300, s-maxage=900',
+        'x-salero-render': 'edge-sector-cms'
+      }
+    });
+  } catch (error) {
+    console.error('Salero sector edge render error', error);
+    return tagged(html, 'edge-sector-error');
+  }
+}
+
+async function fetchSector(slug) {
+  const url = new URL(`${API_BASE}/sectores`);
+  url.searchParams.set('slug', slug);
+  url.searchParams.set('_embed', '1');
+
+  const response = await fetch(url.toString(), {
+    headers: { accept: 'application/json' },
+    cf: { cacheTtl: 300, cacheEverything: true }
+  });
+
+  if (!response.ok) throw new Error(`CMS status ${response.status}`);
+  const data = await response.json();
+  return Array.isArray(data) ? data[0] : null;
+}
+
+function renderSector(html, sector, slug) {
+  const f = sector.salero_acf || sector.acf || {};
+  const title = plain(first(f.hero_title, f.titular_seo, sector.title && sector.title.rendered, 'Marketing digital por sectores'));
+  const intro = plain(first(f.hero_text, f.meta_description, sector.excerpt && sector.excerpt.rendered));
+  const metaTitle = plain(first(f.meta_title, title));
+  const metaDescription = plain(first(f.meta_description, intro)).slice(0, 160);
+  const ctaText = plain(first(f.cta_sectorial_texto, 'Pide tu cata digital'));
+  const label = plain(first(f.etiqueta_comercial, labelFor(slug)));
+
+  const main = `<main data-detail data-type="sector" data-prerendered="edge-sector-cms">
+    <section class="sector-detail-hero sector-kind-${attr(kindFor(slug, title))}" aria-labelledby="sector-detail-title">
+      <div class="sector-detail-veil" aria-hidden="true"></div>
+      <div class="sector-detail-gradient" aria-hidden="true"></div>
+      <div class="container sector-detail-hero-inner">
+        <div class="sector-detail-copy">
+          <a class="sector-detail-back" href="/sectores/">Sectores</a>
+          <span class="sector-detail-kicker">${esc(label)}</span>
+          <h1 id="sector-detail-title">${esc(title)}</h1>
+          ${intro ? `<p>${esc(intro)}</p>` : ''}
+          <div class="sector-detail-actions"><a class="btn btn-primary" href="/hablamos/">${esc(ctaText)}</a><a class="btn btn-secondary sector-btn-glass" href="#contenido-sector">Ver estrategia</a></div>
+        </div>
+        <aside class="sector-detail-hero-card"><span class="sector-card-label">${esc(label)}</span><h2>Una estrategia digital adaptada a tu sector.</h2>${list(first(f.hero_card_items, defaultHeroItems(slug)))}</aside>
+      </div>
+    </section>
+    <section class="sector-content-section" id="contenido-sector"><div class="container sector-content-grid"><article class="sector-main-content"><span class="sector-section-kicker">Estrategia sectorial</span>${intro ? `<div class="sector-rich-content sector-lead-content"><p>${esc(intro)}</p></div>` : ''}${textBlock('El reto del sector', f.problema_sector)}${textBlock('La solución de Salero Digital', f.solucion_salero)}${listBlock('Servicios recomendados', f.servicios_recomendados)}${listBlock('Beneficios que buscamos', f.beneficios)}${listBlock('Acciones que podemos activar', f.ejemplos_acciones)}${faqBlock(first(f.faqs_repeater, f.faqs))}</article><aside class="sector-sidebar"><div class="sector-sidebar-card"><span class="sector-section-kicker">Cata digital</span><h2>Qué miramos antes de proponer la receta</h2>${list(['Cómo apareces en Google y Google Maps', 'Qué transmite tu web', 'Cómo comunicas en redes sociales', 'Qué hace tu competencia directa', 'Dónde se pierden oportunidades'])}<a class="btn btn-primary" href="/hablamos/">${esc(ctaText)}</a></div></aside></div></section>
+    <section class="sector-final-cta"><div class="container sector-final-card"><span class="sector-section-kicker">Con salero y con método</span><h2>${esc(plain(first(f.cta_final_titulo, 'Tu negocio ya tiene oficio. Ahora toca que se vea como merece.')))}</h2>${f.cta_final_texto_largo ? `<p>${esc(plain(f.cta_final_texto_largo))}</p>` : ''}<div class="sector-detail-actions"><a class="btn btn-primary" href="/hablamos/">${esc(ctaText)}</a></div></div></section>
+  </main>`;
+
+  html = html.replace(/<main\b[^>]*data-detail[^>]*data-type=["']sector["'][^>]*>[\s\S]*?<\/main>/i, main);
+  html = replaceTitle(html, `${metaTitle} | Salero Digital`);
+  html = replaceMeta(html, metaDescription);
+  html = replaceCanonical(html, `${SITE_ORIGIN}/sectores/${slug}/`);
+  return html;
+}
+
+function tagged(html, value) {
+  return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=UTF-8', 'x-salero-render': value } });
+}
+
+function first(...values) {
+  return values.find((v) => v !== undefined && v !== null && !(typeof v === 'string' && !v.trim()) && !(Array.isArray(v) && !v.length)) || '';
+}
+
+function plain(value) {
+  if (Array.isArray(value)) return value.map(plain).filter(Boolean).join(', ');
+  if (value && typeof value === 'object') return plain(first(value.rendered, value.title, value.name, value.label, value.text, value.value, value.respuesta, value.answer));
+  return String(value || '').replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<style[\s\S]*?<\/style>/gi, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function esc(value) {
+  return String(value || '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+}
+
+function attr(value) { return esc(value).replaceAll('`', '&#096;'); }
+
+function toItems(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value.map((item) => plain(first(item.text, item.label, item.titulo, item.title, item.nombre, item.value, item.item, item.punto, item))).filter(Boolean);
+  return plain(value).split(/\r?\n\s*\r?\n|\r?\n|;|\|/).map((item) => item.replace(/^[-•–]\s*/, '').trim()).filter(Boolean);
+}
+
+function list(value) {
+  const items = toItems(value);
+  return items.length ? `<ul>${items.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>` : '';
+}
+
+function textBlock(title, value) {
+  const text = plain(value);
+  return text ? `<section class="content-block"><h2>${esc(title)}</h2><p>${esc(text)}</p></section>` : '';
+}
+
+function listBlock(title, value) {
+  const html = list(value);
+  return html ? `<section class="content-block"><h2>${esc(title)}</h2>${html}</section>` : '';
+}
+
+function faqBlock(value) {
+  const faqs = parseFaqs(value);
+  if (!faqs.length) return '';
+  return `<section class="content-block content-block-faqs"><h2>Preguntas frecuentes</h2><div class="faq-list">${faqs.map((faq, index) => `<details ${index === 0 ? 'open' : ''}><summary>${esc(faq.q)}</summary><p>${esc(faq.a)}</p></details>`).join('')}</div></section>`;
+}
+
+function parseFaqs(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value.map((item) => ({ q: plain(first(item.pregunta, item.question, item.q, item.titulo, item.title)), a: plain(first(item.respuesta, item.answer, item.a, item.texto, item.content)) })).filter((item) => item.q && item.a);
+  const blocks = String(value || '').trim().split(/\r?\n\s*\r?\n/).map(plain).filter(Boolean);
+  const result = [];
+  for (let i = 0; i < blocks.length; i += 2) if (blocks[i] && blocks[i + 1]) result.push({ q: blocks[i], a: blocks[i + 1] });
+  return result;
+}
+
+function replaceTitle(html, title) {
+  return /<title>[\s\S]*?<\/title>/i.test(html) ? html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(title)}</title>`) : html.replace('</head>', `<title>${esc(title)}</title>\n</head>`);
+}
+
+function replaceMeta(html, description) {
+  if (!description) return html;
+  return /<meta\s+name=["']description["']/i.test(html) ? html.replace(/<meta\s+name=["']description["']\s+content=["'][^"']*["']\s*>/i, `<meta name="description" content="${attr(description)}">`) : html.replace('</head>', `<meta name="description" content="${attr(description)}">\n</head>`);
+}
+
+function replaceCanonical(html, canonical) {
+  return /<link\s+rel=["']canonical["']/i.test(html) ? html.replace(/<link\s+rel=["']canonical["']\s+href=["'][^"']*["']\s*>/i, `<link rel="canonical" href="${attr(canonical)}">`) : html.replace('</head>', `<link rel="canonical" href="${attr(canonical)}">\n</head>`);
+}
+
+function kindFor(slug, title) {
+  const text = `${slug} ${title}`.toLowerCase();
+  if (text.includes('hosteler') || text.includes('turismo')) return 'hosteleria';
+  if (text.includes('comercio') || text.includes('pyme')) return 'comercio';
+  if (text.includes('almazara') || text.includes('aceite') || text.includes('oliva')) return 'aceite';
+  return 'generico';
+}
+
+function labelFor(slug) {
+  const kind = kindFor(slug, '');
+  if (kind === 'hosteleria') return 'Reservas, imagen y reputación';
+  if (kind === 'comercio') return 'Visibilidad local y ventas';
+  if (kind === 'aceite') return 'Origen, producto y marca';
+  return 'Estrategia sectorial';
+}
+
+function defaultHeroItems(slug) {
+  const kind = kindFor(slug, '');
+  if (kind === 'hosteleria') return ['Google Maps más trabajado', 'Redes con intención comercial', 'Campañas para reservas, llamadas y mensajes'];
+  if (kind === 'comercio') return ['Google Maps y búsquedas locales', 'Redes para activar confianza', 'Campañas de cercanía y venta'];
+  if (kind === 'aceite') return ['SEO para producto y territorio', 'Contenido de origen y calidad', 'Campañas para venta y captación'];
+  return ['Visibilidad local más clara', 'Contenido con intención comercial', 'Medición sencilla y útil'];
 }
