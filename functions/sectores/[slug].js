@@ -8,6 +8,16 @@ export async function onRequestGet({ request, params, env }) {
     return env.ASSETS.fetch(request);
   }
 
+  const staticResponse = await env.ASSETS.fetch(
+    new Request(new URL(`/sectores/${slug}/index.html`, request.url).toString(), request)
+  );
+
+  if (staticResponse.ok) {
+    const headers = new Headers(staticResponse.headers);
+    headers.set('x-salero-render', 'ssg-cms-asset');
+    return new Response(staticResponse.body, { status: staticResponse.status, headers });
+  }
+
   const assetRequest = new Request(new URL('/sectores/detalle/index.html', request.url).toString(), {
     method: 'GET',
     headers: { accept: 'text/html' }
