@@ -167,17 +167,17 @@
     });
 
     const url = `${apiBase()}/posts?${params.toString()}`;
-    const response = await fetch(url, {
+    let totalPages = page;
+    const posts = await window.saleroFetchJson(url, {
       cache: 'no-store',
-      headers: { Accept: 'application/json' }
+      headers: { Accept: 'application/json' },
+      onResponse(response) {
+        totalPages = Number(response.headers.get('X-WP-TotalPages')) || page;
+      }
     });
 
-    if (!response.ok) {
-      throw new Error(`No se pudieron cargar los artículos. Estado ${response.status}`);
-    }
-
-    state.totalPages = Number(response.headers.get('X-WP-TotalPages')) || page;
-    return response.json();
+    state.totalPages = totalPages;
+    return posts;
   }
 
   async function loadPosts() {
