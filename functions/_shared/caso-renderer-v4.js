@@ -6,6 +6,7 @@ const SITE_ORIGIN = 'https://agenciaconsalero.es';
 const MEDIA_CACHE = new Map();
 const FETCH_TIMEOUT_MS = 4500;
 const GESTAMP_COMPAT_SLUG = 'gestamp-digital-summit';
+const CMS_DIAGNOSTIC_USER_AGENT = 'SaleroDigital-SiteGround-Diagnostic-v1';
 
 export async function handleCasoRequest(context) {
   const slug = getSlug(context);
@@ -87,11 +88,13 @@ function buildWpUrls(endpoint, params = {}) {
 async function fetchJsonUrl(url) {
   const controller = new AbortController();
   const started = Date.now();
+  const requestTime = new Date().toISOString();
+  const requestMethod = 'GET';
   const timeout = setTimeout(() => controller.abort('timeout'), FETCH_TIMEOUT_MS);
 
   try {
     const response = await fetch(url, {
-      headers: { Accept: 'application/json', 'User-Agent': 'SaleroDigital-Casos-SSR-v4' },
+      headers: { Accept: 'application/json', 'User-Agent': CMS_DIAGNOSTIC_USER_AGENT },
       cf: { cacheTtl: 0, cacheEverything: false },
       signal: controller.signal
     });
@@ -103,6 +106,8 @@ async function fetchJsonUrl(url) {
     const receivedHtml = looksLikeHtml(trimmed, contentType);
     const htmlKind = receivedHtml ? classifyHtmlKind(trimmed, contentType) : '';
     const finalUrl = response.url || url;
+    const responseRequestId = firstHeaderValue(response.headers, ['x-request-id', 'request-id', 'x-correlation-id', 'x-amz-request-id', 'x-amzn-requestid']);
+    const responseRayId = firstHeaderValue(response.headers, ['cf-ray', 'x-ray-id', 'ray-id']);
 
     if (!response.ok) {
       return {
@@ -114,6 +119,12 @@ async function fetchJsonUrl(url) {
           statusText: response.statusText,
           contentType,
           durationMs,
+          requestTime,
+          requestMethod,
+          requestUserAgent: CMS_DIAGNOSTIC_USER_AGENT,
+          requestUrl: url,
+          responseRequestId,
+          responseRayId,
           redirected: response.redirected === true,
           finalHost: hostnameFromUrl(finalUrl),
           receivedHtml,
@@ -133,6 +144,12 @@ async function fetchJsonUrl(url) {
           statusText: response.statusText,
           contentType,
           durationMs,
+          requestTime,
+          requestMethod,
+          requestUserAgent: CMS_DIAGNOSTIC_USER_AGENT,
+          requestUrl: url,
+          responseRequestId,
+          responseRayId,
           redirected: response.redirected === true,
           finalHost: hostnameFromUrl(finalUrl),
           receivedHtml,
@@ -152,6 +169,12 @@ async function fetchJsonUrl(url) {
           statusText: response.statusText,
           contentType,
           durationMs,
+          requestTime,
+          requestMethod,
+          requestUserAgent: CMS_DIAGNOSTIC_USER_AGENT,
+          requestUrl: url,
+          responseRequestId,
+          responseRayId,
           redirected: response.redirected === true,
           finalHost: hostnameFromUrl(finalUrl),
           receivedHtml,
@@ -173,6 +196,12 @@ async function fetchJsonUrl(url) {
           statusText: response.statusText,
           contentType,
           durationMs,
+          requestTime,
+          requestMethod,
+          requestUserAgent: CMS_DIAGNOSTIC_USER_AGENT,
+          requestUrl: url,
+          responseRequestId,
+          responseRayId,
           redirected: response.redirected === true,
           finalHost: hostnameFromUrl(finalUrl),
           receivedHtml,
@@ -479,6 +508,12 @@ function cmsDiagnostic(url, data = {}) {
     statusText: safeDiagnosticText(data.statusText || ''),
     contentType: safeDiagnosticText(data.contentType || ''),
     durationMs: data.durationMs || 0,
+    requestTime: safeDiagnosticText(data.requestTime || ''),
+    requestMethod: safeDiagnosticText(data.requestMethod || ''),
+    requestUserAgent: safeDiagnosticText(data.requestUserAgent || ''),
+    requestUrl: safeDiagnosticUrl(data.requestUrl || ''),
+    responseRequestId: safeDiagnosticText(data.responseRequestId || ''),
+    responseRayId: safeDiagnosticText(data.responseRayId || ''),
     redirected: data.redirected === true,
     finalHost: safeDiagnosticText(data.finalHost || ''),
     timeout: data.timeout === true,
@@ -512,6 +547,12 @@ function withCmsDiagnosticHeaders(response, error, context) {
     headers.set('x-salero-cms-redirected', String(diagnostic.redirected === true));
     headers.set('x-salero-cms-final-host', safeHeaderValue(diagnostic.finalHost || ''));
     headers.set('x-salero-cms-html-kind', sanitizeDiagnosticCode(diagnostic.htmlKind || 'unknown-html'));
+    headers.set('x-salero-cms-request-time', safeHeaderValue(diagnostic.requestTime || ''));
+    headers.set('x-salero-cms-request-method', safeHeaderValue(diagnostic.requestMethod || ''));
+    headers.set('x-salero-cms-request-user-agent', safeHeaderValue(diagnostic.requestUserAgent || ''));
+    headers.set('x-salero-cms-request-url', safeHeaderValue(diagnostic.requestUrl || ''));
+    headers.set('x-salero-cms-response-request-id', safeHeaderValue(diagnostic.responseRequestId || 'none'));
+    headers.set('x-salero-cms-response-ray-id', safeHeaderValue(diagnostic.responseRayId || 'none'));
   }
   return new Response(response.body, {
     status: response.status,
@@ -546,7 +587,28 @@ function safeDiagnosticText(value = '') {
   return String(value).replace(/[\r\n]+/g, ' ').replace(/(authorization|cookie|token|secret|password)[^,;]*/gi, '[redacted]').slice(0, 160);
 }
 function safeHeaderValue(value = '') {
-  return safeDiagnosticText(value).replace(/[^\w .;=+/:,-]/g, '').slice(0, 120);
+  return safeDiagnosticText(value).replace(/[^\w .;=+/:?&%,-]/g, '').slice(0, 220);
+}
+function safeDiagnosticUrl(value = '') {
+  try {
+    const url = new URL(value);
+    if (!/^https?:$/.test(url.protocol)) return '';
+    for (const key of Array.from(url.searchParams.keys())) {
+      if (/(authorization|cookie|token|secret|password|key|nonce)/i.test(key)) {
+        url.searchParams.set(key, '[redacted]');
+      }
+    }
+    return safeDiagnosticText(url.toString());
+  } catch (_) {
+    return '';
+  }
+}
+function firstHeaderValue(headers, names = []) {
+  for (const name of names) {
+    const value = headers.get(name);
+    if (value) return value;
+  }
+  return '';
 }
 function hostnameFromUrl(value = '') {
   try {
