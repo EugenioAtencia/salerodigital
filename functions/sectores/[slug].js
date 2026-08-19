@@ -9,7 +9,7 @@ export async function onRequestGet({ request, params, env }) {
   }
 
   const staticResponse = await env.ASSETS.fetch(
-    new Request(new URL(`/sectores/${slug}/index.html`, request.url).toString(), request)
+    new Request(new URL(`/sectores/${slug}/`, request.url).toString(), request)
   );
 
   if (staticResponse.ok) {
