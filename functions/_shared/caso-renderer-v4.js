@@ -101,6 +101,8 @@ async function fetchJsonUrl(url) {
     const trimmed = text.trim();
     const durationMs = Date.now() - started;
     const receivedHtml = looksLikeHtml(trimmed, contentType);
+    const htmlKind = receivedHtml ? classifyHtmlKind(trimmed, contentType) : '';
+    const finalUrl = response.url || url;
 
     if (!response.ok) {
       return {
@@ -112,7 +114,10 @@ async function fetchJsonUrl(url) {
           statusText: response.statusText,
           contentType,
           durationMs,
+          redirected: response.redirected === true,
+          finalHost: hostnameFromUrl(finalUrl),
           receivedHtml,
+          htmlKind,
           bodySample: safeBodySample(trimmed, receivedHtml)
         })
       };
@@ -128,7 +133,10 @@ async function fetchJsonUrl(url) {
           statusText: response.statusText,
           contentType,
           durationMs,
+          redirected: response.redirected === true,
+          finalHost: hostnameFromUrl(finalUrl),
           receivedHtml,
+          htmlKind,
           bodySample: safeBodySample(trimmed, receivedHtml)
         })
       };
@@ -144,7 +152,10 @@ async function fetchJsonUrl(url) {
           statusText: response.statusText,
           contentType,
           durationMs,
+          redirected: response.redirected === true,
+          finalHost: hostnameFromUrl(finalUrl),
           receivedHtml,
+          htmlKind,
           bodySample: safeBodySample(trimmed, receivedHtml)
         })
       };
@@ -162,7 +173,10 @@ async function fetchJsonUrl(url) {
           statusText: response.statusText,
           contentType,
           durationMs,
+          redirected: response.redirected === true,
+          finalHost: hostnameFromUrl(finalUrl),
           receivedHtml,
+          htmlKind,
           bodySample: safeBodySample(trimmed, receivedHtml),
           errorName: error?.name || '',
           errorClass: error?.constructor?.name || ''
@@ -465,9 +479,12 @@ function cmsDiagnostic(url, data = {}) {
     statusText: safeDiagnosticText(data.statusText || ''),
     contentType: safeDiagnosticText(data.contentType || ''),
     durationMs: data.durationMs || 0,
+    redirected: data.redirected === true,
+    finalHost: safeDiagnosticText(data.finalHost || ''),
     timeout: data.timeout === true,
     networkError: data.networkError === true,
     receivedHtml: data.receivedHtml === true,
+    htmlKind: sanitizeDiagnosticCode(data.htmlKind || ''),
     bodySample: safeDiagnosticText(data.bodySample || ''),
     errorName: safeDiagnosticText(data.errorName || ''),
     errorClass: safeDiagnosticText(data.errorClass || '')
@@ -488,6 +505,14 @@ function withCmsDiagnosticHeaders(response, error, context) {
   const headers = new Headers(response.headers);
   headers.set('x-salero-cms-status', code);
   headers.set('x-salero-cms-error', code);
+  if (code === 'unexpected-html') {
+    const diagnostic = diagnostics.find(item => item?.code === 'unexpected-html') || diagnostics[0] || {};
+    headers.set('x-salero-cms-http-status', String(diagnostic.status || 0));
+    headers.set('x-salero-cms-content-type', safeHeaderValue(diagnostic.contentType || ''));
+    headers.set('x-salero-cms-redirected', String(diagnostic.redirected === true));
+    headers.set('x-salero-cms-final-host', safeHeaderValue(diagnostic.finalHost || ''));
+    headers.set('x-salero-cms-html-kind', sanitizeDiagnosticCode(diagnostic.htmlKind || 'unknown-html'));
+  }
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
@@ -504,12 +529,31 @@ function isPreviewRequest(context) {
 function looksLikeHtml(text = '', contentType = '') {
   return contentType.toLowerCase().includes('text/html') || /^<!doctype html|^<html|<body[\s>]/i.test(String(text).trim());
 }
+function classifyHtmlKind(text = '', contentType = '') {
+  if (!looksLikeHtml(text, contentType)) return '';
+  const sample = String(text || '').slice(0, 2048).toLowerCase();
+  if (/siteground|sgcaptcha|sg-security/.test(sample)) return 'siteground-challenge';
+  if (/cloudflare|cf-chl|cf-ray|checking your browser/.test(sample)) return 'cloudflare-challenge';
+  if (/wordpress|wp-login|wp-content|wp-includes/.test(sample)) return 'wordpress-html';
+  if (/captcha|challenge|access denied|forbidden|blocked|security check|bot verification/.test(sample)) return 'generic-html';
+  if (/<!doctype html|<html|<body[\s>]/.test(sample)) return 'generic-html';
+  return 'unknown-html';
+}
 function safeBodySample(text = '', allow = false) {
-  if (!allow) return '';
-  return safeDiagnosticText(String(text).slice(0, 120).replace(/\s+/g, ' '));
+  return '';
 }
 function safeDiagnosticText(value = '') {
   return String(value).replace(/[\r\n]+/g, ' ').replace(/(authorization|cookie|token|secret|password)[^,;]*/gi, '[redacted]').slice(0, 160);
+}
+function safeHeaderValue(value = '') {
+  return safeDiagnosticText(value).replace(/[^\w .;=+/:,-]/g, '').slice(0, 120);
+}
+function hostnameFromUrl(value = '') {
+  try {
+    return new URL(value).hostname;
+  } catch (_) {
+    return '';
+  }
 }
 function sanitizeDiagnosticCode(value = '') {
   const clean = String(value || 'unknown').toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
