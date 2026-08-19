@@ -8,8 +8,6 @@ const SALERO_CONFIG = {
   endpoints: {
     pages: 'pages',
     posts: 'posts',
-    menus: 'menu-packs',
-    menuPacks: 'menu-packs',
     servicios: 'servicios',
     sectores: 'sectores',
     casos: 'casos-exito'

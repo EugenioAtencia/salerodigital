@@ -1,17 +1,4 @@
 const DETAIL_CONFIG = {
-  menu: {
-    endpoint: SALERO_CONFIG.endpoints.menus,
-    typeLabel: 'Nuestros menús',
-    ctaTextKey: 'cta_principal_texto',
-    ctaUrlKey: 'cta_principal_url',
-    sections: [
-      ['ideal_para', 'Ideal para', 'text'],
-      ['que_incluye', 'Qué incluye', 'list'],
-      ['beneficios', 'Beneficios', 'list'],
-      ['para_quien', 'Para quién está pensado', 'text'],
-      ['faqs', 'Preguntas frecuentes', 'faqs']
-    ]
-  },
   servicio: {
     endpoint: SALERO_CONFIG.endpoints.servicios,
     typeLabel: 'El Menú',
@@ -107,7 +94,6 @@ function currentSlugFromPath() {
   const parts = window.location.pathname.split('/').filter(Boolean);
   if (parts[0] === 'sectores' && parts[1] && parts[1] !== 'detalle') return parts[1];
   if (parts[0] === 'el-menu' && parts[1] && parts[1] !== 'detalle') return parts[1];
-  if (parts[0] === 'nuestros-menus' && parts[1] && parts[1] !== 'detalle') return parts[1];
   if (parts[0] === 'casos-de-exito' && parts[1] && parts[1] !== 'detalle') return parts[1];
   if (parts[0] === 'sector-detail' && parts[1]) return parts[1];
   return '';

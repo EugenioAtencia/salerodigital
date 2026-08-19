@@ -2,7 +2,7 @@
   const cfg = (typeof SALERO_CONFIG !== 'undefined') ? SALERO_CONFIG : {
     apiBase: 'https://cms.webagencia360.com/wp-json/wp/v2',
     cmsApiBase: 'https://cms.webagencia360.com/wp-json/wp/v2',
-    endpoints: { menus:'menu-packs', servicios:'servicios', sectores:'sectores' }
+    endpoints: { servicios:'servicios', sectores:'sectores' }
   };
 
   function endpointUrl(endpoint){
@@ -75,22 +75,6 @@
     </article>`;
   }
 
-  function renderMenuCard(item){
-    const a = acf(item);
-    const name = title(item);
-    const desc = strip(cardText(item)).slice(0,240);
-    const ideal = strip(a.ideal_para || '').slice(0,130);
-    const featured = name.toLowerCase().includes('media') ? ' featured' : '';
-    const tag = name.toLowerCase().includes('media') ? 'Recomendado' : 'Menú';
-    return `<article class="menu-card${featured}">
-      <span class="tag">${tag}</span>
-      <h3>${esc(name)}</h3>
-      <p>${esc(desc)}</p>
-      ${ideal ? `<p><strong>Ideal para:</strong> ${esc(ideal)}</p>` : ''}
-      <a class="card-link editorial-link" href="/nuestros-menus/">Ver ${esc(name)}</a>
-    </article>`;
-  }
-
   function renderSectorCard(item){
     const name = title(item);
     const desc = strip(cardText(item)).slice(0,190);
@@ -118,7 +102,6 @@
 
   function renderHome(){
     renderSection('[data-home-servicios]', cfg.endpoints?.servicios || 'servicios', renderServiceRow, 'servicios');
-    renderSection('[data-home-menus]', [cfg.endpoints?.menus || 'menu-packs','menus','salero/v1/menu-packs'], renderMenuCard, 'menús');
     renderSection('[data-home-sectores]', cfg.endpoints?.sectores || 'sectores', renderSectorCard, 'sectores');
   }
 
