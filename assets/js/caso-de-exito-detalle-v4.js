@@ -1,5 +1,6 @@
 (function () {
   const CMS_ORIGIN = 'https://cms.webagencia360.com';
+  const GESTAMP_COMPAT_SLUG = 'gestamp-digital-summit';
   const root = document.querySelector('[data-caso-detalle]');
   if (!root) return;
 
@@ -151,7 +152,7 @@
     const titleSlug = sanitizeSlug(caseTitle(item));
     const source = acf(item);
     const altSlug = sanitizeSlug(textField(source, ['slug_publico', 'url_slug', 'slug'], ''));
-    return itemSlug === slug || titleSlug === slug || altSlug === slug;
+    return itemSlug === slug || altSlug === slug || (slug === GESTAMP_COMPAT_SLUG && titleSlug === slug);
   }
 
   async function loadCase() {
