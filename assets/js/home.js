@@ -22,9 +22,7 @@
     const url = new URL(endpointUrl(endpoint), window.location.origin);
     url.searchParams.set('per_page','100');
     url.searchParams.set('_embed','1');
-    const res = await fetch(url.toString(), { mode:'cors' });
-    if(!res.ok) throw new Error(`${endpoint} respondió ${res.status}`);
-    const data = await res.json();
+    const data = await window.saleroFetchJson(url.toString(), { mode:'cors', headers: { Accept: 'application/json' } });
     if(!Array.isArray(data)) throw new Error(`${endpoint} no devolvió una lista`);
     return data;
   }
