@@ -24,10 +24,12 @@ export async function handleCasoRequest(context) {
     return htmlResponse(renderCasoPage(item.slug || slug, item), 200);
   } catch (error) {
     if (isCmsUnavailableError(error)) {
-      return handleCaseDetailShell({
+      logCmsFallback(error, context);
+      const response = await handleCaseDetailShell({
         noindex: true,
         message: 'No se ha podido confirmar este caso con WordPress en este momento. Se cargará en modo temporal si el navegador puede recuperar los datos.'
       });
+      return withCmsDiagnosticHeaders(response, error, context);
     }
 
     return htmlResponse(renderErrorPage('No se pudo cargar el caso desde WordPress', error && error.message ? error.message : String(error), { noindex: true }), 500);
@@ -54,14 +56,19 @@ async function fetchCaso(slug) {
 async function fetchWpJson(endpoint, params = {}) {
   const urls = buildWpUrls(endpoint, params);
   const errors = [];
+  const diagnostics = [];
 
   for (const url of urls) {
     const result = await fetchJsonUrl(url);
     if (result.ok) return result.data;
     errors.push(result.error);
+    if (result.diagnostic) diagnostics.push(result.diagnostic);
   }
 
-  throw new Error(errors.filter(Boolean).join(' | ') || `No se pudo leer ${endpoint}`);
+  const error = new Error(errors.filter(Boolean).join(' | ') || `No se pudo leer ${endpoint}`);
+  error.cmsDiagnostics = diagnostics;
+  error.cmsCode = diagnostics[0]?.code || 'unknown';
+  throw error;
 }
 
 function buildWpUrls(endpoint, params = {}) {
@@ -79,6 +86,7 @@ function buildWpUrls(endpoint, params = {}) {
 
 async function fetchJsonUrl(url) {
   const controller = new AbortController();
+  const started = Date.now();
   const timeout = setTimeout(() => controller.abort('timeout'), FETCH_TIMEOUT_MS);
 
   try {
@@ -91,22 +99,91 @@ async function fetchJsonUrl(url) {
     const contentType = response.headers.get('content-type') || '';
     const text = await response.text();
     const trimmed = text.trim();
+    const durationMs = Date.now() - started;
+    const receivedHtml = looksLikeHtml(trimmed, contentType);
 
     if (!response.ok) {
-      return { ok: false, error: `${response.status} en ${url}` };
+      return {
+        ok: false,
+        error: `${response.status} en ${url}`,
+        diagnostic: cmsDiagnostic(url, {
+          code: `http-${response.status}`,
+          status: response.status,
+          statusText: response.statusText,
+          contentType,
+          durationMs,
+          receivedHtml,
+          bodySample: safeBodySample(trimmed, receivedHtml)
+        })
+      };
     }
 
     if (!contentType.toLowerCase().includes('application/json')) {
-      return { ok: false, error: `Content-Type no JSON en ${url}: ${contentType || 'sin definir'}` };
+      return {
+        ok: false,
+        error: `Content-Type no JSON en ${url}: ${contentType || 'sin definir'}`,
+        diagnostic: cmsDiagnostic(url, {
+          code: receivedHtml ? 'unexpected-html' : 'non-json',
+          status: response.status,
+          statusText: response.statusText,
+          contentType,
+          durationMs,
+          receivedHtml,
+          bodySample: safeBodySample(trimmed, receivedHtml)
+        })
+      };
     }
 
     if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) {
-      return { ok: false, error: `Respuesta no JSON en ${url}: ${trimmed.slice(0, 80).replace(/\s+/g, ' ')}` };
+      return {
+        ok: false,
+        error: `Respuesta no JSON en ${url}: ${trimmed.slice(0, 80).replace(/\s+/g, ' ')}`,
+        diagnostic: cmsDiagnostic(url, {
+          code: 'invalid-json',
+          status: response.status,
+          statusText: response.statusText,
+          contentType,
+          durationMs,
+          receivedHtml,
+          bodySample: safeBodySample(trimmed, receivedHtml)
+        })
+      };
     }
 
-    return { ok: true, data: JSON.parse(trimmed) };
+    try {
+      return { ok: true, data: JSON.parse(trimmed) };
+    } catch (error) {
+      return {
+        ok: false,
+        error: `JSON inválido en ${url}: ${error && error.message ? error.message : String(error)}`,
+        diagnostic: cmsDiagnostic(url, {
+          code: 'invalid-json',
+          status: response.status,
+          statusText: response.statusText,
+          contentType,
+          durationMs,
+          receivedHtml,
+          bodySample: safeBodySample(trimmed, receivedHtml),
+          errorName: error?.name || '',
+          errorClass: error?.constructor?.name || ''
+        })
+      };
+    }
   } catch (error) {
-    return { ok: false, error: `${url}: ${error && error.message ? error.message : String(error)}` };
+    const durationMs = Date.now() - started;
+    const timeoutError = isTimeoutError(error);
+    return {
+      ok: false,
+      error: `${url}: ${error && error.message ? error.message : String(error)}`,
+      diagnostic: cmsDiagnostic(url, {
+        code: timeoutError ? 'timeout' : 'network-error',
+        durationMs,
+        timeout: timeoutError,
+        networkError: !timeoutError,
+        errorName: error?.name || '',
+        errorClass: error?.constructor?.name || ''
+      })
+    };
   } finally {
     clearTimeout(timeout);
   }
@@ -377,4 +454,68 @@ function htmlResponse(html, status = 200) { return new Response(html, { status, 
 function isCmsUnavailableError(error) {
   const message = String(error && error.message ? error.message : error || '');
   return /No se pudo leer|Content-Type no JSON|Respuesta no JSON|abort|timeout|500|502|503|504|fetch failed/i.test(message);
+}
+function cmsDiagnostic(url, data = {}) {
+  const parsed = new URL(url);
+  return {
+    url: `${parsed.origin}${parsed.pathname}`,
+    queryKeys: Array.from(parsed.searchParams.keys()).sort(),
+    code: sanitizeDiagnosticCode(data.code),
+    status: data.status || 0,
+    statusText: safeDiagnosticText(data.statusText || ''),
+    contentType: safeDiagnosticText(data.contentType || ''),
+    durationMs: data.durationMs || 0,
+    timeout: data.timeout === true,
+    networkError: data.networkError === true,
+    receivedHtml: data.receivedHtml === true,
+    bodySample: safeDiagnosticText(data.bodySample || ''),
+    errorName: safeDiagnosticText(data.errorName || ''),
+    errorClass: safeDiagnosticText(data.errorClass || '')
+  };
+}
+function logCmsFallback(error, context) {
+  const diagnostics = Array.isArray(error?.cmsDiagnostics) ? error.cmsDiagnostics : [];
+  console.warn('[salero-cms-fallback]', JSON.stringify({
+    environment: isPreviewRequest(context) ? 'preview' : 'production',
+    code: sanitizeDiagnosticCode(error?.cmsCode || diagnostics[0]?.code || 'unknown'),
+    diagnostics
+  }));
+}
+function withCmsDiagnosticHeaders(response, error, context) {
+  if (!isPreviewRequest(context)) return response;
+  const diagnostics = Array.isArray(error?.cmsDiagnostics) ? error.cmsDiagnostics : [];
+  const code = sanitizeDiagnosticCode(error?.cmsCode || diagnostics[0]?.code || 'unknown');
+  const headers = new Headers(response.headers);
+  headers.set('x-salero-cms-status', code);
+  headers.set('x-salero-cms-error', code);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers
+  });
+}
+function isPreviewRequest(context) {
+  try {
+    return new URL(context.request.url).hostname.endsWith('.pages.dev');
+  } catch (_) {
+    return false;
+  }
+}
+function looksLikeHtml(text = '', contentType = '') {
+  return contentType.toLowerCase().includes('text/html') || /^<!doctype html|^<html|<body[\s>]/i.test(String(text).trim());
+}
+function safeBodySample(text = '', allow = false) {
+  if (!allow) return '';
+  return safeDiagnosticText(String(text).slice(0, 120).replace(/\s+/g, ' '));
+}
+function safeDiagnosticText(value = '') {
+  return String(value).replace(/[\r\n]+/g, ' ').replace(/(authorization|cookie|token|secret|password)[^,;]*/gi, '[redacted]').slice(0, 160);
+}
+function sanitizeDiagnosticCode(value = '') {
+  const clean = String(value || 'unknown').toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+  return clean || 'unknown';
+}
+function isTimeoutError(error) {
+  const message = String(error?.message || error || '').toLowerCase();
+  return error?.name === 'AbortError' || message.includes('timeout') || message.includes('abort');
 }
