@@ -1,25 +1,39 @@
+import { handleCaseDetailShell } from './case-detail-shell-v2.js';
+
 const CMS_ORIGIN = 'https://cms.webagencia360.com';
 const CMS_API_BASE = `${CMS_ORIGIN}/wp-json/wp/v2`;
 const SITE_ORIGIN = 'https://agenciaconsalero.es';
 const MEDIA_CACHE = new Map();
+const FETCH_TIMEOUT_MS = 4500;
+const GESTAMP_COMPAT_SLUG = 'gestamp-digital-summit';
+const CMS_USER_AGENT = 'SaleroDigital-Casos-SSR-v4';
 
 export async function handleCasoRequest(context) {
   const slug = getSlug(context);
 
   if (!slug) {
-    return htmlResponse(renderErrorPage('Caso no encontrado', 'No se ha recibido un slug válido para cargar este caso de éxito.'), 404);
+    return htmlResponse(renderErrorPage('Caso no encontrado', 'No se ha recibido un slug válido para cargar este caso de éxito.', { noindex: true }), 404);
   }
 
   try {
     const item = await fetchCaso(slug);
     if (!item) {
-      return htmlResponse(renderErrorPage('Caso no encontrado', `No existe ningún caso publicado con el slug ${escapeHtml(slug)}.`), 404);
+      return htmlResponse(renderErrorPage('Caso no encontrado', `No existe ningún caso publicado con el slug ${escapeHtml(slug)}.`, { noindex: true }), 404);
     }
 
     await hydrateCasoMedia(item);
-    return htmlResponse(renderCasoPage(slug, item), 200);
+    return htmlResponse(renderCasoPage(item.slug || slug, item), 200);
   } catch (error) {
-    return htmlResponse(renderErrorPage('No se pudo cargar el caso desde WordPress', error && error.message ? error.message : String(error)), 500);
+    if (isCmsUnavailableError(error)) {
+      logCmsFallback(error, context);
+      const response = await handleCaseDetailShell({
+        noindex: true,
+        message: 'No se ha podido confirmar este caso con WordPress en este momento. Se cargará en modo temporal si el navegador puede recuperar los datos.'
+      });
+      return withCmsDiagnosticHeaders(response, error, context);
+    }
+
+    return htmlResponse(renderErrorPage('No se pudo cargar el caso desde WordPress', error && error.message ? error.message : String(error), { noindex: true }), 500);
   }
 }
 
@@ -32,24 +46,30 @@ function getSlug(context) {
 async function fetchCaso(slug) {
   const bySlug = await fetchWpJson('casos-exito', { slug, _embed: '1', _t: Date.now() });
   if (Array.isArray(bySlug) && bySlug.length) return bySlug[0];
+  if (slug !== GESTAMP_COMPAT_SLUG) return null;
 
   const collection = await fetchWpJson('casos-exito', { per_page: '100', _embed: '1', _t: Date.now() });
   if (!Array.isArray(collection)) return null;
 
-  return collection.find(item => sanitizeSlug(item.slug) === slug || slugify(itemTitle(item)) === slug || slugify(textField(getAcf(item), ['cliente_nombre', 'nombre_caso', 'cliente'])) === slug) || null;
+  return collection.find(item => slugify(itemTitle(item)) === slug || slugify(textField(getAcf(item), ['cliente_nombre', 'nombre_caso', 'cliente'])) === slug) || null;
 }
 
 async function fetchWpJson(endpoint, params = {}) {
   const urls = buildWpUrls(endpoint, params);
   const errors = [];
+  const diagnostics = [];
 
   for (const url of urls) {
     const result = await fetchJsonUrl(url);
     if (result.ok) return result.data;
     errors.push(result.error);
+    if (result.diagnostic) diagnostics.push(result.diagnostic);
   }
 
-  throw new Error(errors.filter(Boolean).join(' | ') || `No se pudo leer ${endpoint}`);
+  const error = new Error(errors.filter(Boolean).join(' | ') || `No se pudo leer ${endpoint}`);
+  error.cmsDiagnostics = diagnostics;
+  error.cmsCode = diagnostics[0]?.code || 'unknown';
+  throw error;
 }
 
 function buildWpUrls(endpoint, params = {}) {
@@ -66,26 +86,121 @@ function buildWpUrls(endpoint, params = {}) {
 }
 
 async function fetchJsonUrl(url) {
+  const controller = new AbortController();
+  const started = Date.now();
+  const timeout = setTimeout(() => controller.abort('timeout'), FETCH_TIMEOUT_MS);
+
   try {
     const response = await fetch(url, {
-      headers: { Accept: 'application/json', 'User-Agent': 'SaleroDigital-Casos-SSR-v4' },
-      cf: { cacheTtl: 0, cacheEverything: false }
+      headers: { Accept: 'application/json', 'User-Agent': CMS_USER_AGENT },
+      cf: { cacheTtl: 0, cacheEverything: false },
+      signal: controller.signal
     });
 
+    const contentType = response.headers.get('content-type') || '';
     const text = await response.text();
     const trimmed = text.trim();
+    const durationMs = Date.now() - started;
+    const receivedHtml = looksLikeHtml(trimmed, contentType);
+    const htmlKind = receivedHtml ? classifyHtmlKind(trimmed, contentType) : '';
+    const finalUrl = response.url || url;
 
     if (!response.ok) {
-      return { ok: false, error: `${response.status} en ${url}` };
+      return {
+        ok: false,
+        error: `${response.status} en ${url}`,
+        diagnostic: cmsDiagnostic(url, {
+          code: `http-${response.status}`,
+          status: response.status,
+          statusText: response.statusText,
+          contentType,
+          durationMs,
+          redirected: response.redirected === true,
+          finalHost: hostnameFromUrl(finalUrl),
+          receivedHtml,
+          htmlKind,
+          bodySample: safeBodySample(trimmed, receivedHtml)
+        })
+      };
+    }
+
+    if (!contentType.toLowerCase().includes('application/json')) {
+      return {
+        ok: false,
+        error: `Content-Type no JSON en ${url}: ${contentType || 'sin definir'}`,
+        diagnostic: cmsDiagnostic(url, {
+          code: receivedHtml ? 'unexpected-html' : 'non-json',
+          status: response.status,
+          statusText: response.statusText,
+          contentType,
+          durationMs,
+          redirected: response.redirected === true,
+          finalHost: hostnameFromUrl(finalUrl),
+          receivedHtml,
+          htmlKind,
+          bodySample: safeBodySample(trimmed, receivedHtml)
+        })
+      };
     }
 
     if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) {
-      return { ok: false, error: `Respuesta no JSON en ${url}: ${trimmed.slice(0, 80).replace(/\s+/g, ' ')}` };
+      return {
+        ok: false,
+        error: `Respuesta no JSON en ${url}: ${trimmed.slice(0, 80).replace(/\s+/g, ' ')}`,
+        diagnostic: cmsDiagnostic(url, {
+          code: 'invalid-json',
+          status: response.status,
+          statusText: response.statusText,
+          contentType,
+          durationMs,
+          redirected: response.redirected === true,
+          finalHost: hostnameFromUrl(finalUrl),
+          receivedHtml,
+          htmlKind,
+          bodySample: safeBodySample(trimmed, receivedHtml)
+        })
+      };
     }
 
-    return { ok: true, data: JSON.parse(trimmed) };
+    try {
+      return { ok: true, data: JSON.parse(trimmed) };
+    } catch (error) {
+      return {
+        ok: false,
+        error: `JSON inválido en ${url}: ${error && error.message ? error.message : String(error)}`,
+        diagnostic: cmsDiagnostic(url, {
+          code: 'invalid-json',
+          status: response.status,
+          statusText: response.statusText,
+          contentType,
+          durationMs,
+          redirected: response.redirected === true,
+          finalHost: hostnameFromUrl(finalUrl),
+          receivedHtml,
+          htmlKind,
+          bodySample: safeBodySample(trimmed, receivedHtml),
+          errorName: error?.name || '',
+          errorClass: error?.constructor?.name || ''
+        })
+      };
+    }
   } catch (error) {
-    return { ok: false, error: `${url}: ${error && error.message ? error.message : String(error)}` };
+    const durationMs = Date.now() - started;
+    const timeoutError = isTimeoutError(error);
+    return {
+      ok: false,
+      error: `${url}: ${error && error.message ? error.message : String(error)}`,
+      diagnostic: cmsDiagnostic(url, {
+        code: timeoutError ? 'timeout' : 'network-error',
+        durationMs,
+        timeout: timeoutError,
+        networkError: !timeoutError,
+        errorName: error?.name || '',
+        errorClass: error?.constructor?.name || ''
+      })
+    };
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
@@ -273,8 +388,9 @@ function renderFooter() {
   return `  <footer class="footer"><div class="container"><div class="footer-grid"><div><h2>Salero Digital</h2><p>Tu marca, con salero. Agencia digital para negocios que quieren dejar de estar sosos en internet.</p></div><div><h3>El Menú</h3><nav class="footer-nav"><a href="/el-menu/cimientos-digitales/">Cimientos Digitales</a><a href="/el-menu/el-pregonero/">El Pregonero</a><a href="/el-menu/gracia-y-presencia/">Gracia y Presencia</a><a href="/el-menu/el-empujon/">El Empujón</a></nav></div><div><h3>Sectores</h3><nav class="footer-nav"><a href="/sectores/marketing-para-almazaras-aceite/">Almazaras y aceite</a><a href="/sectores/marketing-para-comercios-pymes/">Comercios y pymes</a><a href="/sectores/marketing-para-hosteleria-turismo/">Hostelería y turismo</a></nav></div><div><h3>¿Hablamos?</h3><p>Morón de la Frontera, Sierra Sur y Campiña.</p><a href="/hablamos/">Pide tu cata digital</a></div></div><div class="footer-bottom"><span>© 2026 Salero Digital</span><span>Digitalizamos con salero, pero con los pies en la tierra.</span></div></div></footer><a class="whatsapp-float" href="https://wa.me/34665688916?text=Hola%2C%20quiero%20hacer%20una%20cata%20digital%20con%20Salero%20Digital." target="_blank" rel="noopener">¿Te hace un café y hablamos?</a>`;
 }
 
-function renderErrorPage(title, message) {
-  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/assets/css/main.css?v=50"></head><body>${renderHeader()}<main class="container" style="padding:9rem 0"><span class="eyebrow">Caso de éxito</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p><p><a class="btn btn-primary" href="/casos-de-exito/">Volver a casos de éxito</a></p></main>${renderFooter()}</body></html>`;
+function renderErrorPage(title, message, options = {}) {
+  const robots = options.noindex ? '<meta name="robots" content="noindex, follow">' : '';
+  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">${robots}<link rel="stylesheet" href="/assets/css/main.css?v=50"></head><body>${renderHeader()}<main class="container" style="padding:9rem 0"><span class="eyebrow">Caso de éxito</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p><p><a class="btn btn-primary" href="/casos-de-exito/">Volver a casos de éxito</a></p></main>${renderFooter()}</body></html>`;
 }
 
 function getAcf(item = {}) { return item.salero_acf || item.acf || item.meta || {}; }
@@ -350,3 +466,101 @@ function stripHtml(value = '') { return String(value || '').replace(/<[^>]*>/g, 
 function escapeHtml(value = '') { return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
 function escapeAttr(value = '') { return escapeHtml(value); }
 function htmlResponse(html, status = 200) { return new Response(html, { status, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store, max-age=0, must-revalidate' } }); }
+function isCmsUnavailableError(error) {
+  const message = String(error && error.message ? error.message : error || '');
+  return /No se pudo leer|Content-Type no JSON|Respuesta no JSON|abort|timeout|500|502|503|504|fetch failed/i.test(message);
+}
+function cmsDiagnostic(url, data = {}) {
+  const parsed = new URL(url);
+  return {
+    url: `${parsed.origin}${parsed.pathname}`,
+    queryKeys: Array.from(parsed.searchParams.keys()).sort(),
+    code: sanitizeDiagnosticCode(data.code),
+    status: data.status || 0,
+    statusText: safeDiagnosticText(data.statusText || ''),
+    contentType: safeDiagnosticText(data.contentType || ''),
+    durationMs: data.durationMs || 0,
+    redirected: data.redirected === true,
+    finalHost: safeDiagnosticText(data.finalHost || ''),
+    timeout: data.timeout === true,
+    networkError: data.networkError === true,
+    receivedHtml: data.receivedHtml === true,
+    htmlKind: sanitizeDiagnosticCode(data.htmlKind || ''),
+    bodySample: safeDiagnosticText(data.bodySample || ''),
+    errorName: safeDiagnosticText(data.errorName || ''),
+    errorClass: safeDiagnosticText(data.errorClass || '')
+  };
+}
+function logCmsFallback(error, context) {
+  const diagnostics = Array.isArray(error?.cmsDiagnostics) ? error.cmsDiagnostics : [];
+  console.warn('[salero-cms-fallback]', JSON.stringify({
+    environment: isPreviewRequest(context) ? 'preview' : 'production',
+    code: sanitizeDiagnosticCode(error?.cmsCode || diagnostics[0]?.code || 'unknown'),
+    diagnostics
+  }));
+}
+function withCmsDiagnosticHeaders(response, error, context) {
+  if (!isPreviewRequest(context)) return response;
+  const diagnostics = Array.isArray(error?.cmsDiagnostics) ? error.cmsDiagnostics : [];
+  const code = sanitizeDiagnosticCode(error?.cmsCode || diagnostics[0]?.code || 'unknown');
+  const headers = new Headers(response.headers);
+  headers.set('x-salero-cms-status', code);
+  headers.set('x-salero-cms-error', code);
+  if (code === 'unexpected-html') {
+    const diagnostic = diagnostics.find(item => item?.code === 'unexpected-html') || diagnostics[0] || {};
+    headers.set('x-salero-cms-http-status', String(diagnostic.status || 0));
+    headers.set('x-salero-cms-content-type', safeHeaderValue(diagnostic.contentType || ''));
+    headers.set('x-salero-cms-redirected', String(diagnostic.redirected === true));
+    headers.set('x-salero-cms-final-host', safeHeaderValue(diagnostic.finalHost || ''));
+    headers.set('x-salero-cms-html-kind', sanitizeDiagnosticCode(diagnostic.htmlKind || 'unknown-html'));
+  }
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers
+  });
+}
+function isPreviewRequest(context) {
+  try {
+    return new URL(context.request.url).hostname.endsWith('.pages.dev');
+  } catch (_) {
+    return false;
+  }
+}
+function looksLikeHtml(text = '', contentType = '') {
+  return contentType.toLowerCase().includes('text/html') || /^<!doctype html|^<html|<body[\s>]/i.test(String(text).trim());
+}
+function classifyHtmlKind(text = '', contentType = '') {
+  if (!looksLikeHtml(text, contentType)) return '';
+  const sample = String(text || '').slice(0, 2048).toLowerCase();
+  if (/siteground|sgcaptcha|sg-security/.test(sample)) return 'siteground-challenge';
+  if (/cloudflare|cf-chl|cf-ray|checking your browser/.test(sample)) return 'cloudflare-challenge';
+  if (/wordpress|wp-login|wp-content|wp-includes/.test(sample)) return 'wordpress-html';
+  if (/captcha|challenge|access denied|forbidden|blocked|security check|bot verification/.test(sample)) return 'generic-html';
+  if (/<!doctype html|<html|<body[\s>]/.test(sample)) return 'generic-html';
+  return 'unknown-html';
+}
+function safeBodySample(text = '', allow = false) {
+  return '';
+}
+function safeDiagnosticText(value = '') {
+  return String(value).replace(/[\r\n]+/g, ' ').replace(/(authorization|cookie|token|secret|password)[^,;]*/gi, '[redacted]').slice(0, 160);
+}
+function safeHeaderValue(value = '') {
+  return safeDiagnosticText(value).replace(/[^\w .;=+/:?&%,-]/g, '').slice(0, 220);
+}
+function hostnameFromUrl(value = '') {
+  try {
+    return new URL(value).hostname;
+  } catch (_) {
+    return '';
+  }
+}
+function sanitizeDiagnosticCode(value = '') {
+  const clean = String(value || 'unknown').toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+  return clean || 'unknown';
+}
+function isTimeoutError(error) {
+  const message = String(error?.message || error || '').toLowerCase();
+  return error?.name === 'AbortError' || message.includes('timeout') || message.includes('abort');
+}

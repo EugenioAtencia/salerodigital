@@ -81,7 +81,7 @@ const CASES = {
     description: 'Caso de éxito de comunicación, captación y activación digital para un proyecto de alcance nacional.',
     service: 'Estrategia digital y campañas'
   },
-  'gestamp-digital-summit': {
+  '140': {
     name: 'Gestamp Digital Summit',
     description: 'Caso de éxito de plataforma digital, evento online, contenidos y experiencia de usuario para un entorno corporativo.',
     service: 'Desarrollo web y experiencia digital'
@@ -91,20 +91,10 @@ const CASES = {
     description: 'Caso de éxito de marketing digital, contenidos, campañas y activación comercial para una marca local de mobiliario y decoración.',
     service: 'Marketing digital y campañas'
   },
-  'comercial-vazquez': {
-    name: 'Comercial Vázquez',
-    description: 'Caso de éxito de estrategia de contenidos, redes sociales y posicionamiento digital para una empresa local de electrodomésticos y cocinas.',
-    service: 'Contenido, SEO y redes sociales'
-  },
   'enoro': {
     name: 'ENORO',
     description: 'Caso de éxito de comunicación digital, contenido y marca para un proyecto de aceite de oliva virgen extra.',
     service: 'Contenido y estrategia de marca'
-  },
-  'museo-de-la-cal-de-moron': {
-    name: 'Museo de la Cal de Morón',
-    description: 'Caso de éxito de desarrollo web, optimización técnica y accesibilidad para un proyecto cultural y patrimonial.',
-    service: 'Desarrollo web y optimización técnica'
   }
 };
 

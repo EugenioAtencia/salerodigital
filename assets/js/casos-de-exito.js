@@ -1,65 +1,4 @@
-const SALERO_CASOS_FALLBACK = [
-  {
-    title: 'Gestamp Digital Summit',
-    slug: 'gestamp-digital-summit',
-    sector: 'Industria y formación corporativa',
-    service: 'Desarrollo web, evento digital y experiencia privada',
-    proof: 'Tecnología para un evento corporativo de alta exigencia',
-    excerpt: 'Desarrollamos una experiencia digital privada para centralizar contenidos, sesiones, recursos formativos y comunicación interna de un evento corporativo internacional.',
-    visual: 'Evento corporativo',
-    accent: 'summit'
-  },
-  {
-    title: 'Fundación ONCE',
-    slug: 'fundacion-once',
-    sector: 'Formación, eventos e impacto social',
-    service: 'Campañas digitales multicanal',
-    proof: 'Campañas nacionales con estrategia y segmentación por plataforma',
-    excerpt: 'Estrategia y ejecución de campañas para dar visibilidad a eventos, cursos e iniciativas formativas, adaptando mensaje, público y canal según cada objetivo.',
-    visual: 'Campañas nacionales',
-    accent: 'social'
-  },
-  {
-    title: 'Muebles Sarria',
-    slug: 'muebles-sarria',
-    sector: 'Retail, decoración y climatización',
-    service: 'Google Ads, email, SMS, WhatsApp, contenidos y landings',
-    proof: 'Sistema de captación multicanal para retail local',
-    excerpt: 'Activación de campañas y contenidos para diferentes líneas de negocio, combinando buscadores, redes sociales, email, SMS, WhatsApp y páginas orientadas a conversión.',
-    visual: 'Retail local',
-    accent: 'retail'
-  },
-  {
-    title: 'Comercial Vázquez',
-    slug: 'comercial-vazquez',
-    sector: 'Electrodomésticos, cocinas y comercio local',
-    service: 'Contenidos, campañas, estrategia social y posicionamiento',
-    proof: 'Comunicación digital para productos y servicios de alto valor',
-    excerpt: 'Estrategia de contenidos y comunicación para acercar productos, proyectos de cocina y campañas comerciales a una audiencia local con alta intención de compra.',
-    visual: 'Comercio y cocinas',
-    accent: 'commerce'
-  },
-  {
-    title: 'Enoro',
-    slug: 'enoro',
-    sector: 'Aceite de oliva virgen extra y agroalimentación',
-    service: 'Web, ecommerce, soporte digital y marca',
-    proof: 'Presencia digital para una marca agroalimentaria con producto de origen',
-    excerpt: 'Trabajo digital orientado a reforzar la marca, mejorar su presencia online y acompañar el canal comercial de una empresa agroalimentaria con producto propio.',
-    visual: 'AOVE y origen',
-    accent: 'agro'
-  },
-  {
-    title: 'Museo de la Cal de Morón',
-    slug: 'museo-de-la-cal-de-moron',
-    sector: 'Cultura, turismo y patrimonio',
-    service: 'Web, ecommerce y experiencia digital',
-    proof: 'Digitalización de un proyecto cultural con raíz local',
-    excerpt: 'Mejora de la presencia digital de un espacio cultural y patrimonial, con una estructura preparada para informar, vender, captar visitas y reforzar su valor turístico.',
-    visual: 'Cultura y patrimonio',
-    accent: 'culture'
-  }
-];
+const SALERO_CASOS_FALLBACK = [];
 
 function saleroPlainValue(value = '') {
   if (value === null || typeof value === 'undefined') return '';
@@ -390,12 +329,15 @@ async function renderCasosPage() {
     const endpoint = (SALERO_CONFIG.endpoints && SALERO_CONFIG.endpoints.casos) ? 'casos' : 'casos-exito';
     const items = await getCollection(endpoint);
     const validItems = Array.isArray(items) ? items.filter(Boolean) : [];
-    root.innerHTML = renderCasosCarousel(validItems.length ? validItems : SALERO_CASOS_FALLBACK);
+    if (!validItems.length) {
+      root.innerHTML = '<div class="error">No hay casos de éxito publicados en WordPress en este momento.</div>';
+      return;
+    }
+    root.innerHTML = renderCasosCarousel(validItems);
     initCasosCarousel(root);
   } catch (error) {
-    console.warn('No se pudieron cargar los casos desde WordPress. Se usa contenido provisional.', error);
-    root.innerHTML = renderCasosCarousel(SALERO_CASOS_FALLBACK);
-    initCasosCarousel(root);
+    console.warn('No se pudieron cargar los casos desde WordPress.', error);
+    root.innerHTML = '<div class="error">No se pudieron cargar los casos de éxito desde WordPress. Inténtalo de nuevo más tarde.</div>';
   }
 }
 
