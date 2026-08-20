@@ -59,6 +59,112 @@
   background: rgba(255, 253, 247, .72) !important;
 }
 
+/* Afinado editorial de Sectores: método y cata digital */
+.sector-layout-v2 .se2-method > .container {
+  width: min(calc(100% - 3rem), 1480px) !important;
+  max-width: none !important;
+  margin-inline: auto !important;
+}
+
+.sector-layout-v2 #se2-method-title {
+  max-width: 8.2ch !important;
+  font-size: clamp(2.55rem, 3.45vw, 4.15rem) !important;
+  line-height: .96 !important;
+  letter-spacing: -.052em !important;
+}
+
+.sector-layout-v2 .se2-method-grid {
+  grid-template-columns: minmax(240px, .56fr) minmax(0, 1.44fr) !important;
+  gap: clamp(64px, 7vw, 120px) !important;
+}
+
+.sector-layout-v2 .se2-cata > .container {
+  width: min(calc(100% - 3rem), 1480px) !important;
+  max-width: none !important;
+  margin-inline: auto !important;
+}
+
+.sector-layout-v2 .se2-cata-card {
+  width: 100% !important;
+  max-width: none !important;
+  grid-template-columns: minmax(0, .78fr) minmax(420px, 1.22fr) !important;
+  column-gap: clamp(48px, 7vw, 110px) !important;
+  row-gap: clamp(30px, 4vw, 48px) !important;
+  padding: clamp(42px, 5vw, 76px) !important;
+  align-items: start !important;
+}
+
+.sector-layout-v2 .se2-cata-copy {
+  display: contents !important;
+}
+
+.sector-layout-v2 .se2-cata-copy .se2-eyebrow {
+  grid-column: 1 / -1 !important;
+  grid-row: 1 !important;
+  justify-self: start !important;
+}
+
+.sector-layout-v2 #se2-cata-title {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  font-size: clamp(3.6rem, 5.6vw, 6.9rem) !important;
+  line-height: .9 !important;
+  letter-spacing: -.065em !important;
+  text-wrap: balance !important;
+}
+
+.sector-layout-v2 .se2-cata-copy > p {
+  grid-column: 1 !important;
+  grid-row: 3 !important;
+  align-self: start !important;
+  max-width: 520px !important;
+  margin: 0 !important;
+  font-size: clamp(1.05rem, 1.3vw, 1.2rem) !important;
+  line-height: 1.72 !important;
+}
+
+.sector-layout-v2 .se2-cata-actions {
+  grid-column: 1 !important;
+  grid-row: 4 !important;
+  align-self: start !important;
+  margin-top: 0 !important;
+}
+
+.sector-layout-v2 .se2-cata-list {
+  grid-column: 2 !important;
+  grid-row: 3 / span 2 !important;
+  align-self: start !important;
+}
+
+@media (max-width: 1050px) {
+  .sector-layout-v2 #se2-method-title {
+    max-width: 13ch !important;
+    font-size: clamp(2.5rem, 6.4vw, 3.8rem) !important;
+  }
+
+  .sector-layout-v2 .se2-method-grid,
+  .sector-layout-v2 .se2-cata-card {
+    grid-template-columns: 1fr !important;
+  }
+
+  .sector-layout-v2 .se2-cata-copy .se2-eyebrow,
+  .sector-layout-v2 #se2-cata-title,
+  .sector-layout-v2 .se2-cata-copy > p,
+  .sector-layout-v2 .se2-cata-actions,
+  .sector-layout-v2 .se2-cata-list {
+    grid-column: 1 !important;
+  }
+
+  .sector-layout-v2 .se2-cata-copy .se2-eyebrow { grid-row: 1 !important; }
+  .sector-layout-v2 #se2-cata-title { grid-row: 2 !important; }
+  .sector-layout-v2 .se2-cata-copy > p { grid-row: 3 !important; max-width: 720px !important; }
+  .sector-layout-v2 .se2-cata-actions { grid-row: 4 !important; }
+  .sector-layout-v2 .se2-cata-list { grid-row: 5 !important; }
+}
+
 @media (max-width: 980px) {
   .sector-final-cta {
     padding: 5rem 0 6rem !important;
@@ -85,5 +191,24 @@
 
   .sector-final-card .sector-detail-actions {
     align-items: stretch !important;
+  }
+
+  .sector-layout-v2 .se2-method > .container,
+  .sector-layout-v2 .se2-cata > .container {
+    width: calc(100% - 2rem) !important;
+  }
+
+  .sector-layout-v2 #se2-method-title {
+    max-width: none !important;
+    font-size: clamp(2.35rem, 11vw, 3.4rem) !important;
+  }
+
+  .sector-layout-v2 #se2-cata-title {
+    font-size: clamp(2.75rem, 13vw, 4.2rem) !important;
+  }
+
+  .sector-layout-v2 .se2-cata-card {
+    padding: 26px !important;
+    row-gap: 26px !important;
   }
 }
