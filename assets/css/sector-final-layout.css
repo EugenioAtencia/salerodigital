@@ -59,6 +59,40 @@
   background: rgba(255, 253, 247, .72) !important;
 }
 
+/* CTA visual para las tarjetas de servicios. La tarjeta completa sigue siendo el enlace. */
+.sector-layout-v2 .se2-service-card {
+  min-height: 270px !important;
+  padding-bottom: 82px !important;
+}
+
+.sector-layout-v2 .se2-service-card::before {
+  content: "Ver servicio  →";
+  position: absolute;
+  left: clamp(25px, 3vw, 34px);
+  bottom: 28px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--se2-ink);
+  color: var(--se2-lime);
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: .78rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  transition: transform .2s ease, background .2s ease, color .2s ease;
+}
+
+.sector-layout-v2 .se2-service-card:hover::before,
+.sector-layout-v2 .se2-service-card:focus-visible::before {
+  transform: translateX(5px);
+  background: var(--se2-lime);
+  color: var(--se2-ink);
+}
+
 /* Afinado editorial de Sectores: método y cata digital */
 .sector-layout-v2 .se2-method > .container {
   width: min(calc(100% - 3rem), 1480px) !important;
@@ -210,5 +244,15 @@
   .sector-layout-v2 .se2-cata-card {
     padding: 26px !important;
     row-gap: 26px !important;
+  }
+
+  .sector-layout-v2 .se2-service-card {
+    min-height: 245px !important;
+    padding-bottom: 76px !important;
+  }
+
+  .sector-layout-v2 .se2-service-card::before {
+    left: 24px;
+    bottom: 24px;
   }
 }
