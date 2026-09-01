@@ -12,10 +12,11 @@ export async function onRequestGet({ request, params, env }) {
     new Request(new URL(`/sectores/${slug}/`, request.url).toString(), request)
   );
 
-  if (staticResponse.ok) {
+  const staticHtml = staticResponse.ok ? await staticResponse.text() : '';
+  if (isExactSectorAsset(staticResponse, staticHtml, slug)) {
     const headers = new Headers(staticResponse.headers);
     headers.set('x-salero-render', 'ssg-cms-asset');
-    return new Response(staticResponse.body, { status: staticResponse.status, headers });
+    return new Response(staticHtml, { status: staticResponse.status, headers });
   }
 
   const assetRequest = new Request(new URL('/sectores/detalle/index.html', request.url).toString(), {
@@ -30,7 +31,7 @@ export async function onRequestGet({ request, params, env }) {
 
   try {
     const sector = await fetchSector(slug);
-    if (!sector) return tagged(html, 'edge-sector-not-found');
+    if (!sector) return renderNotFound(slug);
 
     html = renderSector(html, sector, slug);
     return new Response(html, {
@@ -43,7 +44,7 @@ export async function onRequestGet({ request, params, env }) {
     });
   } catch (error) {
     console.error('Salero sector edge render error', error);
-    return tagged(html, 'edge-sector-error');
+    return renderUnavailable();
   }
 }
 
@@ -97,8 +98,75 @@ function renderSector(html, sector, slug) {
   return html;
 }
 
-function tagged(html, value) {
-  return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=UTF-8', 'x-salero-render': value } });
+function isExactSectorAsset(response, html, slug) {
+  if (!response.ok) return false;
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.toLowerCase().includes('text/html')) return false;
+
+  const canonical = `${SITE_ORIGIN}/sectores/${slug}/`;
+  return String(html || '').includes(`rel="canonical" href="${canonical}"`);
+}
+
+function renderNotFound(slug) {
+  const html = `<!doctype html>
+<html lang="es">
+<head>
+  <title>Sector no encontrado | Salero Digital</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, follow">
+  <link rel="stylesheet" href="/assets/css/main.css?v=50">
+</head>
+<body>
+  <main class="container section">
+    <div class="error">
+      <h1>Sector no encontrado</h1>
+      <p>No existe ningún sector publicado con el slug ${esc(slug)}.</p>
+      <p><a class="btn btn-primary" href="/sectores/">Volver a sectores</a></p>
+    </div>
+  </main>
+</body>
+</html>`;
+
+  return new Response(html, {
+    status: 404,
+    headers: {
+      'content-type': 'text/html; charset=UTF-8',
+      'cache-control': 'no-store, max-age=0, must-revalidate',
+      'x-salero-render': 'edge-sector-not-found'
+    }
+  });
+}
+
+function renderUnavailable() {
+  const html = `<!doctype html>
+<html lang="es">
+<head>
+  <title>Sector temporalmente no disponible | Salero Digital</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, follow">
+  <link rel="stylesheet" href="/assets/css/main.css?v=50">
+</head>
+<body>
+  <main class="container section">
+    <div class="error">
+      <h1>Sector temporalmente no disponible</h1>
+      <p>No se ha podido confirmar este sector con WordPress en este momento.</p>
+      <p><a class="btn btn-primary" href="/sectores/">Volver a sectores</a></p>
+    </div>
+  </main>
+</body>
+</html>`;
+
+  return new Response(html, {
+    status: 503,
+    headers: {
+      'content-type': 'text/html; charset=UTF-8',
+      'cache-control': 'no-store, max-age=0, must-revalidate',
+      'x-salero-render': 'edge-sector-error'
+    }
+  });
 }
 
 function first(...values) {
