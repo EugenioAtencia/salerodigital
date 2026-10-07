@@ -58,6 +58,11 @@ export async function renderCollections(root, collections) {
   }
   const render = await createRenderers(root);
   const output = new Map();
+  let home = await readFile(path.join(root, 'index.html'), 'utf8');
+  const emptyHome = '<div class="error">Todavía no hay contenido publicado en WordPress.</div>';
+  home = replaceRoot(home, 'data-home-servicios', render.homeServices(collections.servicios) || emptyHome);
+  home = replaceRoot(home, 'data-home-sectores', render.homeSectors(collections.sectores) || emptyHome);
+  output.set('index.html', home);
   for (const [directory, endpoint, label] of [['el-menu', 'servicios', 'Servicio'], ['sectores', 'sectores', 'Sector'], ['casos-de-exito', 'casos-exito', 'Caso']]) {
     const file = `${directory}/index.html`, items = collections[endpoint];
     let html = await readFile(path.join(root, file), 'utf8');
@@ -88,7 +93,7 @@ export async function renderCollections(root, collections) {
 
 export async function generate({ root = process.cwd(), fetchOptions = {}, dryRun = false } = {}) {
   // No output is touched until ALL CMS collections and ALL rendered documents validate.
-  await Promise.all(['el-menu', 'sectores', 'casos-de-exito', 'la-rebotica'].map(directory => readFile(path.join(root, directory, 'index.html'), 'utf8')));
+  await Promise.all(['', 'el-menu', 'sectores', 'casos-de-exito', 'la-rebotica'].map(directory => readFile(path.join(root, directory, 'index.html'), 'utf8')));
   const collections = await fetchCollections(fetchOptions);
   const output = await renderCollections(root, collections);
   if (!dryRun) {

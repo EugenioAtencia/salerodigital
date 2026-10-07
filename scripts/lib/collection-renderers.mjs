@@ -17,7 +17,7 @@ export function plain(value = '') {
 // Compile only trusted, existing card functions, not CMS content or page scripts.
 // Reusing their templates keeps SSG and browser markup in step without a framework.
 export async function createRenderers(root) {
-  const [helpers, collection, cases, blog] = await Promise.all(['helpers.js', 'collection.js', 'casos-de-exito.js', 'blog.js'].map(file => readFile(path.join(root, 'assets/js', file), 'utf8')));
+  const [helpers, collection, cases, blog, home] = await Promise.all(['helpers.js', 'collection.js', 'casos-de-exito.js', 'blog.js', 'home.js'].map(file => readFile(path.join(root, 'assets/js', file), 'utf8')));
   const document = { createElement() {
     return { innerHTML: '', get textContent() { return plain(this.innerHTML); }, querySelectorAll() {
       const element = this;
@@ -34,7 +34,13 @@ export async function createRenderers(root) {
   vm.runInContext(sections.join('\n'), context, { timeout: 1000 });
   const blogContext = vm.createContext({ document, Intl, Date, escapeHtml: esc, state: { activeCategory: 'all' } });
   vm.runInContext(blog.slice(blog.indexOf('  function stripHtml'), blog.indexOf('  function renderFilters')), blogContext, { timeout: 1000 });
+  const homeContext = vm.createContext({ document, stripHtml: context.stripHtml, escapeHtml: context.escapeHtml });
+  const homeStart = home.indexOf('  function strip('), homeEnd = home.indexOf('  async function renderSection(');
+  if (homeStart < 0 || homeEnd <= homeStart) throw new Error('Home renderer boundaries missing');
+  vm.runInContext(home.slice(homeStart, homeEnd), homeContext, { timeout: 1000 });
   return {
+    homeServices(items) { return items.map((item, index) => homeContext.renderServiceRow(item, index)).join(''); },
+    homeSectors(items) { return items.map(item => homeContext.renderSectorCard(item)).join(''); },
     cards(items, base, label) { return items.map(item => context.renderCard(item, base, context.collectionCardLabel(item, base, label))).join(''); },
     cases(items) { return context.renderCasosCarousel(items); },
     posts(items) { return items.map((item, index) => blogContext.cardTemplate(item, index)).join(''); },
