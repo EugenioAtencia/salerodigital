@@ -91,11 +91,12 @@ export async function renderCollections(root, collections) {
   return output;
 }
 
-export async function generate({ root = process.cwd(), fetchOptions = {}, dryRun = false } = {}) {
+export async function generate({ root = process.cwd(), fetchOptions = {}, dryRun = false, beforeWrite = async () => {} } = {}) {
   // No output is touched until ALL CMS collections and ALL rendered documents validate.
   await Promise.all(['', 'el-menu', 'sectores', 'casos-de-exito', 'la-rebotica'].map(directory => readFile(path.join(root, directory, 'index.html'), 'utf8')));
   const collections = await fetchCollections(fetchOptions);
   const output = await renderCollections(root, collections);
+  await beforeWrite({ collections, output });
   if (!dryRun) {
     for (const [file, html] of output) {
       await mkdir(path.dirname(path.join(root, file)), { recursive: true });

@@ -28,7 +28,7 @@ No abras los archivos directamente con file:// porque algunas peticiones fetch p
 Esta versión sirve para validar la arquitectura headless. Para producción SEO conviene evolucionarla a Astro o Next para generar HTML estático con metadatos únicos por URL.
 
 
-## Colecciones SSG — fase 1 y extensión Home en Preview
+## Colecciones SSG — fase 1 y Home aprobadas
 
 Requiere Node.js 22 o posterior, sin dependencias npm. WordPress sigue siendo la
 fuente de servicios, sectores, casos y artículos. Los HTML publicados son resultados
@@ -66,12 +66,10 @@ Los casos se muestran en flujo normal antes de inicializar el carrusel; una regl
 local en su HTML deja de aplicarse cuando la inicialización termina. No se cambia
 ningún archivo CSS.
 
-Esta fase conserva el comando de build vacío de Pages: el commit de Preview
-incluye los HTML de las cuatro matrices y Home con contenido real. Todavía NO hay Deploy Hook,
-MU-plugin, webhook, build de producción ni actualización editorial automática.
-En la fase siguiente deberá conectarse el generador al build y establecerse la
-automatización con reintentos. Hasta entonces, una edición CMS requiere regenerar
-y publicar explícitamente el artefacto; no queda sincronizada automáticamente.
+Producción conserva el comando de build vacío y la instantánea HTML aprobada.
+La Fase 2A prepara un build editorial y un MU-plugin portable en
+`codex/cms-auto-deploy`, sin activarlos en producción. No hay Deploy Hook real ni
+MU-plugin instalado. Véase [preparación y activación posterior](docs/editorial-automation.md).
 
 Validación de fallo: la simulación genera una versión válida en una carpeta
 temporal, provoca un 500 en la última colección y comprueba que todos los HTML
@@ -80,5 +78,19 @@ timeout, errores HTTP, JSON inválido, datos incompletos, duplicados, schema,
 middleware y conservación del HTML por los clientes.
 Incluye Home: cuatro servicios, tres sectores, enlaces únicos, equivalencia exacta
 con sus renderers dinámicos, inicializaciones repetidas sin fetch ni duplicación
-y conservación de `index.html` ante un fallo tardío del CMS. La extensión Home se
-revisa en `codex/home-ssg`; no se integra en `main` hasta su aprobación.
+y conservación de `index.html` ante un fallo tardío del CMS. La fase de renderizado HTML está integrada en `main`.
+
+## Preparación editorial — Fase 2A
+
+```sh
+npm test
+php -l integrations/wordpress/salero-pages-publish.php
+php tests/editorial-mu-plugin-simulation.php
+php tests/editorial-mu-plugin-simulation.php --disabled
+```
+
+Build propuesto para Fase 2B: `node scripts/build-editorial-ssg.mjs`. Exige el
+endpoint de revisión del MU-plugin y aborta si falta. Solo en el Preview 2A se usa
+`node scripts/build-editorial-ssg.mjs --snapshot-check`, con dos lecturas completas
+del CMS; no equivale a activar el control editorial final. No mergear ni instalar
+el plugin como parte de esta preparación.

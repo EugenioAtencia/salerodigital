@@ -1,0 +1,10 @@
+{
+  "name": "salero-editorial-build",
+  "private": true,
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "postinstall": "node scripts/pages-preview-build.mjs",
+    "build": "node scripts/build-editorial-ssg.mjs",
+    "test": "node scripts/test-editorial.mjs"
+  }
+}
