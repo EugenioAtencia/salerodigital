@@ -91,12 +91,17 @@ export async function renderCollections(root, collections) {
   return output;
 }
 
-export async function generate({ root = process.cwd(), fetchOptions = {}, dryRun = false } = {}) {
+export async function generate({ root = process.cwd(), fetchOptions = {}, dryRun = false, beforeWrite = async () => {}, onStage = () => {} } = {}) {
   // No output is touched until ALL CMS collections and ALL rendered documents validate.
   await Promise.all(['', 'el-menu', 'sectores', 'casos-de-exito', 'la-rebotica'].map(directory => readFile(path.join(root, directory, 'index.html'), 'utf8')));
+  onStage('cms-read-1');
   const collections = await fetchCollections(fetchOptions);
+  onStage('ssg-generation', { counts: Object.fromEntries(ENDPOINTS.map(key => [key, collections[key].length])) });
   const output = await renderCollections(root, collections);
+  onStage('validation', { files: [...output.keys()] });
+  await beforeWrite({ collections, output });
   if (!dryRun) {
+    onStage('write-output');
     for (const [file, html] of output) {
       await mkdir(path.dirname(path.join(root, file)), { recursive: true });
       await writeFile(path.join(root, file), html);

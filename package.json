@@ -1,0 +1,9 @@
+{
+  "name": "salero-editorial-build",
+  "private": true,
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "node scripts/build-editorial-ssg.mjs",
+    "test": "node scripts/test-editorial.mjs"
+  }
+}
