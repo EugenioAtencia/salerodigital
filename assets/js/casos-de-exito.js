@@ -304,6 +304,7 @@ function initCasosCarousel(root) {
 
   renderDots();
   goTo(0);
+  carousel.dataset.enhanced = 'true';
   start();
 
   prev && prev.addEventListener('click', () => { stop(); goTo(index - 1); start(); });
@@ -324,6 +325,10 @@ function initCasosCarousel(root) {
 async function renderCasosPage() {
   const root = document.querySelector('[data-casos]');
   if (!root) return;
+  if (root.dataset.ssg === 'collections') {
+    initCasosCarousel(root);
+    return;
+  }
   root.innerHTML = '<div class="loading">Cargando casos de éxito desde el CMS...</div>';
   try {
     const endpoint = (SALERO_CONFIG.endpoints && SALERO_CONFIG.endpoints.casos) ? 'casos' : 'casos-exito';

@@ -6,11 +6,13 @@
   const filterbar = document.getElementById('rbFilterbar');
   const loadMoreBtn = document.getElementById('rbLoadMore');
 
+  const ssgElement = document.getElementById('salero-blog-data');
+  const ssg = ssgElement ? JSON.parse(ssgElement.textContent) : null;
   const state = {
-    page: 1,
+    page: ssg ? ssg.page : 1,
     perPage: 12,
-    totalPages: 1,
-    posts: [],
+    totalPages: ssg ? ssg.totalPages : 1,
+    posts: ssg ? ssg.posts : [],
     activeCategory: 'all',
     loading: false
   };
@@ -83,7 +85,7 @@
   }
 
   function cardTemplate(post, index) {
-    const title = sanitizeHtml(post.title && post.title.rendered ? post.title.rendered : 'Artículo sin título');
+    const title = escapeHtml(stripHtml(post.title && post.title.rendered ? post.title.rendered : 'Artículo sin título'));
     const excerpt = stripHtml(post.excerpt && post.excerpt.rendered ? post.excerpt.rendered : '').slice(0, 170);
     const image = featuredImage(post);
     const cat = primaryCategory(post);
@@ -93,16 +95,16 @@
 
     return `
       <article class="rb-post-card ${isFeatured ? 'rb-post-card--featured' : ''}" data-categories="${cats}">
-        <a class="rb-post-card__media" href="${articleUrl(post)}" aria-label="Leer ${stripHtml(title)}">
-          ${image ? `<img src="${image.url}" alt="${image.alt}" loading="${isFeatured ? 'eager' : 'lazy'}">` : `<span class="rb-post-card__fallback" aria-hidden="true">SD</span>`}
+        <a class="rb-post-card__media" href="${articleUrl(post)}" aria-label="Leer ${escapeHtml(stripHtml(title))}">
+          ${image ? `<img src="${escapeHtml(image.url)}" alt="${escapeHtml(image.alt)}" loading="${isFeatured ? 'eager' : 'lazy'}">` : `<span class="rb-post-card__fallback" aria-hidden="true">SD</span>`}
         </a>
         <div class="rb-post-card__body">
           <div class="rb-post-card__meta">
-            ${cat ? `<span class="rb-post-card__cat">${cat.name}</span>` : '<span class="rb-post-card__cat">La Rebotica</span>'}
-            ${date ? `<time datetime="${post.date}">${date}</time>` : ''}
+            ${cat ? `<span class="rb-post-card__cat">${escapeHtml(cat.name)}</span>` : '<span class="rb-post-card__cat">La Rebotica</span>'}
+            ${date ? `<time datetime="${escapeHtml(post.date)}">${date}</time>` : ''}
           </div>
           <h3><a href="${articleUrl(post)}">${title}</a></h3>
-          ${excerpt ? `<p>${excerpt}${excerpt.length >= 170 ? '...' : ''}</p>` : ''}
+          ${excerpt ? `<p>${escapeHtml(excerpt)}${excerpt.length >= 170 ? '...' : ''}</p>` : ''}
           <a class="rb-post-card__link" href="${articleUrl(post)}">Leer artículo</a>
         </div>
       </article>
@@ -121,7 +123,7 @@
 
     const buttons = ['<button class="rb-filter is-active" type="button" data-category="all">Todos</button>'];
     categories.forEach((name, id) => {
-      buttons.push(`<button class="rb-filter" type="button" data-category="${id}">${name}</button>`);
+      buttons.push(`<button class="rb-filter" type="button" data-category="${id}">${escapeHtml(name)}</button>`);
     });
 
     filterbar.innerHTML = buttons.join('');
@@ -220,7 +222,35 @@
     });
   }
 
-  if (loadMoreBtn) {
+  if (loadMoreBtn && ssg) {
+    let incrementalFailed = false;
+    loadMoreBtn.addEventListener('click', async (event) => {
+      if (incrementalFailed || state.loading || !loadMoreBtn.getAttribute('href')) return;
+      event.preventDefault();
+      state.loading = true;
+      try {
+        const response = await fetch(loadMoreBtn.href);
+        if (!response.ok || !(response.headers.get('Content-Type') || '').includes('text/html')) throw new Error('No se pudo cargar la página');
+        const next = new DOMParser().parseFromString(await response.text(), 'text/html');
+        const payload = JSON.parse(next.getElementById('salero-blog-data').textContent);
+        if (payload.page !== state.page + 1 || !Array.isArray(payload.posts)) throw new Error('Paginación no válida');
+        const known = new Set(state.posts.map(post => post.slug));
+        if (payload.posts.some(post => known.has(post.slug))) throw new Error('La colección ha cambiado; usa la navegación HTML');
+        state.posts = state.posts.concat(payload.posts);
+        state.page = payload.page;
+        state.totalPages = payload.totalPages;
+        renderFilters(); renderPosts();
+        const nextLink = next.getElementById('rbLoadMore');
+        if (nextLink) loadMoreBtn.href = nextLink.getAttribute('href');
+        else loadMoreBtn.hidden = true;
+        setStatus('');
+      } catch (error) {
+        incrementalFailed = true;
+        // The next click follows the ordinary link; keep the valid cards.
+        setStatus('No se han podido cargar más artículos. Puedes abrir la siguiente página.', true);
+      } finally { state.loading = false; }
+    });
+  } else if (loadMoreBtn) {
     loadMoreBtn.addEventListener('click', () => {
       if (state.page < state.totalPages) {
         state.page += 1;
@@ -229,5 +259,6 @@
     });
   }
 
-  loadPosts();
+  if (ssg) { renderFilters(); setStatus(''); }
+  else loadPosts();
 })();

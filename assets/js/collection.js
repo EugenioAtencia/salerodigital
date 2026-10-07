@@ -1,6 +1,6 @@
 async function renderCollectionPage() {
   const root = document.querySelector('[data-collection]');
-  if (!root) return;
+  if (!root || root.dataset.ssg === 'collections') return;
 
   const endpoint = root.dataset.endpoint;
   const basePath = root.dataset.basePath || '';
