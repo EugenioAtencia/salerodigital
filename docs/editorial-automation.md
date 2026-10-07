@@ -43,15 +43,20 @@ node scripts/build-editorial-ssg.mjs --snapshot-check
 
 Es el mismo pipeline con dos lecturas completas comparadas, sin revisión del servidor.
 Es un modo explícito de preparación, **no una garantía de atomicidad editorial final**.
-Pages conserva su build command vacío: la instalación npm automática ejecuta el
-`postinstall` de este paquete, condicionado a `CF_PAGES=1` y a la rama exacta
-`codex/cms-auto-deploy`. Solo ese Preview arranca el build anterior. En local y `main`
-el bootstrap no hace nada. Esto permite probar sin editar ajustes compartidos.
-La prueba exige ver el generador en logs y `salero-build.json` con SHA/rama correctos;
-publicar simplemente los HTML guardados en Git no sirve como validación.
+Producción `salerodigital` conserva el build command vacío. La validación usa el
+proyecto separado `salerodigital-staging`, con comando explícito:
+`node scripts/pages-preview-build.mjs`. El intento histórico de arrancar mediante
+`postinstall` en el proyecto sin build command no funcionó: Pages omitía instalación
+y build. Staging sí instala npm; mantener `postinstall` duplicaría el pipeline.
+Se ha retirado. npm solo instala; el Build command es el único punto de entrada.
+La prueba exige logs y `salero-build.json` con SHA/rama correctos. Los diagnósticos
+son códigos y motivos fijos, etapa y colección; nunca cuerpos HTTP/URLs/credenciales.
+El recibo incluye estado de tests, snapshot y éxito. El error original de staging
+no tenía diagnóstico interno; una ejecución local idéntica pasó, por lo que no se
+atribuye retrospectivamente a una colección ni al CMS sin evidencia.
 
-En 2B, retirar este bootstrap de Preview antes de integrar/configurar el comando
-final para evitar dos ejecuciones. Conservar el build normal con revisión obligatoria.
+En 2B, sustituir el comando de staging por el build normal con revisión obligatoria
+únicamente tras aprobación y coordinación del endpoint.
 Nunca configurar `--snapshot-check` como build de producción automatizado.
 
 ## Consistencia y fallos
@@ -189,7 +194,7 @@ No sustituyen una prueba integrada de hooks/cron/ACF/cache reales, reservada a 2
 1. Revisar diff/Preview, comprobar main y aprobar integración; no hacerlo en 2A.
 2. Confirmar ruta física, PHP/WordPress, almacenamiento privado, caché REST y cron.
 3. Preparar plugin en destino relativo confirmado y constantes con enabled=false.
-4. Retirar bootstrap 2A, integrar código aprobado y preparar cambios Pages coordinados.
+4. Integrar código aprobado y preparar cambios Pages coordinados.
 5. Con plugin habilitado, verificar endpoint de revisión sin secretos y cola; no editar
    contenido antes de tener build, token, Hook y cron preparados. Habilitación/orden
    exactos deben coordinarse para no permitir un build sin endpoint operativo.

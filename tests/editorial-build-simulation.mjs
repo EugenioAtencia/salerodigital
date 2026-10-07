@@ -53,5 +53,8 @@ try {
   assert.match(cli.stderr, /deployment must not be promoted/);
   assert.match(cli.stdout, /static menu packs simulations passed/);
   assert.match(cli.stdout, /casos cms source-of-truth simulations passed/); checks++;
+  const failure = cli.stderr.split('\n').find(line => line.startsWith('{"phase":"editorial-build-failed"'));
+  assert.deepEqual(JSON.parse(failure), { phase: 'editorial-build-failed', stage: 'cms-read-1', code: 'cms-http', collection: 'servicios', reason: 'HTTP 500', exitCode: 1 }); checks++;
+  assert.equal(JSON.parse(await readFile(path.join(source, 'package.json'), 'utf8')).scripts.postinstall, undefined); checks++;
   console.log(`PASS: editorial build — ${checks} scenarios; failing CLI exit=${cli.status}`);
 } finally { await rm(root, { recursive: true, force: true }); }
