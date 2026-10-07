@@ -85,9 +85,23 @@ fecha y modo. No contiene el contenido privado de la cola.
 Archivo preparado: `integrations/wordpress/salero-pages-publish.php`.
 Destino relativo estándar para una instalación futura:
 `wp-content/mu-plugins/salero-pages-publish.php`.
-No se presupone ninguna ruta absoluta de SiteGround. PHP requerido: 7.0+;
-validación local realizada con PHP 8.3. Verificar versión real en 2B.
-Desactivado por defecto; no registra hooks ni cron sin `SALERO_PAGES_ENABLED=true`.
+El propietario confirmó el document root relativo
+`cms.webagencia360.com/public_html/`, PHP 7.4.33 y WordPress 7.1.3.
+No se presupone ninguna ruta absoluta de SiteGround. Compatibilidad sintáctica y
+simulaciones verificadas con PHP 7.4.33 real, además de PHP 8.3; integración real pendiente.
+
+`SALERO_PAGES_ENABLED` controla exclusivamente publicación. Ausente o `false`:
+- registra observadores editoriales y GET `/wp-json/salero-pages/v1/revision`;
+- la revisión evoluciona con los mismos cambios relevantes que en ON;
+- conserva eventos durables inertes (opción B), agrupados por petición, con `editing`
+  hasta `shutdown`. No procesa ni elimina la cola existente;
+- no registra worker, no consulta/programa cron, no toma lease y no hace HTTP externo,
+  ni siquiera si se invoca `tick()` directamente.
+
+Mantener registros inertes reutiliza la detección de ediciones incompletas y evita
+introducir un segundo almacenamiento de revisión. Antes de habilitar publicación,
+revisar explícitamente pendientes (incluidos incompletos) y aprobar su tratamiento:
+ON podría publicar eventos acumulados en OFF. No vaciar la cola automáticamente.
 
 Tipos internos verificados mediante REST `/wp/v2/types`: `post`, `servicio`,
 `sector`, `caso_exito`; sus bases REST plurales no son los nombres internos.
@@ -179,6 +193,8 @@ php -l integrations/wordpress/salero-pages-publish.php
 php tests/editorial-mu-plugin-simulation.php
 php tests/editorial-mu-plugin-simulation.php --disabled
 php tests/editorial-mu-plugin-simulation.php --autosave
+php tests/editorial-mu-plugin-simulation.php --disabled --autosave
+php tests/editorial-mu-plugin-simulation.php --unset-enabled
 ```
 
 JS incluye middleware/schema dentro de colecciones (78 checks de la suite aprobada).
@@ -193,11 +209,14 @@ No sustituyen una prueba integrada de hooks/cron/ACF/cache reales, reservada a 2
 
 1. Revisar diff/Preview, comprobar main y aprobar integración; no hacerlo en 2A.
 2. Confirmar ruta física, PHP/WordPress, almacenamiento privado, caché REST y cron.
-3. Preparar plugin en destino relativo confirmado y constantes con enabled=false.
+3. Antes de instalar, verificar en el CMS los valores efectivos de `WPMU_PLUGIN_DIR`
+   y `SALERO_PAGES_ENABLED`; la carpeta estándar no es prueba de ausencia de override.
+   Preparar plugin en destino efectivo confirmado con publicación OFF. No modificar
+   wp-config.php en esta preparación.
 4. Integrar código aprobado y preparar cambios Pages coordinados.
-5. Con plugin habilitado, verificar endpoint de revisión sin secretos y cola; no editar
-   contenido antes de tener build, token, Hook y cron preparados. Habilitación/orden
-   exactos deben coordinarse para no permitir un build sin endpoint operativo.
+5. Con publicación OFF, verificar revisión JSON estable, no-store y sin secretos;
+   validar seguimiento solo mediante fixtures, sin editar contenido real en esta fase.
+   El endpoint ya no requiere habilitar deployments. Comprobar cero HTTP externo/cron.
 6. Configurar build `node scripts/build-editorial-ssg.mjs`, output `.`, raíz actual;
    validar build con revisión. No activar un build sin endpoint; conservar producción
    actual mientras se completa el despliegue válido.
@@ -208,8 +227,9 @@ No sustituyen una prueba integrada de hooks/cron/ACF/cache reales, reservada a 2
 9. Hacer una edición editorial real autorizada; comprobar debounce, build, SHA,
    revisión, receipt, tarjetas/enlaces/schema, consola y HTTP en producción.
 10. Comprobar cambio B, fallo controlado fuera de producción y recuperación de cola;
-    documentar operación y rollback. Si se deshabilita el plugin, no dejar el build
-    con revisión obligatoria sin endpoint: coordinar rollback de configuración también.
+    documentar operación y rollback. Poner publicación OFF conserva el endpoint;
+    retirar el archivo MU sí elimina el endpoint: coordinar esa retirada con volver
+    el Build command a vacío, preservando el último deployment válido.
 
 Hasta aprobación expresa: no merge, Hook, instalación, cambios de Pages/WordPress/hosting.
 
@@ -218,3 +238,34 @@ Fuentes verificadas: [build image](https://developers.cloudflare.com/pages/confi
 [Deploy Hooks](https://developers.cloudflare.com/pages/configuration/deploy-hooks/),
 [Pages API](https://developers.cloudflare.com/api/typescript/resources/pages/),
 [pre_delete_term](https://developer.wordpress.org/reference/hooks/pre_delete_term/).
+
+## Preinstalación de revisión con publicaciones OFF — pendiente operativo
+
+Todavía no instalar ni crear Hook/cron ni cambiar Pages. Primero revisión de rama
+`codex/revision-endpoint-off` y aprobación de integración/instalación.
+
+Consultas de lectura desde la instalación real mediante WP-CLI (sin volcar wp-config
+ni otras constantes; no sustituyen comprobar diferencias entre CLI y PHP web):
+
+```sh
+wp eval 'echo wp_json_encode(array("mu_dir" => WPMU_PLUGIN_DIR, "cron_defined" => defined("DISABLE_WP_CRON"), "cron_value" => defined("DISABLE_WP_CRON") ? constant("DISABLE_WP_CRON") : null, "publish_enabled" => defined("SALERO_PAGES_ENABLED") && SALERO_PAGES_ENABLED === true));'
+```
+
+`WPMU_PLUGIN_DIR`, `DISABLE_WP_CRON` y ruta absoluta siguen pendientes: no existe
+acceso remoto de ejecución PHP en esta preparación. SiteGround no tiene trabajos
+cron según inspección del propietario. No configurar ni desactivar WP-Cron ahora.
+
+Tras aprobación y confirmación del destino, crear directorio MU 755 si falta;
+archivo PHP directamente en ese directorio, 644. Para evitar copias parciales,
+subir primero como archivo sin extensión `.php`, verificar hash y renombrar al
+nombre final. No añadir secretos al plugin. Publicación debe permanecer OFF.
+Verificar frontend, wp-admin, REST, listado MU y logs; endpoint devuelve solo
+`revision` y `editing`. Verificar cero worker/cron/HTTP externo, sin cambios editoriales.
+Rollback: retirar únicamente el archivo del directorio MU; no borrar eventos ni
+contenido editorial. Si existe build con revisión obligatoria, devolver primero
+el Build command a vacío para que retirar el endpoint no rompa futuros builds.
+
+Pruebas OFF: 36 checks de ruta/revisión, cambios públicos/CPT/ACF/términos/medios,
+exclusión de ruido, edición incompleta/completa, agrupación y ausencia de worker,
+cron, modificación del estado/lease y tráfico externo. ON conserva los 26 checks.
+Autosave probado en ON y OFF, incluyendo medios y categorías.
