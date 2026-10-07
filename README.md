@@ -26,3 +26,47 @@ No abras los archivos directamente con file:// porque algunas peticiones fetch p
 ## Nota SEO
 
 Esta versión sirve para validar la arquitectura headless. Para producción SEO conviene evolucionarla a Astro o Next para generar HTML estático con metadatos únicos por URL.
+
+
+## Colecciones SSG — fase 1 (solo Preview)
+
+Requiere Node.js 22 o posterior, sin dependencias npm. WordPress sigue siendo la
+fuente de servicios, sectores, casos y artículos. Los HTML publicados son resultados
+automáticos: no editar sus tarjetas a mano.
+
+```sh
+node scripts/generate-collections-ssg.mjs --dry-run
+node scripts/generate-collections-ssg.mjs
+node tests/collections-ssg-simulation.mjs
+```
+
+El generador consulta todas las páginas REST y exige respuestas JSON públicas con
+`X-WP-Total` y `X-WP-TotalPages` coherentes. Primero descarga y valida las cuatro
+colecciones y renderiza todos los documentos en memoria; solo después escribe.
+Un error termina con código distinto de cero. No publicar ni hacer push si falla.
+Una colección vacía solo se acepta con HTTP correcto, array vacío y totales cero.
+
+Conserva orden REST (fecha descendente), plantillas de tarjetas del cliente, copy
+editorial, titles, metas y canonicals existentes. Genera 12 artículos por página,
+URLs `/la-rebotica/page/{n}/` con canonical propia y enlaces anterior/siguiente.
+El HTML y el ItemList utilizan los mismos registros. El middleware respeta el
+schema generado mediante el identificador existente `salero-schema-graph`.
+Los clientes no vuelven a consultar el CMS al arrancar sobre HTML SSG. El blog
+mejora la navegación descargando la siguiente página HTML, sin depender del CMS.
+
+Los casos se muestran en flujo normal antes de inicializar el carrusel; una regla
+local en su HTML deja de aplicarse cuando la inicialización termina. No se cambia
+ningún archivo CSS.
+
+Esta fase conserva el comando de build vacío de Pages: el commit de Preview
+incluye los cuatro HTML generados con contenido real. Todavía NO hay Deploy Hook,
+MU-plugin, webhook, build de producción ni actualización editorial automática.
+En la fase siguiente deberá conectarse el generador al build y establecerse la
+automatización con reintentos. Hasta entonces, una edición CMS requiere regenerar
+y publicar explícitamente el artefacto; no queda sincronizada automáticamente.
+
+Validación de fallo: la simulación genera una versión válida en una carpeta
+temporal, provoca un 500 en la última colección y comprueba que todos los HTML
+anteriores quedan idénticos. Incluye 12, 13, 20, 50 y 200 artículos, paginación REST,
+timeout, errores HTTP, JSON inválido, datos incompletos, duplicados, schema,
+middleware y conservación del HTML por los clientes.
