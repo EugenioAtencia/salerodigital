@@ -35,7 +35,38 @@ for (const invalid of [{ ...item(0), slug: '../escape' }, { ...item(0), title: {
 
 for (const [count, pages] of [[0, 1], [12, 1], [13, 2], [20, 2], [50, 5], [200, 17]]) {
   const data = fixture(count), output = await renderCollections(root, data);
-  assert.equal(output.size, pages + 3);
+  assert.equal(output.size, pages + 4);
+  const home = output.get('index.html');
+  assert.equal((home.match(/<article class="service-row"/g) || []).length, 4);
+  assert.equal((home.match(/<article class="sector-card"/g) || []).length, 3);
+  assert.doesNotMatch(home, /Cargando servicios|Cargando sectores|Failed to fetch/);
+  for (const [endpoint, base] of [['servicios', 'el-menu'], ['sectores', 'sectores']]) {
+    for (const entry of data[endpoint]) assert.equal(links(home).filter(link => link === `/${base}/${entry.slug}/`).length, 1);
+  }
+  // Execute the full Home script as the dynamic browser would, with the same data.
+  // Its resulting markup must be byte-identical to the generated block content.
+  const nodes = Object.fromEntries(['servicios', 'sectores'].map(endpoint => [`[data-home-${endpoint}]`, { dataset: {}, innerHTML: '' }]));
+  let ready, fetches = 0;
+  const errors = [];
+  const client = vm.createContext({ URL, console: { warn: (...args) => errors.push(args), error: (...args) => errors.push(args) }, document: {
+    querySelector: selector => nodes[selector], addEventListener: (_, handler) => { ready = handler; },
+    createElement: () => ({ innerHTML: '', get textContent() { return plain(this.innerHTML); } })
+  }, window: { location: { origin: 'https://agenciaconsalero.es' }, saleroFetchJson: async url => { fetches++; return data[new URL(url).pathname.split('/').at(-1)]; } } });
+  vm.runInContext(await readFile(path.join(root, 'assets/js/home.js'), 'utf8'), client);
+  ready();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(fetches, 2);
+  for (const endpoint of ['servicios', 'sectores']) {
+    assert.ok(home.includes(`data-home-${endpoint} data-ssg="collections">${nodes[`[data-home-${endpoint}]`].innerHTML}</div>`));
+    nodes[`[data-home-${endpoint}]`].dataset.ssg = 'collections';
+  }
+  const beforeHome = Object.values(nodes).map(node => node.innerHTML);
+  client.window.saleroFetchJson = () => { fetches++; throw new Error('Failed to fetch'); };
+  ready(); ready();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(fetches, 2);
+  assert.deepEqual(Object.values(nodes).map(node => node.innerHTML), beforeHome);
+  assert.equal(errors.length, 0); checks++;
   for (let page = 1; page <= pages; page++) {
     const file = page === 1 ? 'la-rebotica/index.html' : `la-rebotica/page/${page}/index.html`, html = output.get(file), expected = Math.min(12, Math.max(0, count - (page - 1) * 12));
     assert.equal((html.match(/<article class="rb-post-card/g) || []).length, expected);
@@ -67,6 +98,7 @@ for (const [count, pages] of [[0, 1], [12, 1], [13, 2], [20, 2], [50, 5], [200, 
 // A late CMS failure cannot change even the first valid output file.
 const temporary = await mkdtemp(path.join(tmpdir(), 'salero-collections-'));
 try {
+  await cp(path.join(root, 'index.html'), path.join(temporary, 'index.html'));
   for (const directory of ['assets/js', 'el-menu', 'sectores', 'casos-de-exito', 'la-rebotica']) await cp(path.join(root, directory), path.join(temporary, directory), { recursive: true });
   const valid = await generate({ root: temporary, fetchOptions: { fetchImpl: rest(fixture(20)) } });
   const before = await Promise.all(valid.files.map(file => readFile(path.join(temporary, file), 'utf8')));

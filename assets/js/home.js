@@ -89,6 +89,7 @@
   async function renderSection(selector,endpoints,renderer,label){
     const container = document.querySelector(selector);
     if(!container) return;
+    if(container.dataset?.ssg === 'collections') return;
     try{
       const items = await fetchWithFallback(endpoints);
       container.innerHTML = items.length
