@@ -74,9 +74,25 @@ export async function renderCollections(root, collections) {
     }
     output.set(file, withSchema(html, `/${directory}/`, render.entries(items, `/${directory}`)).replace(/[ \t]+$/gm, ''));
   }
+  for (const [file, html] of await renderBlogCollection(root, collections.posts)) output.set(file, html);
+  return output;
+}
+
+// Blog-only entry point: reuse the existing card renderer without writing other sections.
+export async function renderBlogCollection(root, posts) {
+  if (!Array.isArray(posts)) throw new Error('Missing posts');
+  const ids = new Set(), slugs = new Set();
+  for (const post of posts) {
+    validateItem(post, 'posts');
+    const slug = decodeURIComponent(post.slug).toLowerCase();
+    if (ids.has(post.id) || slugs.has(slug)) throw new Error('Duplicate record');
+    ids.add(post.id); slugs.add(slug);
+  }
+  posts = [...posts].sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
+  const render = await createRenderers(root), output = new Map();
   let template = await readFile(path.join(root, 'la-rebotica/index.html'), 'utf8');
   template = template.replace(/<script\b[^>]*id="salero-blog-data"[^>]*>[\s\S]*?<\/script>\s*/g, '');
-  const posts = collections.posts, totalPages = Math.max(1, Math.ceil(posts.length / BLOG_PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(posts.length / BLOG_PAGE_SIZE));
   for (let page = 1; page <= totalPages; page++) {
     const pathname = blogPath(page), items = posts.slice((page - 1) * BLOG_PAGE_SIZE, page * BLOG_PAGE_SIZE);
     let html = replaceRoot(template, 'data-blog-posts', render.posts(items) || '<div class="rb-empty">Todavía no hay artículos publicados.</div>');
