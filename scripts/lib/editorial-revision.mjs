@@ -26,7 +26,7 @@ export async function readEditorialRevision(url, { fetchImpl = fetch, timeoutMs 
       info.finalUrl = safeUrl(r.headers.get('location') || r.url || url);
       fail('redirect');
     }
-    if (!r.ok) fail('http-status');
+    if (r.status !== 200) fail('http-status');
     if (type !== 'application/json') fail('content-type');
     let data;
     try { data = JSON.parse(body); } catch { fail('json-parse'); }
