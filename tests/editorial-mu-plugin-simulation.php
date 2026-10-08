@@ -1,11 +1,42 @@
 <?php
 // In-memory WordPress/HTTP fixtures. No real CMS writes or deployments.
 define('ABSPATH', '/fixture/'); define('ARRAY_A', 'ARRAY_A');
-define('SALERO_PAGES_ENABLED', !in_array('--disabled', $argv, true));
+if (!in_array('--unset-enabled', $argv, true)) define('SALERO_PAGES_ENABLED', !in_array('--disabled', $argv, true));
 define('SALERO_PAGES_ACCOUNT_ID', 'fixture'); define('SALERO_PAGES_READ_TOKEN', 'fixture-private-token');
-define('SALERO_PAGES_DEPLOY_HOOK', 'https://api.cloudflare.com/client/v4/pages/webhooks/fixture-private-hook');
+// Structural fixtures only: never use an operational Hook secret.
+$hookBase = 'https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/fixture-private-hook';
+$hookCases = array(
+    'official' => array($hookBase, true),
+    'http' => array(str_replace('https:', 'http:', $hookBase), false),
+    'external' => array(str_replace('api.cloudflare.com', 'example.com', $hookBase), false),
+    'spoofed' => array(str_replace('api.cloudflare.com', 'api.cloudflare.com.example.com', $hookBase), false),
+    'credentials' => array(str_replace('https://', 'https://user:password@', $hookBase), false),
+    'old-path' => array(str_replace('/deploy_hooks/', '/', $hookBase), false),
+    'other-path' => array(str_replace('/deploy_hooks/', '/other/', $hookBase), false),
+    'empty' => array('', false),
+    'malformed' => array('https:///api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/fixture', false),
+    'other-subdomain' => array(str_replace('api.cloudflare.com', 'www.cloudflare.com', $hookBase), false),
+    'host-case' => array(str_replace('api.cloudflare.com', 'API.CLOUDFLARE.COM', $hookBase), false),
+    'port' => array(str_replace('api.cloudflare.com', 'api.cloudflare.com:443', $hookBase), false),
+    'query-redirect' => array($hookBase . '?redirect=https://example.com', false),
+    'fragment' => array($hookBase . '#fragment', false),
+    'encoded-path' => array(str_replace('/deploy_hooks/', '/%64eploy_hooks/', $hookBase), false),
+    'newline' => array($hookBase . "\n", false),
+    'response-redirect' => array($hookBase, true)
+);
+if (in_array('--url-validation', $argv, true)) {
+    foreach (array_keys($hookCases) as $name) {
+        passthru(escapeshellarg(PHP_BINARY) . ' -d pcre.jit=0 ' . escapeshellarg(__FILE__) . ' --hook-case ' . escapeshellarg($name), $status);
+        if ($status !== 0) exit($status);
+    }
+    echo 'PASS: Hook URL validation — ' . count($hookCases) . " cases\n"; exit;
+}
+$caseIndex = array_search('--hook-case', $argv, true);
+$hookCase = $caseIndex === false ? null : ($argv[$caseIndex + 1] ?? '');
+if ($hookCase !== null && !isset($hookCases[$hookCase])) throw new Exception('Unknown Hook fixture');
+define('SALERO_PAGES_DEPLOY_HOOK', $hookCase === null ? $hookBase : $hookCases[$hookCase][0]);
 if (in_array('--autosave', $argv, true)) define('DOING_AUTOSAVE', true);
-$options = array(); $hooks = array(); $posts = array(); $meta = array(); $scheduled = null; $http = array(); $calls = array(); $counter = 0; $checks = 0;
+$options = array(); $hooks = array(); $posts = array(); $meta = array(); $scheduled = null; $http = array(); $calls = array(); $counter = 0; $checks = 0; $cron_calls = 0;
 function add_action($name, $callback, $priority = 10, $args = 1) { global $hooks; $hooks[$name][] = $callback; }
 function add_filter($name, $callback, $priority = 10, $args = 1) { add_action($name, $callback, $priority, $args); }
 function add_option($key, $value, $deprecated = '', $autoload = false) { global $options; if (isset($options[$key])) return false; $options[$key] = $value; return true; }
@@ -13,9 +44,9 @@ function update_option($key, $value, $autoload = false) { global $options; $opti
 function get_option($key, $default = false) { global $options; return $options[$key] ?? $default; }
 function delete_option($key) { global $options; unset($options[$key]); }
 function wp_generate_uuid4() { global $counter; return sprintf('00000000-0000-4000-8000-%012d', ++$counter); }
-function wp_next_scheduled($hook) { global $scheduled; return $scheduled; }
-function wp_unschedule_event($at, $hook) { global $scheduled; $scheduled = null; }
-function wp_schedule_single_event($at, $hook) { global $scheduled; $scheduled = $at; }
+function wp_next_scheduled($hook) { global $scheduled, $cron_calls; $cron_calls++; return $scheduled; }
+function wp_unschedule_event($at, $hook) { global $scheduled, $cron_calls; $cron_calls++; $scheduled = null; }
+function wp_schedule_single_event($at, $hook) { global $scheduled, $cron_calls; $cron_calls++; $scheduled = $at; }
 function get_post($id) { global $posts; return $posts[$id] ?? null; }
 function wp_is_post_revision($id) { return $id === 90; }
 function wp_is_post_autosave($id) { return $id === 91; }
@@ -28,11 +59,11 @@ function maybe_unserialize($value) { return is_string($value) && strpos($value, 
 function wp_cache_delete($key, $group) {}
 function register_rest_route($namespace, $route, $args) { global $routes; $routes[$namespace . $route] = $args; }
 function wp_remote_get($url, $args) { return fixture_http('GET', $url); }
-function wp_remote_post($url, $args) { return fixture_http('POST', $url); }
+function wp_remote_post($url, $args) { global $post_args; $post_args = $args; return fixture_http('POST', $url); }
 function fixture_http($method, $url) { global $http, $calls; $calls[] = $method; if (!$http) throw new Exception('Unexpected HTTP request'); return array_shift($http); }
 function wp_remote_retrieve_response_code($r) { return $r['status']; }
 function wp_remote_retrieve_body($r) { return $r['body']; }
-class WP_REST_Response { public $data; public function __construct($data) { $this->data = $data; } public function header($key, $value) {} }
+class WP_REST_Response { public $data; public $headers = array(); public function __construct($data) { $this->data = $data; } public function header($key, $value) { $this->headers[$key] = $value; } }
 class FixtureDB {
     public $options = 'wp_options';
     public function prepare($query, ...$args) { return array($query, $args); }
@@ -49,13 +80,85 @@ function complete() { global $options; Salero_Pages_Publish::finish_request(); f
 function response($value, $status = 200) { return array('status' => $status, 'body' => json_encode($value)); }
 function api($result) { return response(array('success' => true, 'result' => $result)); }
 function reset_retry() { global $options; $options[Salero_Pages_Publish::STATE]['retry_at'] = 0; }
-if (!SALERO_PAGES_ENABLED) { check(!$hooks && !$scheduled, 'disabled plugin registers nothing'); exit; }
 $base = array('ID' => 1, 'post_type' => 'post', 'post_status' => 'publish', 'post_title' => 'Title', 'post_excerpt' => '', 'post_content' => '', 'post_date' => '2026-01-01', 'post_name' => 'title', 'post_password' => '');
 foreach (array(1, 2, 90, 91) as $id) $posts[$id] = (object) array_merge($base, array('ID' => $id, 'post_status' => $id === 2 ? 'draft' : 'publish'));
+if ($hookCase !== null) {
+    Salero_Pages_Publish::mark(); complete();
+    $accepted = $hookCases[$hookCase][1];
+    $http = array(api(array()));
+    if ($accepted) $http[] = $hookCase === 'response-redirect'
+        ? array('status' => 302, 'body' => '', 'headers' => array('location' => 'https://example.com'))
+        : response(array('success' => true));
+    Salero_Pages_Publish::tick();
+    $postCount = count(array_filter($calls, function ($method) { return $method === 'POST'; }));
+    check($postCount === ($accepted ? 1 : 0), 'Hook case ' . $hookCase . ': expected dispatch boundary');
+    check(!empty(events()) && strpos(json_encode($options), 'fixture-private') === false, 'queue retained and secret absent from diagnostics');
+    if ($accepted) {
+        check($post_args['redirection'] === 0, 'Hook redirects disabled');
+        check($options[Salero_Pages_Publish::STATE]['status'] === ($hookCase === 'response-redirect' ? 'hook_http_rejected_or_unknown' : 'accepted'), 'Hook response classified safely');
+        if ($hookCase === 'response-redirect') {
+            reset_retry(); $http = array(api(array())); Salero_Pages_Publish::tick();
+            check(count(array_filter($calls, function ($method) { return $method === 'POST'; })) === 1, 'redirect outcome polls without following or repeating POST');
+        }
+    } else check($options[Salero_Pages_Publish::STATE]['status'] === 'hook_not_configured', 'invalid Hook rejected before POST');
+    check(!$http, 'no hidden HTTP calls'); exit;
+}
 if (defined('DOING_AUTOSAVE')) {
     Salero_Pages_Publish::before_post(1, array('post_title' => 'Autosave'));
     Salero_Pages_Publish::transition('publish', 'draft', $posts[1]);
-    check(!events(), 'DOING_AUTOSAVE suppresses public hooks'); exit;
+    Salero_Pages_Publish::media_meta(null, 100, '_wp_attachment_metadata', array('sizes' => array()));
+    Salero_Pages_Publish::term_changed(1, 'category');
+    check(!events() && Salero_Pages_Publish::revision()['revision'] === hash('sha256', ''), 'DOING_AUTOSAVE suppresses public hooks and revision changes'); exit;
+}
+if (!Salero_Pages_Publish::enabled()) {
+    check(isset($hooks['rest_api_init'], $hooks['pre_post_update'], $hooks['shutdown']), 'OFF loads and registers revision observers');
+    check(!isset($hooks[Salero_Pages_Publish::CRON]) && !$scheduled && $cron_calls === 0, 'OFF registers no worker and never calls cron APIs');
+    foreach ($hooks['rest_api_init'] as $callback) call_user_func($callback);
+    $route = $routes['salero-pages/v1/revision'];
+    check($route['methods'] === 'GET' && $route['permission_callback'] === '__return_true', 'OFF exposes read-only revision route');
+    $initial = $route['callback']();
+    check(preg_match('/^[a-f0-9]{64}$/D', $initial->data['revision']) === 1 && $initial->data['editing'] === false, 'OFF initial revision accessible');
+    check($route['callback']()->data === $initial->data, 'OFF revision reads stable without edits');
+    check($initial->headers['Cache-Control'] === 'no-store, no-cache, must-revalidate', 'OFF revision response forbids caching');
+    check(array_keys($initial->data) === array('revision', 'editing') && strpos(json_encode($initial->data), 'fixture-private') === false, 'OFF response contains only opaque revision and editing');
+    foreach (array(2, 90, 91) as $id) Salero_Pages_Publish::before_post($id, array('post_title' => 'Ignored'));
+    Salero_Pages_Publish::before_post(1, array('post_modified' => 'noise'));
+    Salero_Pages_Publish::before_meta(null, 1, '_edit_lock', 'noise');
+    Salero_Pages_Publish::transition('publish', 'publish', $posts[1]);
+    check($route['callback']()->data === $initial->data && !events(), 'OFF drafts, revisions, autosave IDs and admin noise ignored');
+    $changes = array(
+        'published post' => function () use ($posts) { Salero_Pages_Publish::transition('publish', 'draft', $posts[1]); },
+        'post update' => function () { Salero_Pages_Publish::before_post(1, array('post_title' => 'Changed')); },
+        'withdrawal' => function () use ($posts) { Salero_Pages_Publish::transition('trash', 'publish', $posts[1]); },
+        'restoration' => function () use ($posts) { Salero_Pages_Publish::transition('publish', 'trash', $posts[1]); },
+        'ACF' => function () { Salero_Pages_Publish::before_meta(null, 1, 'descripcion_corta', 'Changed'); },
+        'category assignment' => function () { Salero_Pages_Publish::terms(1, array(), array(2), 'category', false, array(1)); },
+        'category rename/delete' => function () { Salero_Pages_Publish::term_changed(1, 'category'); },
+        'featured image' => function () { Salero_Pages_Publish::before_meta(null, 1, '_thumbnail_id', 100); },
+        'referenced medium' => function () { Salero_Pages_Publish::media_meta(null, 100, '_wp_attachment_metadata', array('sizes' => array())); }
+    );
+    foreach (array('servicio', 'sector', 'caso_exito') as $type) {
+        $changes[$type] = function () use ($base, $type) { Salero_Pages_Publish::transition('publish', 'draft', (object) array_merge($base, array('post_type' => $type))); };
+    }
+    foreach ($changes as $label => $change) {
+        $prior = $route['callback']()->data['revision']; $count = count(events()); $change();
+        $during = $route['callback']()->data;
+        check($during['revision'] !== $prior && $during['editing'] && count(events()) === $count + 1, 'OFF tracks ' . $label . ' with durable editing marker');
+        foreach ($hooks['shutdown'] as $callback) call_user_func($callback);
+        check($route['callback']()->data['editing'] === false, 'OFF completes ' . $label . ' without scheduling');
+    }
+    $count = count(events());
+    Salero_Pages_Publish::before_post(1, array('post_title' => 'Grouped'));
+    Salero_Pages_Publish::before_meta(null, 1, 'descripcion_corta', 'Grouped');
+    Salero_Pages_Publish::terms(1, array(), array(2), 'category', false, array(1));
+    check(count(events()) === $count + 1, 'OFF groups post, ACF and terms in one inert request');
+    Salero_Pages_Publish::finish_request();
+    $options[Salero_Pages_Publish::STATE] = array('active' => array('id' => 'existing-deployment'), 'status' => 'building');
+    $before = $options; Salero_Pages_Publish::tick();
+    check($options === $before, 'OFF direct worker call cannot process old queue, state or lease');
+    check(!$calls && !$http, 'OFF zero external GET, POST, Deploy Hook or Cloudflare queries');
+    check(!$scheduled && $cron_calls === 0, 'OFF zero cron calls after all edits and direct worker call');
+    echo "PASS: OFF — $checks checks\n"; exit;
 }
 foreach (array('servicio', 'sector', 'caso_exito') as $type) {
     $entity = (object) array_merge($base, array('post_type' => $type));
