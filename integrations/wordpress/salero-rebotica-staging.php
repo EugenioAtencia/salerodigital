@@ -51,7 +51,11 @@ final class Salero_Rebotica_Staging {
         $used=$wpdb->get_var($wpdb->prepare("SELECT p.ID FROM {$wpdb->posts} p LEFT JOIN {$wpdb->postmeta} m ON m.post_id=p.ID AND m.meta_key='_thumbnail_id' WHERE p.post_type='post' AND p.post_status='publish' AND (m.meta_value=%s OR p.post_parent=%d OR p.post_content LIKE %s) LIMIT 1",(string)$id,(int)$id,'%'.$wpdb->esc_like($url ?: 'never-match-media-'.(int)$id).'%'));
         self::guard((bool)$used);
     }
-    public static function meta($check,$id,$key,$value,$extra=null){self::related($id);return $check;}
+    public static function meta($check,$id,$key,$value,$extra=null){
+        // Opening the editor updates these locks; it is not a public editorial mutation.
+        if(in_array($key,array('_edit_lock','_edit_last'),true))return $check;
+        self::related($id);return $check;
+    }
     public static function relationship($object,$terms,$taxonomy){if(in_array($taxonomy,array('category','post_tag'),true))self::guard(self::publicPost($object));}
     public static function term($term,$taxonomy){
         if(!in_array($taxonomy,array('category','post_tag'),true))return;
