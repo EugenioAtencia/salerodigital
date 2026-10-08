@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { spawnSync } from 'node:child_process';
-import { randomBytes } from 'node:crypto';
+import { randomBytes, generateKeyPairSync } from 'node:crypto';
 import { createServer } from 'node:http';
 import { mkdtemp, rm, readFile } from 'node:fs/promises';
 import os from 'node:os';
@@ -11,13 +11,17 @@ import { signCommand } from '../../../scripts/lib/editorial-push-rpc.mjs';
 import { signSnapshot, verifySnapshot } from '../../../scripts/lib/editorial-push-snapshot.mjs';
 import { renderVerifiedSnapshot } from '../../../scripts/lib/editorial-snapshot-ssg.mjs';
 import { stagingCommand } from '../../../scripts/lib/editorial-push-http.mjs';
+import { LocalGitHubAPI } from '../../../tests/fixtures/editorial-github-api.mjs';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const php = process.env.SALERO_TEST_PHP || 'php';
 const exported = spawnSync(php, ['-d', 'pcre.jit=0', 'tests/editorial-push-exporter-simulation.php', '--emit-snapshot'], { cwd: root, encoding: 'utf8' });
 assert.equal(exported.status, 0, 'PHP fixture export');
 const snapshot = JSON.parse(exported.stdout), codeSha = '8283cebe5db420ecb0e4671cc99b21badee2288b';
-const bindings = { ENVIRONMENT: 'staging', CODE_SHA: codeSha, EDITOR_KEY: randomBytes(32).toString('hex'),
+const rsa = generateKeyPairSync('rsa', { modulusLength: 2048 });
+const github = new LocalGitHubAPI(rsa.publicKey);
+const bindings = { ENVIRONMENT: 'staging', CODE_SHA: codeSha, GITHUB_OWNER: 'local-test', GITHUB_REPOSITORY: 'salero-editorial-snapshots-staging',
+  GITHUB_APP_ID: '1', GITHUB_INSTALLATION_ID: '2', GITHUB_APP_PRIVATE_KEY: rsa.privateKey.export({ type: 'pkcs8', format: 'pem' }), EDITOR_KEY: randomBytes(32).toString('hex'),
   BUILDER_KEY: randomBytes(32).toString('hex'), MONITOR_KEY: randomBytes(32).toString('hex'), SNAPSHOT_KEY: randomBytes(32).toString('hex') };
 const directory = await mkdtemp(path.join(os.tmpdir(), 'salero-push-runtime-'));
 const bundle = path.join(directory, 'bundle');
@@ -26,7 +30,7 @@ const compiled = spawnSync(process.execPath, ['node_modules/wrangler/bin/wrangle
 assert.equal(compiled.status, 0, compiled.stderr);
 const options = convertV4MiniflareOptions({ name: 'salero-push-staging', modules: true, script: await readFile(path.join(bundle, 'worker.js'), 'utf8'), compatibilityDate: '2026-10-08',
   compatibilityFlags: ['nodejs_compat'], bindings, durableObjects: { COORDINATOR: { className: 'EditorialCoordinator', useSQLite: true } },
-  r2Buckets: ['SNAPSHOTS'], resourcePersistencePath: path.join(directory, 'storage') });
+  outboundService: request => github.fetch(request), resourcePersistencePath: path.join(directory, 'storage') });
 let mf, passed = 0;
 async function test(label, operation) { await operation(); passed++; console.log(`PASS ${label}`); }
 const command = (role, operation, args, extra = {}) => ({ ...signCommand(role, operation, args, bindings[`${role.toUpperCase()}_KEY`], Math.floor(Date.now() / 1000)), ...extra });
@@ -57,9 +61,11 @@ try {
     packet = phpMessage('--emit-packet');
     denied(await invoke('editor', 'offer', [{ ...packet, body: `${packet.body} ` }]), 'snapshot_size');
   });
-  await test('complete snapshot reaches private local R2 and atomic head', async () => {
-    assert.equal((await invoke('editor', 'offer', [packet])).value.accepted, true);
-    const bucket = await mf.getR2Bucket('SNAPSHOTS'); assert.equal(await (await bucket.get(`snapshots/${packet.sha256}.json`)).text(), packet.body);
+  await test('complete snapshot reaches isolated GitHub fixture and atomic SQLite head', async () => {
+    const results = await Promise.all([invoke('editor', 'offer', [packet]), invoke('editor', 'offer', [packet])]);
+    for (const offered of results) { assert.equal(offered.ok, true, offered.error); assert.equal(offered.value.accepted, true); }
+    assert.equal(github.commits.size, 2, 'concurrent identical offers share one commit');
+    assert.ok([...github.blobs.values()].some(blob => blob.toString('utf8') === packet.body));
   });
   await test('lost acceptance ACK can be retried idempotently', async () => assert.equal((await invoke('editor', 'offer', [packet])).value.duplicate, true));
   await test('builder claims current manifest', async () => { lease = (await invoke('builder', 'claim', ['job-1', codeSha])).value; assert.equal(lease.snapshotId, packet.snapshotId); });
@@ -92,14 +98,15 @@ try {
   await test('new edit invalidates build', async () => { assert.equal((await invoke('editor', 'begin', ['batch-2'])).value.generation, 2); denied(await invoke('builder', 'preparePromotion', ['job-1']), 'obsolete_build'); });
   await test('stale snapshot rejected', async () => denied(await invoke('editor', 'offer', [packet]), 'obsolete_snapshot'));
   await test('terminal failure permits recovery', async () => assert.equal((await invoke('monitor', 'settle', ['job-1', { jobId: 'job-1', codeSha, environment: 'production', id: 'local-failure', status: 'failure' }])).ok, true));
-  await test('storage corruption leaves editing open', async () => {
-    const bucket = await mf.getR2Bucket('SNAPSHOTS'); await bucket.put(`snapshots/${packet.sha256}.json`, 'corrupt');
+  await test('lost GitHub ref ACK leaves editing open and survives restart', async () => {
     const next = signSnapshot(snapshot, 2, 'batch-2', bindings.SNAPSHOT_KEY);
-    denied(await invoke('editor', 'offer', [next]), 'storage_unconfirmed');
+    github.fault = { path: '/git/refs/heads/snapshots', method: 'PATCH', lost: true };
+    denied(await invoke('editor', 'offer', [next]), 'github_unavailable');
     denied(await invoke('builder', 'claim', ['job-2', codeSha]), 'editorial_blocked');
-    // Simulated operator repairs a deliberately corrupted disposable local object.
-    await bucket.delete(`snapshots/${packet.sha256}.json`);
+    const commits = github.commits.size;
+    await mf.dispose(); mf = new Miniflare(options);
     assert.equal((await invoke('editor', 'offer', [next])).ok, true);
+    assert.equal(github.commits.size, commits);
   });
   await test('promotion lock survives workerd restart', async () => {
     assert.equal((await invoke('builder', 'claim', ['job-2', codeSha])).ok, true);

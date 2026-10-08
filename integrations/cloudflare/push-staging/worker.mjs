@@ -2,7 +2,9 @@
 import { DurableObject } from 'cloudflare:workers';
 import { EditorialPushCoordinator } from '../../../scripts/lib/editorial-push-coordinator.mjs';
 import { AuthenticatedCoordinatorRPC } from '../../../scripts/lib/editorial-push-rpc.mjs';
-import { sha256, fail, signSnapshot } from '../../../scripts/lib/editorial-push-snapshot.mjs';
+import { fail } from '../../../scripts/lib/editorial-push-snapshot.mjs';
+import { GitHubSnapshotStore } from '../../../scripts/lib/editorial-github-store.mjs';
+import { installationToken } from './github-app.mjs';
 
 const MAX_REQUEST = 1200000;
 const reply = (data, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
@@ -37,6 +39,9 @@ export class EditorialCoordinator extends DurableObject {
   constructor(ctx, env) {
     super(ctx, env); this.sql = ctx.storage.sql;
     this.sql.exec('CREATE TABLE IF NOT EXISTS coordinator (id INTEGER PRIMARY KEY CHECK (id = 1), state TEXT NOT NULL)');
+    this.github = new GitHubSnapshotStore({ owner: env.GITHUB_OWNER, repository: env.GITHUB_REPOSITORY,
+      key: env.SNAPSHOT_KEY, token: installationToken(env) });
+    this.inflight = new Map(); // Optimization only; all recovery information is persisted in SQLite.
   }
   transaction(operation) {
     return this.ctx.storage.transactionSync(() => {
@@ -68,26 +73,52 @@ export class EditorialCoordinator extends DurableObject {
     if (command.operation === 'check') {
       try {
         const a = result.value;
-        const object = await this.env.SNAPSHOTS.get(`snapshots/${a.sha256}.json`);
-        if (!object || object.size > 1048576) fail('stored_integrity');
-        const body = await object.text(); if (sha256(body) !== a.sha256) fail('stored_integrity');
-        const packet = signSnapshot({ body, bytes: object.size, formatVersion: 1, revision: a.revision,
-          counts: a.counts, sha256: a.sha256, snapshotId: a.snapshotId }, a.generation, a.batchId, this.env.SNAPSHOT_KEY);
+        const locator = this.transaction(model => model.state.githubObjects?.[a.generation]);
+        if (!locator.ok || !locator.value) fail('snapshot_unavailable');
+        const packet = await this.github.read(locator.value);
+        if (packet.snapshotId !== a.snapshotId || packet.generation !== a.generation || packet.revision !== a.revision) fail('snapshot_unavailable');
         return this.transaction(model => ({ ...model.check(a.jobId), packet }));
       } catch { return { ok: false, error: 'snapshot_unavailable' }; }
     }
     if (command.operation !== 'offer') return result;
     const { identity, duplicate } = result.value;
     if (duplicate) return { ok: true, value: { accepted: true, duplicate: true } };
-    const packet = command.args[0], objectKey = `snapshots/${packet.sha256}.json`;
+    const packet = command.args[0];
+    if (this.inflight.has(packet.batchId)) {
+      const pending = this.inflight.get(packet.batchId);
+      if (pending.snapshotId !== packet.snapshotId) return { ok: false, error: 'github_intent_conflict' };
+      return pending.promise;
+    }
+    const attempt = this.storeOffer(packet, identity);
+    this.inflight.set(packet.batchId, { snapshotId: packet.snapshotId, promise: attempt });
+    try { return await attempt; } finally { this.inflight.delete(packet.batchId); }
+  }
+  async storeOffer(packet, identity) {
+    const initial = this.transaction(model => {
+      model.checkOffer(identity);
+      const intents = model.state.githubIntents ||= {};
+      const prior = intents[packet.batchId];
+      if (prior && prior.snapshotId !== packet.snapshotId) fail('github_intent_conflict');
+      return intents[packet.batchId] ||= { snapshotId: packet.snapshotId, generation: packet.generation, batchId: packet.batchId, createdAt: new Date().toISOString() };
+    });
+    if (!initial.ok) return initial;
+    const fence = async () => { const r = this.transaction(model => model.checkOffer(identity)); if (!r.ok) fail(r.error); };
+    const checkpoint = async journal => {
+      const r = this.transaction(model => { model.checkOffer(identity); model.state.githubIntents[packet.batchId] = journal; });
+      if (!r.ok) fail(r.error);
+    };
     try {
-      // Content-addressed writes are create-only; retries read the existing object.
-      await this.env.SNAPSHOTS.put(objectKey, packet.body, { onlyIf: { etagDoesNotMatch: '*' },
-        httpMetadata: { contentType: 'application/json' } });
-      const stored = await this.env.SNAPSHOTS.get(objectKey);
-      if (!stored || stored.size !== packet.bytes || sha256(await stored.text()) !== packet.sha256) fail('stored_integrity');
-      // Atomic manifest lives in SQLite. It becomes visible only after R2 verification.
-      return this.transaction(model => model.commitOffer(identity));
-    } catch { return { ok: false, error: 'storage_unconfirmed' }; }
+      const locator = await this.github.put(packet, initial.value, checkpoint, fence);
+      // This is a separate SQLite transaction, NOT a distributed GitHub/DO transaction.
+      return this.transaction(model => {
+        model.checkOffer(identity);
+        (model.state.githubObjects ||= {})[packet.generation] = locator;
+        const accepted = model.commitOffer(identity); model.state.githubIntents[packet.batchId].confirmed = true; return accepted;
+      });
+    } catch (error) {
+      const code = /^[a-z_]{1,60}$/.test(error.message || '') ? error.message : 'storage_unconfirmed';
+      this.transaction(model => { const intent = model.state.githubIntents?.[packet.batchId]; if (intent) { intent.lastError = code; intent.attempts = (intent.attempts || 0) + 1; } });
+      return { ok: false, error: code };
+    }
   }
 }

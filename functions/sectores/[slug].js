@@ -1,7 +1,9 @@
+import { snapshotPage } from '../_shared/snapshot-page.js';
+export async function onRequestGet(context) { return snapshotPage(context, 'sectores', legacySector); }
 const API_BASE = 'https://cms.webagencia360.com/wp-json/wp/v2';
 const SITE_ORIGIN = 'https://agenciaconsalero.es';
 
-export async function onRequestGet({ request, params, env }) {
+async function legacySector({ request, params, env }) {
   const slug = String(params.slug || '').replace(/^\/+|\/+$/g, '');
 
   if (!slug || slug === 'detalle') {

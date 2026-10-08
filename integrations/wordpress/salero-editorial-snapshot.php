@@ -85,6 +85,40 @@ final class Salero_Editorial_Snapshot_Exporter {
 
 /** Future explicit caller only. Uses WordPress REST internally as an anonymous public reader. */
 final class Salero_WordPress_Snapshot_Source {
+    // Resolve exactly the references used by the established case renderer inside both guarded reads.
+    public static function enrichCase($item, $readMedia) {
+        $a = $item['salero_acf'] ?? ($item['acf'] ?? array()); $a = (array)$a;
+        $keys = array('hero_video','video_hero','video_fondo','fondo_video','background_video','hero_background_video',
+            'video_portada','portada_video','video_principal','video_principal_url','video_principal_caso','video_caso','video_campana','video',
+            'hero_poster','poster_hero','video_poster','poster_video','poster','hero_image','imagen_hero','imagen_principal','imagen_caso','imagen_destacada','imagen_campana','cover_image','logo_cliente','logo_marca','logo');
+        $values = array(); foreach ($keys as $key) if (isset($a[$key])) $values[] = $a[$key];
+        foreach (($a['galeria_caso'] ?? array()) as $row) foreach (array('imagen','video') as $key) if (isset($row[$key])) $values[] = $row[$key];
+        $media = array();
+        foreach ($values as $value) {
+            if (is_object($value)) $value = (array)$value;
+            if (is_array($value) && (!empty($value['url']) || !empty($value['source_url']) || !empty($value['guid']['rendered']))) continue;
+            $id = is_array($value) ? ($value['ID'] ?? ($value['id'] ?? ($value['attachment_id'] ?? ($value['media_id'] ?? null)))) : $value;
+            if (!(is_int($id) || (is_string($id) && preg_match('/^[0-9]+$/D', $id))) || (int)$id <= 0) continue;
+            $id = (int)$id; if (isset($media[$id])) continue;
+            $record = $readMedia($id);
+            if (!is_array($record) || ($record['id'] ?? null) !== $id || !is_string($record['source_url'] ?? null) || !preg_match('~^https?://~', $record['source_url'])) throw new RuntimeException('snapshot_media_missing');
+            $media[$id] = $record;
+        }
+        if ($media) $item['salero_snapshot_media'] = (object)$media;
+        return $item;
+    }
+    private static function items($type, $items) {
+        if ($type !== 'casos-exito' || !is_array($items)) return $items;
+        return array_map(function ($item) {
+            return self::enrichCase($item, function ($id) {
+                $request = new WP_REST_Request('GET', '/wp/v2/media/' . $id);
+                $request->set_query_params(array('context' => 'view'));
+                $response = rest_do_request($request);
+                if (is_wp_error($response) || $response->get_status() !== 200) throw new RuntimeException('snapshot_media_missing');
+                return rest_get_server()->response_to_data($response, false);
+            });
+        }, $items);
+    }
     public static function export($perPage = 100) {
         if (!class_exists('Salero_Pages_Publish') || !class_exists('WP_REST_Request')) throw new RuntimeException('wordpress_source_unavailable');
         $user = get_current_user_id(); wp_set_current_user(0);
@@ -98,7 +132,8 @@ final class Salero_WordPress_Snapshot_Source {
                 $headers = array_change_key_case($response->get_headers(), CASE_LOWER);
                 return array('status' => $response->get_status(), 'contentType' => $headers['content-type'] ?? 'application/json',
                     'total' => $headers['x-wp-total'] ?? null, 'totalPages' => $headers['x-wp-totalpages'] ?? null,
-                    'items' => rest_get_server()->response_to_data($response, true));
+                    'items' => self::items($type, rest_get_server()->response_to_data($response, true)));
+
             }, $perPage);
         } finally { wp_set_current_user($user); }
     }

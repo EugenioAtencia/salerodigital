@@ -58,4 +58,9 @@ function rest_do_request($req){global $data,$calls,$user,$restFail;if($restFail)
 function rest_get_server(){return new class {public function response_to_data($r,$embed){if(!$embed)throw new Exception('embed');return $r->items;}};}
 check(Salero_WordPress_Snapshot_Source::export(2)===$valid&&$calls===12&&$user===9,'WordPress internal public REST adapter, embedding and user restoration');
 $restFail=true;rejected('internal_rest_failed',function(){Salero_WordPress_Snapshot_Source::export();});check($user===9,'user restored on failed internal export');
+$mediaItem=$data['casos-exito'][0];$mediaItem['acf']=array('hero_image'=>999,'hero_video'=>999,'galeria_caso'=>array(array('imagen'=>999,'video'=>'https://example.test/video.mp4')));$mediaReads=0;
+$enriched=Salero_WordPress_Snapshot_Source::enrichCase($mediaItem,function($id)use(&$mediaReads){$mediaReads++;return array('id'=>$id,'source_url'=>'https://example.test/image.jpg');});
+check($mediaReads===1&&isset($enriched['salero_snapshot_media']->{999}),'case media references exported once per read, no network');
+rejected('snapshot_media_missing',function()use($mediaItem){Salero_WordPress_Snapshot_Source::enrichCase($mediaItem,function(){return null;});});
+rejected('snapshot_media_missing',function()use($mediaItem){Salero_WordPress_Snapshot_Source::enrichCase($mediaItem,function(){return array('id'=>888,'source_url'=>'https://example.test/image.jpg');});});
 echo 'PASS: push exporter — '.$checks." checks; PHP ".PHP_VERSION."; no network or writes\n";

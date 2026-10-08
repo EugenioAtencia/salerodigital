@@ -62,6 +62,8 @@ function makeCase(id, slug, title, seoTitle) {
 
 function contextFor(slug) {
   return {
+    // Legacy deployment has no snapshot receipt; production ASSETS binding still exists.
+    env: { ASSETS: { fetch: async () => new Response('', { status: 404 }) } },
     params: { slug },
     request: new Request(`https://agenciaconsalero.es/casos-de-exito/${slug}/`)
   };
