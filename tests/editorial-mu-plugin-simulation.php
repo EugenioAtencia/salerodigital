@@ -3,7 +3,38 @@
 define('ABSPATH', '/fixture/'); define('ARRAY_A', 'ARRAY_A');
 define('SALERO_PAGES_ENABLED', !in_array('--disabled', $argv, true));
 define('SALERO_PAGES_ACCOUNT_ID', 'fixture'); define('SALERO_PAGES_READ_TOKEN', 'fixture-private-token');
-define('SALERO_PAGES_DEPLOY_HOOK', 'https://api.cloudflare.com/client/v4/pages/webhooks/fixture-private-hook');
+// Structural fixtures only: never use an operational Hook secret.
+$hookBase = 'https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/fixture-private-hook';
+$hookCases = array(
+    'official' => array($hookBase, true),
+    'http' => array(str_replace('https:', 'http:', $hookBase), false),
+    'external' => array(str_replace('api.cloudflare.com', 'example.com', $hookBase), false),
+    'spoofed' => array(str_replace('api.cloudflare.com', 'api.cloudflare.com.example.com', $hookBase), false),
+    'credentials' => array(str_replace('https://', 'https://user:password@', $hookBase), false),
+    'old-path' => array(str_replace('/deploy_hooks/', '/', $hookBase), false),
+    'other-path' => array(str_replace('/deploy_hooks/', '/other/', $hookBase), false),
+    'empty' => array('', false),
+    'malformed' => array('https:///api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/fixture', false),
+    'other-subdomain' => array(str_replace('api.cloudflare.com', 'www.cloudflare.com', $hookBase), false),
+    'host-case' => array(str_replace('api.cloudflare.com', 'API.CLOUDFLARE.COM', $hookBase), false),
+    'port' => array(str_replace('api.cloudflare.com', 'api.cloudflare.com:443', $hookBase), false),
+    'query-redirect' => array($hookBase . '?redirect=https://example.com', false),
+    'fragment' => array($hookBase . '#fragment', false),
+    'encoded-path' => array(str_replace('/deploy_hooks/', '/%64eploy_hooks/', $hookBase), false),
+    'newline' => array($hookBase . "\n", false),
+    'response-redirect' => array($hookBase, true)
+);
+if (in_array('--url-validation', $argv, true)) {
+    foreach (array_keys($hookCases) as $name) {
+        passthru(escapeshellarg(PHP_BINARY) . ' -d pcre.jit=0 ' . escapeshellarg(__FILE__) . ' --hook-case ' . escapeshellarg($name), $status);
+        if ($status !== 0) exit($status);
+    }
+    echo 'PASS: Hook URL validation — ' . count($hookCases) . " cases\n"; exit;
+}
+$caseIndex = array_search('--hook-case', $argv, true);
+$hookCase = $caseIndex === false ? null : ($argv[$caseIndex + 1] ?? '');
+if ($hookCase !== null && !isset($hookCases[$hookCase])) throw new Exception('Unknown Hook fixture');
+define('SALERO_PAGES_DEPLOY_HOOK', $hookCase === null ? $hookBase : $hookCases[$hookCase][0]);
 if (in_array('--autosave', $argv, true)) define('DOING_AUTOSAVE', true);
 $options = array(); $hooks = array(); $posts = array(); $meta = array(); $scheduled = null; $http = array(); $calls = array(); $counter = 0; $checks = 0;
 function add_action($name, $callback, $priority = 10, $args = 1) { global $hooks; $hooks[$name][] = $callback; }
@@ -28,7 +59,7 @@ function maybe_unserialize($value) { return is_string($value) && strpos($value, 
 function wp_cache_delete($key, $group) {}
 function register_rest_route($namespace, $route, $args) { global $routes; $routes[$namespace . $route] = $args; }
 function wp_remote_get($url, $args) { return fixture_http('GET', $url); }
-function wp_remote_post($url, $args) { return fixture_http('POST', $url); }
+function wp_remote_post($url, $args) { global $post_args; $post_args = $args; return fixture_http('POST', $url); }
 function fixture_http($method, $url) { global $http, $calls; $calls[] = $method; if (!$http) throw new Exception('Unexpected HTTP request'); return array_shift($http); }
 function wp_remote_retrieve_response_code($r) { return $r['status']; }
 function wp_remote_retrieve_body($r) { return $r['body']; }
@@ -52,6 +83,27 @@ function reset_retry() { global $options; $options[Salero_Pages_Publish::STATE][
 if (!SALERO_PAGES_ENABLED) { check(!$hooks && !$scheduled, 'disabled plugin registers nothing'); exit; }
 $base = array('ID' => 1, 'post_type' => 'post', 'post_status' => 'publish', 'post_title' => 'Title', 'post_excerpt' => '', 'post_content' => '', 'post_date' => '2026-01-01', 'post_name' => 'title', 'post_password' => '');
 foreach (array(1, 2, 90, 91) as $id) $posts[$id] = (object) array_merge($base, array('ID' => $id, 'post_status' => $id === 2 ? 'draft' : 'publish'));
+if ($hookCase !== null) {
+    Salero_Pages_Publish::mark(); complete();
+    $accepted = $hookCases[$hookCase][1];
+    $http = array(api(array()));
+    if ($accepted) $http[] = $hookCase === 'response-redirect'
+        ? array('status' => 302, 'body' => '', 'headers' => array('location' => 'https://example.com'))
+        : response(array('success' => true));
+    Salero_Pages_Publish::tick();
+    $postCount = count(array_filter($calls, function ($method) { return $method === 'POST'; }));
+    check($postCount === ($accepted ? 1 : 0), 'Hook case ' . $hookCase . ': expected dispatch boundary');
+    check(!empty(events()) && strpos(json_encode($options), 'fixture-private') === false, 'queue retained and secret absent from diagnostics');
+    if ($accepted) {
+        check($post_args['redirection'] === 0, 'Hook redirects disabled');
+        check($options[Salero_Pages_Publish::STATE]['status'] === ($hookCase === 'response-redirect' ? 'hook_http_rejected_or_unknown' : 'accepted'), 'Hook response classified safely');
+        if ($hookCase === 'response-redirect') {
+            reset_retry(); $http = array(api(array())); Salero_Pages_Publish::tick();
+            check(count(array_filter($calls, function ($method) { return $method === 'POST'; })) === 1, 'redirect outcome polls without following or repeating POST');
+        }
+    } else check($options[Salero_Pages_Publish::STATE]['status'] === 'hook_not_configured', 'invalid Hook rejected before POST');
+    check(!$http, 'no hidden HTTP calls'); exit;
+}
 if (defined('DOING_AUTOSAVE')) {
     Salero_Pages_Publish::before_post(1, array('post_title' => 'Autosave'));
     Salero_Pages_Publish::transition('publish', 'draft', $posts[1]);
