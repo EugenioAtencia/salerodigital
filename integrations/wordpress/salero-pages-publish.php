@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Salero Pages Publish
- * Description: Prepared editorial queue. Disabled until explicit server configuration.
+ * Description: Editorial revision tracking; deployments disabled until explicit server configuration.
  * Version: 0.1.0
  * Install only in 2B, under the verified WordPress wp-content/mu-plugins/.
  */
@@ -27,7 +27,7 @@ final class Salero_Pages_Publish {
 
     public static function enabled() { return defined('SALERO_PAGES_ENABLED') && SALERO_PAGES_ENABLED === true; }
     public static function boot() {
-        if (!self::enabled()) { return; }
+        // Revision observers remain available independently of publication.
         add_action('pre_post_update', array(__CLASS__, 'before_post'), 10, 2);
         add_action('transition_post_status', array(__CLASS__, 'transition'), 10, 3);
         add_action('wp_after_insert_post', array(__CLASS__, 'saved'), 10, 4);
@@ -44,9 +44,11 @@ final class Salero_Pages_Publish {
             add_filter($hook, array(__CLASS__, 'media_meta'), 10, 5);
         }
         add_action('shutdown', array(__CLASS__, 'finish_request'));
-        add_action(self::CRON, array(__CLASS__, 'tick'));
         add_action('rest_api_init', array(__CLASS__, 'routes'));
-        if (!wp_next_scheduled(self::CRON)) { self::schedule(60); }
+        if (self::enabled()) {
+            add_action(self::CRON, array(__CLASS__, 'tick'));
+            if (!wp_next_scheduled(self::CRON)) { self::schedule(60); }
+        }
     }
     public static function public_post($id) {
         $post = get_post($id);
@@ -55,7 +57,9 @@ final class Salero_Pages_Publish {
             && !(defined('DOING_AUTOSAVE') && DOING_AUTOSAVE);
     }
     public static function mark() {
-        if (!self::enabled()) { return; }
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) { return; }
+        // Durable edit markers also track incomplete edits while deployments are OFF.
+        // They stay inert until publication is explicitly enabled.
         if (self::$event_id === null) { self::$event_id = wp_generate_uuid4(); }
         $key = self::PREFIX . self::$event_id;
         $event = array('at' => time(), 'complete' => false);
@@ -142,6 +146,7 @@ final class Salero_Pages_Publish {
             }));
     }
     private static function schedule($delay) {
+        if (!self::enabled()) { return; }
         $next = wp_next_scheduled(self::CRON);
         if (!$next || $next > time() + $delay) {
             if ($next) { wp_unschedule_event($next, self::CRON); }
@@ -229,7 +234,7 @@ final class Salero_Pages_Publish {
                 foreach (self::api('deployments?env=production&per_page=20') as $d) {
                     if (in_array($d['latest_stage']['status'] ?? '', array('active', 'idle'), true)) { $state['status'] = 'waiting_existing_build'; self::schedule(60); return; }
                 }
-                if (!defined('SALERO_PAGES_DEPLOY_HOOK') || !preg_match('~^https://api\.cloudflare\.com/client/v4/pages/webhooks/[a-zA-Z0-9-]+$~D', SALERO_PAGES_DEPLOY_HOOK)) { throw new RuntimeException('hook_not_configured'); }
+                if (!defined('SALERO_PAGES_DEPLOY_HOOK') || !preg_match('~^https://api\.cloudflare\.com/client/v4/pages/webhooks/deploy_hooks/[a-zA-Z0-9-]+$~D', SALERO_PAGES_DEPLOY_HOOK)) { throw new RuntimeException('hook_not_configured'); }
                 // Persist before the HTTP request: a crash/timeout might mean it
                 // was accepted. Never blindly POST again while outcome is unknown.
                 $state['active'] = array('started' => time(), 'events' => array_keys($events), 'id' => null);
