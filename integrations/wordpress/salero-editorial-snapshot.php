@@ -1,0 +1,105 @@
+<?php
+/** Phase 1 library only: no boot hooks, activation, filesystem writes or HTTP calls. */
+final class Salero_Editorial_Snapshot_Exporter {
+    const COLLECTIONS = array('servicios', 'sectores', 'casos-exito', 'posts');
+    private static function fail($code) { throw new RuntimeException($code); }
+    private static function revision($read) {
+        $r = $read();
+        if (!is_array($r) || !isset($r['revision']) || !is_string($r['revision']) || !preg_match('/^[a-f0-9]{64}$/D', $r['revision'])) self::fail('revision_invalid');
+        if (!array_key_exists('editing', $r) || $r['editing'] !== false) self::fail('editing_or_incomplete');
+        return $r['revision'];
+    }
+    private static function canonical($v) {
+        if (is_object($v)) { $a = get_object_vars($v); ksort($a, SORT_STRING); foreach ($a as &$x) $x = self::canonical($x); return (object)$a; }
+        if (!is_array($v)) return $v;
+        $list = !$v || array_keys($v) === range(0, count($v) - 1);
+        if (!$list) ksort($v, SORT_STRING);
+        foreach ($v as &$x) $x = self::canonical($x);
+        return $v;
+    }
+    private static function encode($v) {
+        $s = json_encode(self::canonical($v), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
+        if ($s === false) self::fail('json_encoding');
+        return $s;
+    }
+    private static function total($v) {
+        if (!(is_int($v) || is_string($v)) || !preg_match('/^(0|[1-9][0-9]*)$/D', (string)$v) || (float)$v > 9007199254740991) self::fail('pagination_invalid');
+        return (int)$v;
+    }
+    private static function validate($item, $type) {
+        if (!is_array($item) || !isset($item['id']) || !is_int($item['id']) || $item['id'] <= 0 || $item['id'] > 9007199254740991) self::fail('record_invalid');
+        $slug = $item['slug'] ?? null;
+        if (!is_string($slug) || !preg_match('/^(?:[a-z0-9_-]|%[a-f0-9]{2})+$/iD', $slug) || in_array(strtolower(rawurldecode($slug)), array('detalle', 'page', 'index'), true)) self::fail('slug_invalid');
+        if (($item['status'] ?? null) !== 'publish' || !is_string($item['title']['rendered'] ?? null) || !trim(strip_tags($item['title']['rendered'])) || !is_string($item['excerpt']['rendered'] ?? null)) self::fail('record_invalid');
+        if (!empty($item['password']) || !empty($item['content']['protected']) || !empty($item['excerpt']['protected'])) self::fail('protected_record');
+        if ($type === 'posts') {
+            if (!is_string($item['content']['rendered'] ?? null)) self::fail('record_invalid');
+            $date = $item['date'] ?? null;
+            $parsed = is_string($date) ? DateTime::createFromFormat('!Y-m-d\TH:i:s', $date) : false;
+            if (!$parsed || $parsed->format('Y-m-d\TH:i:s') !== $date) self::fail('date_invalid');
+        }
+        foreach (array('acf', 'salero_acf') as $key) if (array_key_exists($key, $item) && $item[$key] !== false && !is_array($item[$key]) && !is_object($item[$key])) self::fail('acf_invalid');
+    }
+    private static function collect($pageReader, $perPage) {
+        $result = array(); $globalIds = array();
+        foreach (self::COLLECTIONS as $type) {
+            $items = array(); $slugs = array(); $expected = null; $pages = null;
+            for ($page = 1; $pages === null || $page <= $pages; $page++) {
+                $r = $pageReader($type, $page, $perPage);
+                if (!is_array($r) || ($r['status'] ?? null) !== 200) self::fail('page_http');
+                if (!preg_match('~^application/json(?:\s*;|$)~i', $r['contentType'] ?? '')) self::fail('page_content_type');
+                $total = self::total($r['total'] ?? null); $n = self::total($r['totalPages'] ?? null);
+                if ($n !== (int)ceil($total / $perPage)) self::fail('pagination_invalid');
+                if ($expected === null) { $expected = $total; $pages = $n; }
+                if ($total !== $expected || $n !== $pages) self::fail('pagination_changed');
+                $data = $r['items'] ?? null;
+                if (!is_array($data) || ($data && array_keys($data) !== range(0, count($data) - 1))) self::fail('page_format');
+                if (count($data) !== min($perPage, max(0, $total - ($page - 1) * $perPage))) self::fail('page_incomplete');
+                foreach ($data as $item) {
+                    self::validate($item, $type);
+                    $slug = strtolower(rawurldecode($item['slug']));
+                    if (isset($slugs[$slug]) || isset($globalIds[$item['id']])) self::fail('duplicate_record');
+                    $slugs[$slug] = true; $globalIds[$item['id']] = true; $items[] = $item;
+                }
+            }
+            if (count($items) !== $expected) self::fail('collection_incomplete');
+            $result[$type] = $items;
+        }
+        return $result;
+    }
+    public static function export($revisionReader, $pageReader, $perPage = 100) {
+        if (!is_int($perPage) || $perPage < 1 || $perPage > 100) self::fail('page_size');
+        $before = self::revision($revisionReader);
+        $first = self::collect($pageReader, $perPage);
+        if (self::revision($revisionReader) !== $before) self::fail('revision_changed');
+        $second = self::collect($pageReader, $perPage);
+        if (self::encode($first) !== self::encode($second)) self::fail('snapshot_changed');
+        if (self::revision($revisionReader) !== $before) self::fail('revision_changed');
+        $counts = array(); foreach ($first as $type => $items) $counts[$type] = count($items);
+        $body = self::encode(array('formatVersion' => 1, 'revision' => $before, 'counts' => $counts, 'collections' => $first));
+        $hash = hash('sha256', $body);
+        return array('formatVersion' => 1, 'revision' => $before, 'counts' => $counts, 'sha256' => $hash,
+            'snapshotId' => 'sha256:' . $hash, 'bytes' => strlen($body), 'body' => $body);
+    }
+}
+
+/** Future explicit caller only. Uses WordPress REST internally as an anonymous public reader. */
+final class Salero_WordPress_Snapshot_Source {
+    public static function export($perPage = 100) {
+        if (!class_exists('Salero_Pages_Publish') || !class_exists('WP_REST_Request')) throw new RuntimeException('wordpress_source_unavailable');
+        $user = get_current_user_id(); wp_set_current_user(0);
+        try {
+            return Salero_Editorial_Snapshot_Exporter::export(array('Salero_Pages_Publish', 'revision'), function ($type, $page, $size) {
+                $request = new WP_REST_Request('GET', '/wp/v2/' . $type);
+                $request->set_query_params(array('context' => 'view', 'status' => 'publish', '_embed' => 1, 'page' => $page,
+                    'per_page' => $size, 'orderby' => 'date', 'order' => 'desc'));
+                $response = rest_do_request($request);
+                if (is_wp_error($response)) throw new RuntimeException('internal_rest_failed');
+                $headers = array_change_key_case($response->get_headers(), CASE_LOWER);
+                return array('status' => $response->get_status(), 'contentType' => $headers['content-type'] ?? 'application/json',
+                    'total' => $headers['x-wp-total'] ?? null, 'totalPages' => $headers['x-wp-totalpages'] ?? null,
+                    'items' => rest_get_server()->response_to_data($response, true));
+            }, $perPage);
+        } finally { wp_set_current_user($user); }
+    }
+}
