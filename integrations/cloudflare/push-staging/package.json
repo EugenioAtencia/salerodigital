@@ -1,0 +1,17 @@
+{
+  "name": "salero-push-staging-local",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test.mjs",
+    "dev": "wrangler dev --local"
+  },
+  "overrides": {
+    "sharp": "0.35.5"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "miniflare": "5.20261006.0-alpha",
+    "wrangler": "4.148.0"
+  }
+}

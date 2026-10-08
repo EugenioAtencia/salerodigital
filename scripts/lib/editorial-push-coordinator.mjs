@@ -1,5 +1,5 @@
-// Synchronous local state-machine model, not a deployed Worker or Durable Object.
-// State transitions must become durable transactions in Phase 2; storage/monitor are trusted adapters.
+// Shared synchronous transition model; adapters own durable transactions and asynchronous storage.
+// The staging Worker persists transitions in SQLite; the terminal deployment monitor remains a trusted adapter.
 import { canonical, fail, sha256, verifySnapshot } from './editorial-push-snapshot.mjs';
 export class EditorialPushCoordinator {
   constructor({ store, key, codeSha, state = null }) {
@@ -20,22 +20,31 @@ export class EditorialPushCoordinator {
     this.state.permits[batchId] = permit; this.state.window = { ...permit };
     return structuredClone(permit);
   }
-  offer(packet) {
+  validateOffer(packet) {
     verifySnapshot(packet, this.key);
     const identity = { batchId: packet.batchId, generation: packet.generation, snapshotId: packet.snapshotId,
       revision: packet.revision, sha256: packet.sha256, counts: structuredClone(packet.counts) };
+    if (!this.state.window && JSON.stringify(canonical(this.state.head)) === JSON.stringify(canonical(identity))) return { identity, duplicate: true };
+    this.checkOffer(identity);
+    return { identity, duplicate: false };
+  }
+  checkOffer(identity) {
+    if (identity.generation !== this.state.generation || identity.batchId !== this.state.window?.batchId) fail('obsolete_snapshot');
+    if (this.state.active && this.state.active.phase !== 'building') fail('publication_locked');
+  }
+  commitOffer(identity) {
     if (!this.state.window && JSON.stringify(canonical(this.state.head)) === JSON.stringify(canonical(identity))) return { accepted: true, duplicate: true };
-    const check = () => {
-      if (packet.generation !== this.state.generation || packet.batchId !== this.state.window?.batchId) fail('obsolete_snapshot');
-      if (this.state.active && this.state.active.phase !== 'building') fail('publication_locked');
-    };
-    check();
+    this.checkOffer(identity);
+    this.state.head = identity; this.state.permits[identity.batchId].closed = true; this.state.window = null;
+    return { accepted: true, duplicate: false };
+  }
+  offer(packet) {
+    const { identity, duplicate } = this.validateOffer(packet);
+    if (duplicate) return { accepted: true, duplicate: true };
     // R2 equivalent: finish immutable object first. A lost ACK leaves no published head.
     this.store.put(packet.snapshotId, packet.body);
     if (sha256(this.store.get(packet.snapshotId)) !== packet.sha256) fail('stored_integrity');
-    check(); // Recheck after storage: never publish from an obsolete asynchronous attempt.
-    this.state.head = identity; this.state.permits[packet.batchId].closed = true; this.state.window = null;
-    return { accepted: true, duplicate: false };
+    return this.commitOffer(identity); // Fence again after asynchronous storage in the real adapter.
   }
   claim(jobId, codeSha) {
     if (codeSha !== this.codeSha) fail('code_revision');
