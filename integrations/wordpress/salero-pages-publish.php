@@ -229,7 +229,7 @@ final class Salero_Pages_Publish {
                 foreach (self::api('deployments?env=production&per_page=20') as $d) {
                     if (in_array($d['latest_stage']['status'] ?? '', array('active', 'idle'), true)) { $state['status'] = 'waiting_existing_build'; self::schedule(60); return; }
                 }
-                if (!defined('SALERO_PAGES_DEPLOY_HOOK') || !preg_match('~^https://api\.cloudflare\.com/client/v4/pages/webhooks/[a-zA-Z0-9-]+$~D', SALERO_PAGES_DEPLOY_HOOK)) { throw new RuntimeException('hook_not_configured'); }
+                if (!defined('SALERO_PAGES_DEPLOY_HOOK') || !preg_match('~^https://api\.cloudflare\.com/client/v4/pages/webhooks/deploy_hooks/[a-zA-Z0-9-]+$~D', SALERO_PAGES_DEPLOY_HOOK)) { throw new RuntimeException('hook_not_configured'); }
                 // Persist before the HTTP request: a crash/timeout might mean it
                 // was accepted. Never blindly POST again while outcome is unknown.
                 $state['active'] = array('started' => time(), 'events' => array_keys($events), 'id' => null);
