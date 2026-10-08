@@ -22,6 +22,7 @@ export async function readEditorialRevision(url, { fetchImpl = fetch, timeoutMs 
     info.finalUrl = safeUrl(r.url || url);
     const body = await r.text();
     info.responseBytes = Buffer.byteLength(body);
+    if (type === 'text/html') info.responseKind = /\/\.well-known\/sgcaptcha\/|sgcaptcha|__sg_tk/i.test(body) ? 'siteground-challenge' : /captcha|challenge/i.test(body) ? 'challenge-html' : /<script/i.test(body) ? 'script-html' : 'other-html';
     if (info.redirected) {
       info.finalUrl = safeUrl(r.headers.get('location') || r.url || url);
       fail('redirect');
