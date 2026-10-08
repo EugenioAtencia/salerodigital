@@ -4,3 +4,10 @@ if (process.env.CF_PAGES === '1' && process.env.CF_PAGES_BRANCH === 'codex/cms-a
   const result = spawnSync(process.execPath, ['scripts/build-editorial-ssg.mjs', '--snapshot-check'], { stdio: 'inherit' });
   process.exit(result.status ?? 1);
 }
+
+// Temporary diagnostic Preview, restricted to this branch and staging project.
+if (process.env.CF_PAGES === '1' && process.env.CF_PAGES_BRANCH === 'codex/fix-revision-before-production'
+  && new URL(process.env.CF_PAGES_URL).hostname.endsWith('.salerodigital-staging.pages.dev')) {
+  const result = spawnSync(process.execPath, ['scripts/build-editorial-ssg.mjs'], { stdio: 'inherit' });
+  process.exit(result.status ?? 1);
+}

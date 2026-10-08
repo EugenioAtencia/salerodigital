@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { build } from '../scripts/build-editorial-ssg.mjs';
+import './editorial-revision-simulation.mjs';
 const source = path.resolve(import.meta.dirname, '..');
 const root = await mkdtemp(path.join(tmpdir(), 'salero-editorial-test-'));
 let checks = 0;

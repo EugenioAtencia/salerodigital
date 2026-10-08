@@ -4,6 +4,7 @@ import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { generate } from './generate-collections-ssg.mjs';
+import { readEditorialRevision } from './lib/editorial-revision.mjs';
 import { API_BASE, ENDPOINTS, fetchCollections } from './lib/cms-collections.mjs';
 
 function canonical(value) {
@@ -16,6 +17,7 @@ export const digest = value => createHash('sha256').update(JSON.stringify(canoni
 
 // Fixed diagnostics: never print exception messages, URLs, bodies or credentials.
 function diagnostic(error, stage, collection) {
+  if (error.revisionDiagnostic) return { stage, code: 'revision-invalid', collection, reason: 'Revision validation failed', ...error.revisionDiagnostic };
   const message = String(error.message || '');
   const rules = [
     [/HTTP (\d{3})/, 'cms-http', match => `HTTP ${match[1]}`],
@@ -48,13 +50,8 @@ export async function build({ root = process.cwd(), apiBase = API_BASE, fetchImp
     return fetchImpl(fresh, options);
   };
   const options = { apiBase, fetchImpl: freshFetch, timeoutMs };
-  const readRevision = async () => {
-    const r = await freshFetch(revisionUrl, { signal: AbortSignal.timeout(timeoutMs), cache: 'no-store', headers: { Accept: 'application/json' } });
-    if (!r.ok || !r.headers.get('content-type')?.includes('application/json')) throw new Error('Editorial revision unavailable');
-    const data = await r.json();
-    if (!/^[a-f0-9]{64}$/.test(data.revision) || data.editing !== false) throw new Error('Editorial revision invalid or edit in progress');
-    return data.revision;
-  };
+  const readRevision = () => readEditorialRevision(revisionUrl, { fetchImpl: freshFetch, timeoutMs,
+    onRead: metadata => console.log(JSON.stringify({ phase: 'revision-read', stage, ...metadata })) });
   if (runTests) {
     for (const name of ['sector-ssg-generator', 'collections-ssg', 'fetch-json', 'casos-cms-source-of-truth', 'static-menu-packs']) {
       phase('tests', { test: name, status: 'start' });
