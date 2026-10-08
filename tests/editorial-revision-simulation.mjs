@@ -5,7 +5,7 @@ const valid = { revision: 'a'.repeat(64), editing: false };
 const json = data => new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json; charset=UTF-8' } });
 let checks = 0;
 const cases = [
-  ['http-status', () => new Response('<html><script></script></html>'.padEnd(262, ' '), { status: 202, headers: { 'Content-Type': 'text/html' } })],
+  ['http-status', () => new Response('<html><script src="/.well-known/sgcaptcha/fixture-secret"></script></html>'.padEnd(262, ' '), { status: 202, headers: { 'Content-Type': 'text/html' } })],
   ['http-status', () => new Response(JSON.stringify(valid), { status: 202, headers: { 'Content-Type': 'application/json' } })],
   ['http-status', () => new Response('fixture-secret', { status: 403, headers: { 'Content-Type': 'text/html' } })],
   ['content-type', () => new Response('<html>fixture-secret</html>', { headers: { 'Content-Type': 'text/html' } })],
@@ -25,7 +25,13 @@ for (const [code, fetchImpl] of cases) {
     assert.equal(error.revisionDiagnostic.logicalCode, code);
     assert.equal(JSON.stringify(error.revisionDiagnostic).includes('fixture-secret'), false);
     assert.equal(JSON.stringify(error.revisionDiagnostic).includes('?'), false);
-    if (code === 'http-status') assert.ok([202,403].includes(error.revisionDiagnostic.httpStatus));
+    if (code === 'http-status') {
+      assert.ok([202,403].includes(error.revisionDiagnostic.httpStatus));
+      if (error.revisionDiagnostic.contentType === 'text/html' && error.revisionDiagnostic.httpStatus === 202) {
+        assert.equal(error.revisionDiagnostic.responseBytes,262);
+        assert.equal(error.revisionDiagnostic.responseKind,'siteground-challenge');
+      }
+    }
     if (code === 'redirect') { assert.equal(error.revisionDiagnostic.redirected, true); assert.equal(error.revisionDiagnostic.finalUrl.path, '[other-path]'); }
     return true;
   }); checks++;
