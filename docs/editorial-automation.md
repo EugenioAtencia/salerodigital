@@ -80,14 +80,25 @@ Cloudflare debe conservar la producción anterior al fallar el build.
 `salero-build.json` es un recibo público sin secretos: hashes, conteos, SHA, rama,
 fecha y modo. No contiene el contenido privado de la cola.
 
-## MU-plugin portable, todavía no instalado
+## MU-plugin portable: revisión y publicación
 
 Archivo preparado: `integrations/wordpress/salero-pages-publish.php`.
-Destino relativo estándar para una instalación futura:
+Destino relativo estándar:
 `wp-content/mu-plugins/salero-pages-publish.php`.
-No se presupone ninguna ruta absoluta de SiteGround. PHP requerido: 7.0+;
-validación local realizada con PHP 8.3. Verificar versión real en 2B.
-Desactivado por defecto; no registra hooks ni cron sin `SALERO_PAGES_ENABLED=true`.
+La reconciliación conserva exactamente el archivo portable instalado en el CMS,
+verificado con PHP 7.4.33 y WordPress 7.1.3, sin configuración privada ni secretos.
+
+`SALERO_PAGES_ENABLED` controla publicación. Ausente o `false`, registra
+observadores y GET `/wp-json/salero-pages/v1/revision`; los cambios relevantes
+actualizan la revisión y `editing`. Conserva eventos durables inertes hasta aprobar
+su tratamiento, sin worker, cron, lease, procesamiento de cola ni HTTP externo.
+Un `tick()` directo retorna sin efectos. Autosaves y revisiones se ignoran.
+Con `true` conserva cola, debounce, lease, reintentos, serialización A/B y recibos.
+
+El Hook exige HTTPS, host exacto `api.cloudflare.com` y path
+`/client/v4/pages/webhooks/deploy_hooks/{identificador}`, sin credenciales, query,
+fragmento, puerto ni paths alternativos. Las peticiones no siguen redirecciones.
+Los tests usan únicamente identificadores ficticios.
 
 Tipos internos verificados mediante REST `/wp/v2/types`: `post`, `servicio`,
 `sector`, `caso_exito`; sus bases REST plurales no son los nombres internos.
@@ -179,6 +190,9 @@ php -l integrations/wordpress/salero-pages-publish.php
 php tests/editorial-mu-plugin-simulation.php
 php tests/editorial-mu-plugin-simulation.php --disabled
 php tests/editorial-mu-plugin-simulation.php --autosave
+php tests/editorial-mu-plugin-simulation.php --disabled --autosave
+php tests/editorial-mu-plugin-simulation.php --unset-enabled
+php tests/editorial-mu-plugin-simulation.php --url-validation
 ```
 
 JS incluye middleware/schema dentro de colecciones (78 checks de la suite aprobada).
@@ -195,9 +209,9 @@ No sustituyen una prueba integrada de hooks/cron/ACF/cache reales, reservada a 2
 2. Confirmar ruta física, PHP/WordPress, almacenamiento privado, caché REST y cron.
 3. Preparar plugin en destino relativo confirmado y constantes con enabled=false.
 4. Integrar código aprobado y preparar cambios Pages coordinados.
-5. Con plugin habilitado, verificar endpoint de revisión sin secretos y cola; no editar
-   contenido antes de tener build, token, Hook y cron preparados. Habilitación/orden
-   exactos deben coordinarse para no permitir un build sin endpoint operativo.
+5. Con publicación OFF, verificar endpoint de revisión estable, JSON/no-store y cola;
+   comprobar ausencia de worker, cron y HTTP externo. Antes de activar ON, revisar
+   explícitamente los eventos acumulados en OFF; no vaciarlos automáticamente.
 6. Configurar build `node scripts/build-editorial-ssg.mjs`, output `.`, raíz actual;
    validar build con revisión. No activar un build sin endpoint; conservar producción
    actual mientras se completa el despliegue válido.
@@ -208,8 +222,9 @@ No sustituyen una prueba integrada de hooks/cron/ACF/cache reales, reservada a 2
 9. Hacer una edición editorial real autorizada; comprobar debounce, build, SHA,
    revisión, receipt, tarjetas/enlaces/schema, consola y HTTP en producción.
 10. Comprobar cambio B, fallo controlado fuera de producción y recuperación de cola;
-    documentar operación y rollback. Si se deshabilita el plugin, no dejar el build
-    con revisión obligatoria sin endpoint: coordinar rollback de configuración también.
+    documentar operación y rollback. Poner publicación OFF conserva el endpoint;
+    retirar el archivo MU lo elimina: coordinar su retirada con devolver el Build
+    command a vacío, conservando el último deployment válido.
 
 Hasta aprobación expresa: no merge, Hook, instalación, cambios de Pages/WordPress/hosting.
 
