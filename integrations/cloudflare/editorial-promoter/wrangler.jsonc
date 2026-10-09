@@ -1,0 +1,17 @@
+{
+ "$schema":"../push-staging/node_modules/wrangler/config-schema.json",
+ "name":"salero-editorial-promoter-staging",
+ "main":"worker.mjs",
+ "account_id":"0bd72789f683471596f05b6d0c4653fc",
+ "compatibility_date":"2026-10-09",
+ "compatibility_flags":["nodejs_compat"],
+ "workers_dev":false,
+ "preview_urls":false,
+ "vars":{"ENVIRONMENT":"staging","PROMOTER_ENABLED":"false","CODE_SHA":"UNCONFIGURED","TRUSTED_WORKFLOW_SHA":"UNCONFIGURED","REPOSITORY_ID":"UNCONFIGURED"},
+ "services":[{"binding":"EDITORIAL_COORDINATOR","service":"salero-push-staging"}],
+ "durable_objects":{"bindings":[{"name":"PROMOTER","class_name":"StagingPromoter"}]},
+ "migrations":[{"tag":"v1","new_sqlite_classes":["StagingPromoter"]}],
+ "routes":[],
+ "triggers":{"crons":[]},
+ "observability":{"enabled":false}
+}

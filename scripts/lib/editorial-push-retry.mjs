@@ -5,7 +5,7 @@ export async function retryEditorial(operation, { attempts = 3, wait = ms => new
   for (let n = 0; n < attempts; n++) {
     try { return await operation(); }
     catch (error) {
-      const transient = ['github_unavailable','github_rate_limit','snapshot_unavailable','coordinator_unavailable'].includes(error.message)
+      const transient = ['github_unavailable','github_rate_limit','snapshot_unavailable','coordinator_unavailable','promoter_unavailable','pages_unavailable','deployment_outcome_unknown'].includes(error.message)
         || error.name === 'TimeoutError' || (error instanceof TypeError && error.message === 'fetch failed');
       if (!transient || n === attempts - 1) throw error;
       await wait(Math.min(baseMs * 2 ** n, 30000));
