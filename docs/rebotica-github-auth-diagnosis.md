@@ -29,3 +29,18 @@ No borrar/resetear SQLite. El modelo conserva permiso e intención pendientes de
 Solo cambios locales en codex/rebotica-editorial-staging. Sin push, merge, nueva prueba completa, instalación WordPress, cambios de secretos o despliegues remotos. Actions deshabilitado; promotor OFF; EDITOR_KEY ausente. Producción permanece en 837db72f99312bcf68c0739a6d4cf6ec718ab521.
 
 Referencias: https://docs.github.com/en/rest/using-the-rest-api/troubleshooting-the-rest-api#user-agent-required y https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-json-web-token-jwt-for-a-github-app
+
+
+## Comprobación remota autorizada y cierre
+
+El 2026-10-09 se desplegó temporalmente un wrapper privado de diagnóstico en salero-push-staging. Usó una credencial temporal independiente y una instancia DO distinta (`github-diagnostic-…`), con un registro durable consumido antes del fetch. No invocó begin/offer/notify ni accedió a la instancia editorial de la generación 1. El endpoint y el fence se comprobaron previamente con workerd local: acceso inválido rechazado, clasificación saneada, segunda invocación rechazada y exactamente un fetch simulado.
+
+Única solicitud real: POST `/app/installations/169496401/access_tokens`, con el repositorio de staging y Contents write, reproduciendo la ausencia de User-Agent del código original. Resultado: HTTP 403, 132 ms, categoría `github_user_agent_required`; sin request ID de GitHub disponible. La clasificación se obtuvo inspeccionando de forma acotada el error de GitHub, sin registrar/devolver su contenido. No se recibió installation token. No hubo segunda llamada.
+
+Esto confirma el rechazo por ausencia del User-Agent en el entorno Cloudflare. La corrección está en el commit 3ff187a45cab263b226e714601f43b7098bb7688: identificador real `Salero-Editorial-Staging` en creación de tokens, almacenamiento GitHub y dispatch. No se ha probado remotamente una respuesta 201 con la corrección: queda pendiente de otra autorización. No hay evidencia que requiera cambiar los secretos GitHub.
+
+Se retiró el wrapper y se restauró el código normal del commit 3ff187a, manteniendo CODE_SHA y la configuración editorial existente. Se deshabilitaron workers_dev y preview URLs, se retiraron los flags temporales y se eliminó GITHUB_DIAGNOSTIC_KEY. EDITOR_KEY continúa ausente. El registro de consumo del diagnóstico permanece en su instancia aislada, sin tocar la generación 1.
+
+Actions continúa deshabilitado y con 0 ejecuciones; promotor responde 503 promoter_disabled. Producción conserva main 837db72f99312bcf68c0739a6d4cf6ec718ab521, deployment d2004f70-bde2-4066-bbf4-bea2a4d9f228 success y Build command vacío. No hubo deployments Pages, snapshots, eventos editoriales, cambios WordPress/DNS/main ni push.
+
+Para recuperar: inspeccionar de forma autorizada el journal de la generación 1; conservar batchId/generación/hash y SNAPSHOT_KEY; alinear el commit corregido en los tres anclajes (coordinador, promotor OIDC y dispatcher), y solo entonces autorizar la recuperación idempotente de offer y la segunda prueba completa. No resetear SQLite ni saltarse la intención pendiente.
