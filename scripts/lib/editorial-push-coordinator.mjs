@@ -71,9 +71,17 @@ export class EditorialPushCoordinator {
     if (this.state.window || active.generation !== this.state.generation || active.snapshotId !== this.state.head?.snapshotId) fail('obsolete_build');
     return structuredClone(active);
   }
-  preparePromotion(jobId) {
+  sealArtifact(jobId, digest) {
+    const active = this.check(jobId);
+    if (active.phase !== 'building' || !/^[a-f0-9]{64}$/.test(digest || '')) fail('artifact_identity');
+    if (this.state.active.artifactDigest && this.state.active.artifactDigest !== digest) fail('artifact_conflict');
+    this.state.active.artifactDigest = digest;
+    return structuredClone(this.state.active);
+  }
+  preparePromotion(jobId, digest) {
     const active = this.check(jobId);
     if (active.phase !== 'building') fail('job_phase');
+    if (active.artifactDigest && active.artifactDigest !== digest) fail('artifact_identity');
     this.state.active.promotionAuthorized = true; this.state.active.phase = 'publishing'; // Locks new edits through deployment's terminal outcome.
     return structuredClone(this.state.active);
   }

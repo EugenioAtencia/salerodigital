@@ -46,14 +46,14 @@ jobs:
     if: vars.SALERO_REBOTICA_STAGING_READY == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment: salero-rebotica-staging-builder
     outputs:
-      deployment_id: ${{ steps.build.outputs.deployment_id }}
+      site: ${{ steps.build.outputs.site }}
     steps:
       - uses: actions/checkout@v4
         with:
           repository: EugenioAtencia/salerodigital
           ref: ${{ needs.prepare.outputs.code_sha }}
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 22.16.0
@@ -68,19 +68,54 @@ jobs:
           SALERO_COORDINATOR_URL: ${{ vars.SALERO_COORDINATOR_URL }}
           SALERO_BUILDER_KEY: ${{ secrets.SALERO_BUILDER_KEY }}
           SALERO_SNAPSHOT_KEY: ${{ secrets.SALERO_SNAPSHOT_KEY }}
-          CLOUDFLARE_ACCOUNT_ID: '0bd72789f683471596f05b6d0c4653fc'
-          CLOUDFLARE_API_TOKEN: ${{ secrets.SALERO_STAGING_PAGES_WRITE_TOKEN }}
-  monitor:
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rebotica-${{ needs.prepare.outputs.job_id }}
+          path: ${{ steps.build.outputs.site }}
+          include-hidden-files: true
+          retention-days: 1
+          if-no-files-found: error
+  promote:
     needs: [prepare, build]
-    if: always() && needs.prepare.result == 'success' && vars.SALERO_REBOTICA_STAGING_READY == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment: salero-rebotica-staging-monitor
     steps:
       - uses: actions/checkout@v4
         with:
           repository: EugenioAtencia/salerodigital
           ref: ${{ needs.prepare.outputs.code_sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.16.0
+      - run: npm ci --prefix integrations/cloudflare/push-staging --ignore-scripts
+      - uses: actions/download-artifact@v4
+        with:
+          name: rebotica-${{ needs.prepare.outputs.job_id }}
+          path: verified-site
+      - id: promote
+        run: node scripts/promote-rebotica-staging.mjs verified-site
+        env:
+          SALERO_BUILD_JOB_ID: ${{ needs.prepare.outputs.job_id }}
+          SALERO_CODE_SHA: ${{ needs.prepare.outputs.code_sha }}
+          SALERO_COORDINATOR_URL: ${{ vars.SALERO_COORDINATOR_URL }}
+          SALERO_PROMOTER_KEY: ${{ secrets.SALERO_PROMOTER_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: '0bd72789f683471596f05b6d0c4653fc'
+          CLOUDFLARE_API_TOKEN: ${{ secrets.SALERO_STAGING_PAGES_WRITE_TOKEN }}
+    outputs:
+      deployment_id: ${{ steps.promote.outputs.deployment_id }}
+  monitor:
+    needs: [prepare, build, promote]
+    if: always() && needs.prepare.result == 'success' && vars.SALERO_REBOTICA_STAGING_READY == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: EugenioAtencia/salerodigital
+          ref: ${{ needs.prepare.outputs.code_sha }}
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 22.16.0
@@ -90,7 +125,7 @@ jobs:
           SALERO_CODE_SHA: ${{ needs.prepare.outputs.code_sha }}
           SALERO_COORDINATOR_URL: ${{ vars.SALERO_COORDINATOR_URL }}
           SALERO_MONITOR_KEY: ${{ secrets.SALERO_MONITOR_KEY }}
-          SALERO_DEPLOYMENT_ID: ${{ needs.build.outputs.deployment_id }}
-          SALERO_RUN_RESULT: ${{ needs.build.result }}
+          SALERO_DEPLOYMENT_ID: ${{ needs.promote.outputs.deployment_id }}
+          SALERO_RUN_RESULT: ${{ needs.build.result != 'success' && needs.build.result || needs.promote.result }}
           CLOUDFLARE_ACCOUNT_ID: '0bd72789f683471596f05b6d0c4653fc'
           CLOUDFLARE_API_TOKEN: ${{ secrets.SALERO_STAGING_PAGES_READ_TOKEN }}

@@ -22,7 +22,7 @@ const rsa = generateKeyPairSync('rsa', { modulusLength: 2048 });
 const github = new LocalGitHubAPI(rsa.publicKey);
 const bindings = { ENVIRONMENT: 'staging', CODE_SHA: codeSha, GITHUB_OWNER: 'local-test', GITHUB_REPOSITORY: 'salero-editorial-snapshots-staging',
   GITHUB_APP_ID: '1', GITHUB_INSTALLATION_ID: '2', GITHUB_APP_PRIVATE_KEY: rsa.privateKey.export({ type: 'pkcs8', format: 'pem' }), EDITOR_KEY: randomBytes(32).toString('hex'),
-  BUILDER_KEY: randomBytes(32).toString('hex'), MONITOR_KEY: randomBytes(32).toString('hex'), SNAPSHOT_KEY: randomBytes(32).toString('hex') };
+  PROMOTER_KEY: randomBytes(32).toString('hex'), BUILDER_KEY: randomBytes(32).toString('hex'), MONITOR_KEY: randomBytes(32).toString('hex'), SNAPSHOT_KEY: randomBytes(32).toString('hex') };
 const directory = await mkdtemp(path.join(os.tmpdir(), 'salero-push-runtime-'));
 const bundle = path.join(directory, 'bundle');
 const compiled = spawnSync(process.execPath, ['node_modules/wrangler/bin/wrangler.js', 'deploy', '--dry-run', '--outdir', bundle],
@@ -105,7 +105,7 @@ try {
     await assert.rejects(renderVerifiedSnapshot({ root, packet, key: bindings.SNAPSHOT_KEY, jobId: 'job-1', check: async () => (++calls === 1 ? lease : { ...lease, revision: 'b'.repeat(64) }) }), /build_snapshot_identity/);
     assert.equal(calls, 2);
   });
-  await test('new edit invalidates build', async () => { assert.equal((await invoke('editor', 'begin', ['batch-2'])).value.generation, 2); denied(await invoke('builder', 'preparePromotion', ['job-1']), 'obsolete_build'); });
+  await test('new edit invalidates build', async () => { assert.equal((await invoke('editor', 'begin', ['batch-2'])).value.generation, 2); denied(await invoke('promoter', 'preparePromotion', ['job-1']), 'obsolete_build'); });
   await test('stale snapshot rejected', async () => denied(await invoke('editor', 'offer', [packet]), 'obsolete_snapshot'));
   await test('terminal failure permits recovery', async () => assert.equal((await invoke('monitor', 'settle', ['job-1', { jobId: 'job-1', codeSha, environment: 'production', id: 'local-failure', status: 'failure' }])).ok, true));
   await test('lost GitHub ref ACK leaves editing open and survives restart', async () => {
@@ -120,7 +120,12 @@ try {
   });
   await test('promotion lock survives workerd restart', async () => {
     assert.equal((await invoke('builder', 'claim', ['job-2', codeSha])).ok, true);
-    assert.equal((await invoke('builder', 'preparePromotion', ['job-2'])).ok, true);
+    denied(await invoke('builder', 'preparePromotion', ['job-2']), 'rpc_permission');
+    denied(await invoke('promoter', 'claim', ['job-2', codeSha]), 'rpc_permission');
+    denied(await invoke('promoter', 'preparePromotion', ['job-2', 'c'.repeat(64)]), 'artifact_identity');
+    assert.equal((await invoke('builder', 'sealArtifact', ['job-2', 'c'.repeat(64)])).ok, true);
+    denied(await invoke('promoter', 'preparePromotion', ['job-2', 'd'.repeat(64)]), 'artifact_identity');
+    assert.equal((await invoke('promoter', 'preparePromotion', ['job-2', 'c'.repeat(64)])).ok, true);
     await mf.dispose(); mf = new Miniflare(options);
     denied(await invoke('editor', 'begin', ['batch-3']), 'publication_locked');
   });

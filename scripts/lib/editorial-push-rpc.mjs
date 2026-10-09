@@ -10,14 +10,14 @@ export function signCommand(role, operation, args, key, at, nonce = randomUUID()
 export class AuthenticatedCoordinatorRPC {
   constructor(coordinator, keys, clock) { this.coordinator = coordinator; this.keys = keys; this.clock = clock; }
   invoke(request) {
-    if (!['editor', 'builder', 'monitor'].includes(request?.role)) fail('rpc_authentication');
+    if (!['editor', 'builder', 'promoter', 'monitor'].includes(request?.role)) fail('rpc_authentication');
     const now = this.clock(), key = this.keys[request.role];
     if (!key || !Number.isSafeInteger(request.at) || Math.abs(now - request.at) > 60
       || !/^[a-z0-9-]{1,80}$/.test(request.nonce || '') || !Array.isArray(request.args)
       || !/^[a-f0-9]{64}$/.test(request.signature || '')) fail('rpc_authentication');
     const signature = createHmac('sha256', key).update(JSON.stringify(canonical(fields(request)))).digest();
     if (!timingSafeEqual(signature, Buffer.from(request.signature, 'hex'))) fail('rpc_authentication');
-    const permitted = { editor: ['begin', 'offer', 'notify'], builder: ['claim', 'check', 'preparePromotion'], monitor: ['settle', 'uncertain', 'abort'] };
+    const permitted = { editor: ['begin', 'offer', 'notify'], builder: ['claim', 'check', 'sealArtifact'], promoter: ['check', 'preparePromotion'], monitor: ['settle', 'uncertain', 'abort'] };
     if (!permitted[request.role]?.includes(request.operation)) fail('rpc_permission');
     const nonces = this.coordinator.state.nonces ||= {};
     for (const [nonce, expiry] of Object.entries(nonces)) if (expiry < now) delete nonces[nonce];

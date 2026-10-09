@@ -8,7 +8,7 @@ import { installationToken } from './github-app.mjs';
 
 const MAX_REQUEST = 1200000;
 const reply = (data, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
-const keys = env => ({ editor: env.EDITOR_KEY, builder: env.BUILDER_KEY, monitor: env.MONITOR_KEY });
+const keys = env => ({ editor: env.EDITOR_KEY, builder: env.BUILDER_KEY, promoter: env.PROMOTER_KEY, monitor: env.MONITOR_KEY });
 export default {
   async fetch(request, env) {
     if (env.ENVIRONMENT !== 'staging') return reply({ error: 'staging_only' }, 503);
@@ -62,11 +62,15 @@ export class EditorialCoordinator extends DurableObject {
   async invoke(command) {
     const secrets = [...Object.values(keys(this.env)), this.env.SNAPSHOT_KEY];
     if (this.env.ENVIRONMENT !== 'staging' || secrets.some(key => typeof key !== 'string' || key.length < 32)
-      || new Set(secrets).size !== 4 || !/^[a-f0-9]{40}$/.test(this.env.CODE_SHA || '')) return { ok: false, error: 'configuration' };
+      || new Set(secrets).size !== 5 || !/^[a-f0-9]{40}$/.test(this.env.CODE_SHA || '')) return { ok: false, error: 'configuration' };
     const result = this.transaction(model => {
       // Authorize/consume nonce in SQLite before any asynchronous object operation.
       const facade = Object.create(model);
       facade.offer = packet => model.validateOffer(packet);
+      facade.preparePromotion = (jobId, digest) => {
+        if (!model.check(jobId).artifactDigest) fail('artifact_identity');
+        return model.preparePromotion(jobId, digest);
+      };
       return new AuthenticatedCoordinatorRPC(facade, keys(this.env), () => Math.floor(Date.now() / 1000)).invoke(command);
     });
     if (!result.ok) return result;

@@ -151,3 +151,15 @@ Referencias oficiales:
 - https://developers.cloudflare.com/durable-objects/platform/pricing/
 - https://docs.github.com/en/billing/concepts/product-billing/github-actions
 - https://docs.github.com/en/rest/repos/repos#create-a-repository-dispatch-event
+
+## GitHub Free: builder, promotor y monitor
+
+El workflow privado utiliza secretos de repositorio y tres jobs separados, sin environments de pago. El builder no recibe ningún token de Cloudflare ni clave de promotor/monitor. Sella en SQLite el SHA-256 de todos los archivos del artefacto; el promotor comprueba ese sello y la revisión vigente antes de un único upload a `salerodigital-staging`. El monitor tiene únicamente su clave y un token Pages de lectura. La clave de promotor es independiente, y RPC deniega promoción al builder y claim al promotor.
+
+Esta separación no es una frontera frente al administrador del repositorio: quien pueda modificar workflows podría exfiltrar secretos de repositorio. Mantener el repositorio privado con un único propietario autorizado, permisos `contents: read`, checkout sin credenciales persistentes, SHA de código autorizado explícito, ejecución serial y `cancel-in-progress: false`. El artefacto se conserva un día. El presupuesto Actions permanece $0 con Stop usage activo; nunca habilitar facturación.
+
+La GitHub App staging usa Contents write y Metadata read únicamente para el repositorio privado editorial. La clave PEM vive fuera de Git y como secreto del Worker; no se copia a Actions. `EDITOR_KEY` se retiene localmente hasta disponer de todos los permisos y secretos, manteniendo el Worker cerrado.
+
+Pendiente de intervención del propietario: tokens nuevos exclusivos de esta integración `SALERO_STAGING_PAGES_WRITE_TOKEN` (Pages Edit) y `SALERO_STAGING_PAGES_READ_TOKEN` (Pages Read), restringidos a la cuenta Cloudflare indicada. El permiso API de Pages es por cuenta, no una garantía de aislamiento por proyecto; el promotor fija proyecto staging y rama Preview en código y el coordinador solo acepta recibos Preview. No usar tokens del MCP ni de otros Workers. Si ese alcance por cuenta no es aceptable, mantener cerrado y no ejecutar la prueba.
+
+Prueba sintética prevista, sin WordPress: productor local autenticado abre generación, ofrece un snapshot ficticio completo, verifica ACK de GitHub y emite notify. Actions construye, promueve y confirma automáticamente; repetir notify debe conservar un único trabajo lógico. Abrir una generación nueva invalida el build anterior, que se rechaza antes de promoción. Fallos de subida al coordinador conservan identidad y se reintentan; una confirmación de deployment perdida se reconcilia sin repetir upload. No se considera validado el circuito hasta observar deployment Preview y recibo asentado en SQLite.
