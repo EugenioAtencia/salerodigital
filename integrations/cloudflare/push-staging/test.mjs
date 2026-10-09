@@ -172,5 +172,26 @@ try {
     const port = server.address().port; await new Promise(resolve => server.close(resolve));
     await assert.rejects(stagingCommand({ url: `http://127.0.0.1:${port}/rpc`, role: 'editor', operation: 'begin', args: ['batch-4'], key: bindings.EDITOR_KEY }), /fetch failed/);
   });
+  const retryPacket = signSnapshot(snapshot, 3, 'batch-3', bindings.SNAPSHOT_KEY);
+  const retryOriginal = 'blog-' + sha256(retryPacket.snapshotId + ':3');
+  const retryArgs = [retryOriginal, 3, retryPacket.snapshotId, 'local-failed-deployment'];
+  await test('SQLite authorizes retry only after confirmed failure', async () => {
+    assert.equal((await invoke('editor', 'offer', [retryPacket])).ok, true);
+    assert.equal((await invoke('editor', 'notify', [retryOriginal, 3])).ok, true);
+    assert.equal((await invoke('builder', 'claim', [retryOriginal, codeSha, 3])).ok, true);
+    denied(await invoke('editor', 'prepareRetry', retryArgs), 'publication_locked');
+    assert.equal((await invoke('monitor', 'settle', [retryOriginal, {jobId:retryOriginal, codeSha, id:'local-failed-deployment', environment:'production', status:'failure'}])).ok, true);
+    denied(await invoke('builder', 'prepareRetry', retryArgs), 'rpc_permission');
+    assert.equal((await invoke('editor', 'prepareRetry', retryArgs)).value.jobId, retryOriginal + '-r2');
+  });
+  await test('SQLite retry authorization survives restart and lost ACK', async () => {
+    await mf.dispose(); mf = new Miniflare(options);
+    const r = await invoke('editor', 'prepareRetry', retryArgs);
+    assert.equal(r.value.jobId, retryOriginal + '-r2');
+    assert.equal(r.value.generation, 3);
+    denied(await invoke('editor', 'notify', [retryOriginal, 3]), 'job_completed');
+    assert.equal((await invoke('builder', 'claim', [retryOriginal + '-r2', codeSha, 3])).ok, true);
+    assert.equal((await invoke('builder', 'check', [retryOriginal + '-r2'])).value.packet.sha256, retryPacket.sha256);
+  });
   console.log(JSON.stringify({ passed, runtime: 'local-workerd', cloudResources: 0, cpuCloudflare: 'not-measured', snapshotBytes: packet.bytes }));
 } finally { await mf?.dispose(); await rm(directory, { recursive: true, force: true }); }

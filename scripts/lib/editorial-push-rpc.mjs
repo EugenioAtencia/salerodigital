@@ -17,7 +17,7 @@ export class AuthenticatedCoordinatorRPC {
       || !/^[a-f0-9]{64}$/.test(request.signature || '')) fail('rpc_authentication');
     const signature = createHmac('sha256', key).update(JSON.stringify(canonical(fields(request)))).digest();
     if (!timingSafeEqual(signature, Buffer.from(request.signature, 'hex'))) fail('rpc_authentication');
-    const permitted = { editor: ['begin', 'offer', 'notify'], builder: ['claim', 'check', 'sealArtifact'], promoter: ['check', 'preparePromotion'], monitor: ['settle', 'uncertain', 'abort'] };
+    const permitted = { editor: ['begin', 'offer', 'notify', 'prepareRetry'], builder: ['claim', 'check', 'sealArtifact'], promoter: ['check', 'preparePromotion'], monitor: ['settle', 'uncertain', 'abort'] };
     if (!permitted[request.role]?.includes(request.operation)) fail('rpc_permission');
     const nonces = this.coordinator.state.nonces ||= {};
     for (const [nonce, expiry] of Object.entries(nonces)) if (expiry < now) delete nonces[nonce];

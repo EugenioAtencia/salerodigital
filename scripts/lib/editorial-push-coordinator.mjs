@@ -50,6 +50,7 @@ export class EditorialPushCoordinator {
     if (codeSha !== this.codeSha) fail('code_revision');
     if (expectedGeneration !== null && (!Number.isSafeInteger(expectedGeneration) || expectedGeneration !== this.state.generation)) fail('obsolete_job');
     if (!/^[a-z0-9-]{1,80}$/.test(jobId)) fail('job_identity');
+    if (/-r\d+$/.test(jobId)) this.checkRetry(jobId);
     if (this.state.active?.jobId === jobId) return structuredClone(this.state.active);
     if (this.state.jobs[jobId]) fail('job_completed');
     if (this.state.active) fail('build_busy');
@@ -61,9 +62,38 @@ export class EditorialPushCoordinator {
   notify(jobId, generation) {
     if (this.state.window || generation !== this.state.generation || this.state.head?.generation !== generation) fail('obsolete_job');
     const expected = 'blog-' + sha256(this.state.head.snapshotId + ':' + generation);
-    if (jobId !== expected) fail('job_identity');
+    if (this.state.jobs[jobId]) fail('job_completed');
+    if (jobId !== expected) this.checkRetry(jobId);
     const notifications = this.state.notifications ||= {};
     return notifications[jobId] ||= { jobId, generation, codeSha: this.codeSha, dispatched: false };
+  }
+  prepareRetry(previousJobId, generation, snapshotId, deploymentId) {
+    // Explicit second attempt only. Never revive a terminal job or manufacture a new editorial generation.
+    const head = this.state.head;
+    if (this.state.window || generation !== this.state.generation || head?.generation !== generation || head.snapshotId !== snapshotId) fail('obsolete_job');
+    if (this.state.active) fail('publication_locked');
+    if (this.state.published?.generation === generation) fail('already_published');
+    const original = 'blog-' + sha256(snapshotId + ':' + generation);
+    if (previousJobId !== original) fail('retry_identity');
+    const prior = this.state.jobs[previousJobId], notification = this.state.notifications?.[previousJobId];
+    if (prior?.status !== 'failure' || prior.generation !== generation || prior.deploymentId !== deploymentId
+      || !/^[a-z0-9-]{1,80}$/.test(deploymentId || '') || notification?.generation !== generation || !notification.dispatched) fail('retry_not_terminal');
+    const retry = { jobId: original + '-r2', attempt: 2, previousJobId, previousDeploymentId: deploymentId,
+      generation, batchId: head.batchId, snapshotId, sha256: head.sha256, codeSha: this.codeSha };
+    const existing = this.state.retryAttempts?.[retry.jobId];
+    if (existing && JSON.stringify(canonical(existing)) !== JSON.stringify(canonical(retry))) fail('retry_conflict');
+    const attempts = this.state.retryAttempts ||= {};
+    attempts[retry.jobId] ||= retry;
+    return structuredClone(attempts[retry.jobId]);
+  }
+  checkRetry(jobId) {
+    const retry = this.state.retryAttempts?.[jobId], head = this.state.head;
+    if (!retry) fail('retry_not_authorized');
+    if (this.state.window || retry.generation !== this.state.generation || head?.generation !== retry.generation
+      || head.snapshotId !== retry.snapshotId || head.sha256 !== retry.sha256 || head.batchId !== retry.batchId) fail('obsolete_job');
+    if (retry.codeSha !== this.codeSha) fail('code_revision');
+    if (this.state.published?.generation === retry.generation) fail('already_published');
+    return structuredClone(retry);
   }
   check(jobId) {
     const active = this.state.active;
@@ -90,6 +120,13 @@ export class EditorialPushCoordinator {
     this.state.active.phase = 'unknown'; // No automatic lease timeout/unlock.
   }
   settle(jobId, deployment) {
+    // A monitor may lose the ACK after this transaction commits. Reconcile the exact same outcome only.
+    const outcomeDigest = sha256(JSON.stringify(canonical(deployment || null)));
+    const terminal = this.state.jobs[jobId];
+    if (terminal?.outcomeDigest) {
+      if (terminal.outcomeDigest !== outcomeDigest) fail('deployment_identity');
+      return { settled: true, duplicate: true };
+    }
     const a = this.state.active;
     if (!a || a.jobId !== jobId || deployment?.jobId !== jobId || deployment.codeSha !== a.codeSha || deployment.environment !== this.publishEnvironment
       || !/^[a-z0-9-]{1,80}$/.test(deployment.id || '') || !['success', 'failure'].includes(deployment.status)) fail('deployment_identity');
@@ -103,8 +140,9 @@ export class EditorialPushCoordinator {
         || JSON.stringify(canonical(r.counts)) !== JSON.stringify(canonical(a.counts))) fail('receipt_invalid');
       this.state.published = { ...structuredClone(a), deploymentId: deployment.id };
     }
-    this.state.jobs[jobId] = { status: deployment.status, generation: a.generation, deploymentId: deployment.id };
+    this.state.jobs[jobId] = { status: deployment.status, generation: a.generation, deploymentId: deployment.id, outcomeDigest };
     this.state.active = null;
+    return { settled: true, duplicate: false };
   }
   abort(jobId) {
     if (!this.state.active || this.state.active.jobId !== jobId || this.state.active.phase !== 'building') fail('publication_locked');
