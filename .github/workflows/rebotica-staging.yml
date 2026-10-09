@@ -20,6 +20,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   prepare:
+    timeout-minutes: 2
     if: vars.SALERO_REBOTICA_STAGING_READY == 'true'
     runs-on: ubuntu-latest
     outputs:
