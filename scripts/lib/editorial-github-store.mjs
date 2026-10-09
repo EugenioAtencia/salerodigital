@@ -14,7 +14,7 @@ export class GitHubSnapshotStore {
     const token = await this.token(); if (typeof token !== 'string' || !token) fail('github_authentication');
     let response;
     try { response = await this.fetchImpl(`https://api.github.com${path}`, { method, redirect: 'manual', signal: AbortSignal.timeout(this.timeoutMs),
-      headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json', 'X-GitHub-Api-Version': '2026-03-10' },
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json', 'X-GitHub-Api-Version': '2026-03-10', 'User-Agent': 'Salero-Editorial-Staging' },
       body: body === undefined ? undefined : JSON.stringify(body) }); }
     catch { fail('github_unavailable'); }
     if (response.status >= 500) fail('github_unavailable');
@@ -38,7 +38,7 @@ export class GitHubSnapshotStore {
     const token = await this.token();
     let response;
     try { response = await this.fetchImpl(`https://api.github.com${this.base}/dispatches`, { method: 'POST', redirect: 'manual', signal: AbortSignal.timeout(this.timeoutMs),
-      headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json', 'X-GitHub-Api-Version': '2026-03-10' },
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json', 'X-GitHub-Api-Version': '2026-03-10', 'User-Agent': 'Salero-Editorial-Staging' },
       body: JSON.stringify({ event_type: 'salero-rebotica-staging', client_payload: { job_id: notification.jobId, generation: notification.generation, code_sha: notification.codeSha } }) }); }
     catch { fail('github_unavailable'); }
     if (response.status !== 204) fail(response.status === 429 ? 'github_rate_limit' : 'github_unavailable');

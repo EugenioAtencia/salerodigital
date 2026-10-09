@@ -40,7 +40,9 @@ export class EditorialCoordinator extends DurableObject {
     super(ctx, env); this.sql = ctx.storage.sql;
     this.sql.exec('CREATE TABLE IF NOT EXISTS coordinator (id INTEGER PRIMARY KEY CHECK (id = 1), state TEXT NOT NULL)');
     this.github = new GitHubSnapshotStore({ owner: env.GITHUB_OWNER, repository: env.GITHUB_REPOSITORY,
-      key: env.SNAPSHOT_KEY, token: installationToken(env) });
+      key: env.SNAPSHOT_KEY, token: installationToken(env, undefined, { diagnostic: record => {
+        if (env.ENVIRONMENT === 'staging' && env.GITHUB_AUTH_DIAGNOSTICS === 'true') console.info(JSON.stringify(record));
+      } }) });
     this.inflight = new Map(); // Optimization only; all recovery information is persisted in SQLite.
   }
   transaction(operation) {

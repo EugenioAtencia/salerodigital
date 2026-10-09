@@ -12,6 +12,7 @@ export class LocalGitHubAPI {
     if (typeof request === 'string' || request instanceof URL) request = new Request(request, options);
     const url = new URL(request.url), method = request.method, path = url.pathname;
     if (url.hostname !== 'api.github.com') throw new Error('unexpected_network');
+    if (request.headers.get('user-agent') !== 'Salero-Editorial-Staging') return Response.json({}, {status:403});
     this.calls.push({ method, path });
     const fault = this.fault && path.endsWith(this.fault.path) && (!this.fault.method || this.fault.method === method) ? this.fault : null;
     if (fault) this.fault = null;

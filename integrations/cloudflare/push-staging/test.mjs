@@ -61,6 +61,15 @@ try {
     packet = phpMessage('--emit-packet');
     denied(await invoke('editor', 'offer', [{ ...packet, body: `${packet.body} ` }]), 'snapshot_size');
   });
+  for (const [status, code] of [[401,'github_unauthorized'],[403,'github_forbidden'],[404,'github_not_found'],[422,'github_unprocessable'],[202,'github_http_error'],[302,'github_redirect']]) {
+    await test(`installation token HTTP ${status} remains distinguishable in real workerd`, async () => {
+      github.fault = {path:'/access_tokens', method:'POST', status};
+      denied(await invoke('editor','offer',[packet]), code);
+      denied(await invoke('builder','claim',['job-1',codeSha]), 'editorial_blocked');
+      assert.equal(github.commits.size,1, 'no snapshot commit after authentication failure');
+      assert.equal(github.dispatches.length,0, 'no Actions dispatch after authentication failure');
+    });
+  }
   await test('complete snapshot reaches isolated GitHub fixture and atomic SQLite head', async () => {
     const results = await Promise.all([invoke('editor', 'offer', [packet]), invoke('editor', 'offer', [packet])]);
     for (const offered of results) { assert.equal(offered.ok, true, offered.error); assert.equal(offered.value.accepted, true); }
