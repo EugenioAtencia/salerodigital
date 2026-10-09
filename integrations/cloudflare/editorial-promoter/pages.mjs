@@ -1,6 +1,7 @@
 import {ACCOUNT,PROJECT,BRANCH,SPECIAL} from './policy.mjs';
 import {boundedJSON} from './oidc.mjs';
 import {fail} from '../../../scripts/lib/editorial-push-snapshot.mjs';
+import {pagesWorkerUpload} from './pages-worker-upload.mjs';
 const ORIGIN='https://api.cloudflare.com/client/v4';
 export class StagingPages{
  constructor(token,fetchImpl=(...args)=>fetch(...args)){this.token=token;this.fetchImpl=fetchImpl;}
@@ -20,7 +21,11 @@ export class StagingPages{
   const project=await this.api(this.base);if(project.name!==PROJECT||project.production_branch===BRANCH)fail('pages_project_configuration');
   const form=new FormData();const manifest=Object.fromEntries(job.files.filter(f=>!SPECIAL.has(f.path)).map(f=>['/'+f.path,f.pagesHash]));
   form.set('manifest',JSON.stringify(manifest));form.set('branch',BRANCH);form.set('commit_hash',job.codeSha);form.set('commit_dirty','false');form.set('commit_message','editorial-job:'+job.jobId);
-  for(const [name,encoded]of Object.entries(job.special))form.set(name,new Blob([Buffer.from(encoded,'base64')]),name);
+  for(const [name,encoded]of Object.entries(job.special)){
+   const bytes=Buffer.from(encoded,'base64');
+   if(name==='_worker.js'){const {field,blob}=pagesWorkerUpload(bytes);form.set(field,blob,field);}
+   else form.set(name,new Blob([bytes]),name);
+  }
   const d=await this.api(this.base+'/deployments','POST',form);
   if(d.environment!=='preview'||d.deployment_trigger?.metadata?.commit_hash!==job.codeSha||d.deployment_trigger?.metadata?.commit_message!=='editorial-job:'+job.jobId||!/^https:\/\/[a-f0-9]{8}\.salerodigital-staging\.pages\.dev$/.test(d.url)||typeof d.id!=='string')fail('deployment_identity');return d;
  }

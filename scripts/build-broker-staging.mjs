@@ -5,6 +5,7 @@ import os from 'node:os';import path from 'node:path';
 import {broker} from './lib/editorial-broker-client.mjs';
 import {retryEditorial} from './lib/editorial-push-retry.mjs';
 import {buildSnapshotArtifacts} from './lib/editorial-snapshot-artifacts.mjs';
+import {validatePagesWorkerUpload} from './lib/editorial-pages-worker-validation.mjs';
 import {sha256} from './lib/editorial-push-snapshot.mjs';
 import {CHUNK,filesManifest} from '../integrations/cloudflare/editorial-promoter/policy.mjs';
 const require=createRequire(new URL('../integrations/cloudflare/push-staging/package.json',import.meta.url));
@@ -21,6 +22,7 @@ try{
  const cli=path.resolve('integrations/cloudflare/push-staging/node_modules/wrangler/bin/wrangler.js');
  const compiled=spawnSync(process.execPath,[cli,'pages','functions','build',path.join(site,'functions'),'--outfile',path.join(site,'_worker.js'),'--build-output-directory',site,'--output-routes-path',path.join(site,'_routes.json'),'--compatibility-date','2026-10-09'],{encoding:'utf8',env:{...process.env,WRANGLER_SEND_METRICS:'false'}});
  if(compiled.status!==0)throw Error('functions_compile');
+ await validatePagesWorkerUpload(await readFile(path.join(site,'_worker.js')));
  await rm(path.join(site,'functions'),{recursive:true});
  const files=[];
  async function walk(relative=''){
