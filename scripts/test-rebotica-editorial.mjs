@@ -3,4 +3,5 @@ const node=['tests/editorial-github-auth-simulation.mjs','scripts/test-editorial
 for(const file of node){const r=spawnSync(process.execPath,[file],{stdio:'inherit'});if(r.status!==0)process.exit(r.status??1);}
 for(const file of ['tests/editorial-push-exporter-simulation.php','tests/editorial-push-staging-transport.php','tests/rebotica-journal-simulation.php','tests/rebotica-wordpress-hooks-simulation.php','tests/editorial-mu-plugin-simulation.php']){const r=spawnSync(process.env.SALERO_TEST_PHP||'php',['-d','pcre.jit=0',file],{stdio:'inherit'});if(r.status!==0)process.exit(r.status??1);}
 const packaging=spawnSync(process.execPath,['tests/editorial-pages-functions-packaging.mjs'],{stdio:'inherit'});if(packaging.status!==0)process.exit(packaging.status??1);
+const preview=spawnSync(process.execPath,['tests/editorial-staging-preview-simulation.mjs'],{stdio:'inherit'});if(preview.status!==0)process.exit(preview.status??1);
 console.log('PASS Rebotica editorial suite; no remote publishing');

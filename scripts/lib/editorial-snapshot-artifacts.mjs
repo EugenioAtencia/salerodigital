@@ -2,6 +2,7 @@ import { cp, mkdir, writeFile, rename, rm, stat, readdir, readFile } from 'node:
 import path from 'node:path';
 import { renderVerifiedSnapshot } from './editorial-snapshot-ssg.mjs';
 import { sha256, fail } from './editorial-push-snapshot.mjs';
+import { applyStagingPreview } from './editorial-staging-preview.mjs';
 
 // Isolated output only. No deploy, hook, promotion or modification of the source checkout.
 export async function buildSnapshotArtifacts({ root, output, packet, key, jobId, check, codeSha, tests, scope = 'all', branch = 'main' }) {
@@ -40,6 +41,7 @@ export async function buildSnapshotArtifacts({ root, output, packet, key, jobId,
     }
     // Nuestros menús stays byte-for-byte from the checkout and is not snapshot-generated.
     if (await readFile(path.join(root, 'nuestros-menus/index.html'), 'utf8') !== await readFile(path.join(temporary, 'nuestros-menus/index.html'), 'utf8')) fail('menu_pack_changed');
+    await applyStagingPreview(temporary, { scope, branch });
     const finalLease = await check(jobId);
     if (finalLease.phase !== 'building' || finalLease.codeSha !== codeSha || finalLease.snapshotId !== packet.snapshotId || finalLease.generation !== packet.generation || finalLease.revision !== packet.revision) fail('obsolete_build');
     const receipt = { ...rendered.identity, commit: codeSha, branch, scope, mode: 'snapshot-coordinated', buildSuccess: true,
