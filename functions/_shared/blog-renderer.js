@@ -1,3 +1,4 @@
+import { blogPostingSchema, schemaGraph, renderJsonLd, organizationSchema, websiteSchema, webPageSchema, breadcrumbSchema } from './schema.js';
 const CMS_API_BASE = 'https://cms.webagencia360.com/wp-json/wp/v2';
 const SITE_ORIGIN = 'https://agenciaconsalero.es';
 
@@ -132,6 +133,17 @@ function renderPostPage(slug, post, blogContext = {}) {
   const metaDescription = (excerpt || stripHtml(fullContent).slice(0, 155)).slice(0, 155);
   const tocHtml = buildToc(rawContent);
   const navigationBlock = renderBlogNavigation(blogContext);
+  const structuredData = renderJsonLd(schemaGraph([
+    organizationSchema(),
+    websiteSchema(),
+    webPageSchema({ url: canonical, name: title, description: metaDescription, mainEntity: `${canonical}#article`, datePublished: post.date, dateModified: post.modified }),
+    breadcrumbSchema([
+      { name: 'Inicio', url: '/' },
+      { name: 'La Rebotica', url: '/la-rebotica/' },
+      { name: title, url: canonical }
+    ]),
+    blogPostingSchema({ post, title, description: metaDescription, url: canonical, image: featured, categories, content: fullContent, faqs: faqData.faqs })
+  ]));
 
   return `<!doctype html>
 <html lang="es">
@@ -140,7 +152,7 @@ function renderPostPage(slug, post, blogContext = {}) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="${escapeAttr(metaDescription)}">
-  <link rel="canonical" href="${escapeAttr(canonical)}">
+  <link rel="canonical" href="${escapeAttr(canonical)}">\n  ${structuredData}
   ${featured ? `<meta property="og:image" content="${escapeAttr(featured.url)}">` : ''}
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
