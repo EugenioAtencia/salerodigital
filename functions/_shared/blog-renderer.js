@@ -1,5 +1,5 @@
 const CMS_API_BASE = 'https://cms.webagencia360.com/wp-json/wp/v2';
-const SITE_ORIGIN = 'https://salero.webagencia360.com';
+const SITE_ORIGIN = 'https://agenciaconsalero.es';
 
 export async function handleBlogPostRequest(context) {
   const slug = sanitizeSlug(context.params.slug || '');
