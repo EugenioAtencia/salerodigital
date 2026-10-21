@@ -1,4 +1,5 @@
 import { renderJsonLd, schemaForPath } from './_shared/schema.js';
+import { handleBlogPostRequest } from './_shared/blog-renderer.js';
 
 const SITE_ORIGIN = 'https://agenciaconsalero.es';
 const LEGACY_ORIGIN = 'https://salero.webagencia360.com';
@@ -155,7 +156,16 @@ export async function onRequest(context) {
     return Response.redirect(`${SITE_ORIGIN}/nuestros-menus/`, 301);
   }
 
-  const response = await context.next();
+  // Route article HTML through server rendering even when a Pages route falls back to its client shell.
+  // Keep the previous handler available if the CMS is temporarily unavailable.
+  let response;
+  if (isBlogArticlePath(normalizedPath)) {
+    const slug = normalizedPath.split('/').filter(Boolean).at(-1);
+    const serverResponse = await handleBlogPostRequest({ ...context, params: { ...context.params, slug } });
+    response = serverResponse.status === 200 ? serverResponse : await context.next();
+  } else {
+    response = await context.next();
+  }
   const contentType = response.headers.get('content-type') || '';
 
   if (!contentType.includes('text/html')) return response;
