@@ -1,5 +1,6 @@
 import { renderJsonLd, schemaForPath } from './_shared/schema.js';
 import { handleBlogPostRequest } from './_shared/blog-renderer.js';
+import { renderSitemap } from './_shared/sitemap-renderer.js';
 
 const SITE_ORIGIN = 'https://agenciaconsalero.es';
 const LEGACY_ORIGIN = 'https://salero.webagencia360.com';
@@ -147,6 +148,8 @@ export async function onRequest(context) {
   }
 
   const normalizedPath = normalizePath(requestUrl.pathname);
+
+  if (normalizedPath === '/sitemap.xml/') return renderSitemap(context);
 
   if (REMOVED_PAGES.has(normalizedPath)) {
     return renderGoneResponse();
