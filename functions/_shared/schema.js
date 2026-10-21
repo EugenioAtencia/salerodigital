@@ -1,4 +1,4 @@
-export const SITE_ORIGIN = 'https://salero.webagencia360.com';
+export const SITE_ORIGIN = 'https://agenciaconsalero.es';
 
 const ORGANIZATION_ID = `${SITE_ORIGIN}/#organization`;
 const WEBSITE_ID = `${SITE_ORIGIN}/#website`;
