@@ -130,7 +130,15 @@ function renderPostPage(slug, post, blogContext = {}) {
   const date = formatDate(post.date);
   const readTime = readingTime(fullContent);
   const canonical = `${SITE_ORIGIN}/la-rebotica/${slug}/`;
-  const metaDescription = (excerpt || stripHtml(fullContent).slice(0, 155)).slice(0, 155);
+  const descriptionSource = excerpt || stripHtml(fullContent);
+  const metaDescription = descriptionSource.length > 155
+    ? descriptionSource.slice(0, 156).replace(/\s+\S*$/, '').trim()
+    : descriptionSource;
+  const seoTitles = {
+    'seo-moron-de-la-frontera': 'SEO en Morón de la Frontera: guía local | Salero Digital',
+    'guia-completa-sobre-gestion-de-redes-sociales-para-negocios-locales': 'Redes sociales para negocios locales | Salero Digital'
+  };
+  const seoTitle = seoTitles[slug] || `${title} | Salero Digital`;
   const tocHtml = buildToc(rawContent);
   const navigationBlock = renderBlogNavigation(blogContext);
   const structuredData = renderJsonLd(schemaGraph([
@@ -148,7 +156,7 @@ function renderPostPage(slug, post, blogContext = {}) {
   return `<!doctype html>
 <html lang="es">
 <head>
-  <title>${escapeHtml(title)} | La Rebotica | Salero Digital</title>
+  <title>${escapeHtml(seoTitle)}</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="${escapeAttr(metaDescription)}">
