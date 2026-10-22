@@ -84,7 +84,7 @@ export async function build({ root = process.cwd(), apiBase = API_BASE, fetchImp
     const home = output.get('index.html');
     if (!home?.includes('data-home-servicios data-ssg="collections"') || /Cargando servicios|Cargando sectores/.test(home)) throw new Error('Invalid generated Home');
     for (const [file, html] of output) {
-      if (file !== 'index.html' && (html.match(/id="salero-schema-graph"/g) || []).length !== 1) throw new Error('Invalid generated graph');
+      if (file.endsWith('.html') && file !== 'index.html' && (html.match(/id="salero-schema-graph"/g) || []).length !== 1) throw new Error('Invalid generated graph');
     }
   } });
   // Final check also guards a CMS change during local output writes. Any failure

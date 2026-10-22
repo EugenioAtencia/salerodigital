@@ -4,6 +4,9 @@
   "engines": { "node": ">=22" },
   "scripts": {
     "build": "node scripts/build-editorial-ssg.mjs",
-    "test": "node scripts/test-editorial.mjs"
+    "test": "node scripts/test-editorial.mjs",
+    "check:editorial": "node scripts/sync-editorial-seo.mjs",
+    "sync:editorial": "node scripts/sync-editorial-seo.mjs --write",
+    "check:http": "node scripts/verify-http-seo.mjs"
   }
 }

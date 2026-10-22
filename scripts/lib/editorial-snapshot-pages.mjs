@@ -3,7 +3,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { plain, esc, jsonScript } from './collection-renderers.mjs';
 import { renderIntoTemplate } from '../generate-sectors-ssg.mjs';
-import { schemaForPath, schemaGraph, organizationSchema, websiteSchema, webPageSchema, breadcrumbSchema, blogPostingSchema, caseStudySchema } from '../../functions/_shared/schema.js';
+import { renderJsonLd, schemaForPath, schemaGraph, organizationSchema, websiteSchema, webPageSchema, breadcrumbSchema, blogPostingSchema, caseStudySchema } from '../../functions/_shared/schema.js';
 import { fail } from './editorial-push-snapshot.mjs';
 
 // Execute only trusted existing renderers. CMS strings are data, never code.
@@ -24,7 +24,7 @@ function graph(html, pathname, title, post = null) {
 }
 export async function renderSnapshotPages(root, collections) {
   const output = new Map();
-  const service = await renderer(root, 'functions/_shared/service-renderer.js');
+  const service = await renderer(root, 'functions/_shared/service-renderer.js', { renderJsonLd, schemaForPath });
   const blog = await renderer(root, 'functions/_shared/blog-renderer-client.js');
   const caseRenderer = await renderer(root, 'functions/_shared/caso-renderer-v4.js', {
     // Numeric references must be resolved by the WordPress export, never via HTTP here.

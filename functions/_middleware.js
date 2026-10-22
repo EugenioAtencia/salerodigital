@@ -158,7 +158,8 @@ export async function onRequest(context) {
   const response = await context.next();
   const contentType = response.headers.get('content-type') || '';
 
-  if (!contentType.includes('text/html')) return response;
+  // Error documents must retain their status and must not acquire page schema/canonical.
+  if (response.status >= 400 || !contentType.includes('text/html')) return response;
 
   const schema = isBlogArticlePath(requestUrl.pathname) ? null : schemaForPath(requestUrl.pathname);
   const html = await response.text();

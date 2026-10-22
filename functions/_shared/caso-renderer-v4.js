@@ -30,7 +30,7 @@ export async function handleCasoRequest(context) {
         noindex: true,
         message: 'No se ha podido confirmar este caso con WordPress en este momento. Se cargará en modo temporal si el navegador puede recuperar los datos.'
       });
-      return withCmsDiagnosticHeaders(response, error, context);
+      return withCmsDiagnosticHeaders(new Response(response.body, { status: 503, headers: response.headers }), error, context);
     }
 
     return htmlResponse(renderErrorPage('No se pudo cargar el caso desde WordPress', error && error.message ? error.message : String(error), { noindex: true }), 500);

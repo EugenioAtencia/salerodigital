@@ -3,7 +3,20 @@ const SITE_ORIGIN = 'https://agenciaconsalero.es';
 export async function handleBlogPostRequest(context) {
   const slug = sanitizeSlug(context.params.slug || context.params.path || '');
   if (!slug) return htmlResponse(renderErrorPage('Artículo no encontrado', 'No se ha recibido un slug válido para cargar el artículo.'), 404);
-  return htmlResponse(renderShell(slug), 200);
+  try {
+    const url = new URL('https://cms.webagencia360.com/wp-json/wp/v2/posts');
+    url.searchParams.set('slug', slug);
+    url.searchParams.set('status', 'publish');
+    const response = await fetch(url, { signal: AbortSignal.timeout(5000), cache: 'no-store', headers: { Accept: 'application/json' } });
+    if (!response.ok || !/application\/json/i.test(response.headers.get('content-type') || '')) throw new Error('CMS unavailable');
+    const posts = await response.json();
+    if (!Array.isArray(posts)) throw new Error('Invalid CMS collection');
+    if (!posts.length) return htmlResponse(renderErrorPage('Artículo no encontrado', 'No existe un artículo publicado en esta dirección.'), 404);
+    if (posts.length !== 1 || posts[0].slug !== slug || posts[0].status !== 'publish') throw new Error('Invalid CMS record');
+    return htmlResponse(renderShell(slug), 200);
+  } catch {
+    return htmlResponse(renderErrorPage('Contenido temporalmente no disponible', 'No se ha podido verificar el artículo con WordPress. Inténtalo de nuevo más tarde.'), 503);
+  }
 }
 
 function renderShell(slug) {
@@ -57,7 +70,10 @@ function renderErrorPage(title, message) {
   return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/assets/css/main.css?v=50"></head><body>${renderHeader()}<main class="container" style="padding:9rem 0"><span class="eyebrow">La Rebotica</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p><p><a class="btn btn-primary" href="/la-rebotica/">Volver a La Rebotica</a></p></main>${renderFooter()}<script src="/assets/js/helpers.js?v=50"></script></body></html>`;
 }
 
-function sanitizeSlug(value = '') { return String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9-]+/g, '-').replace(/^-|-$/g, ''); }
+function sanitizeSlug(value = '') {
+  const slug = String(value || '');
+  return /^(?:[a-z0-9_-]|%[a-f0-9]{2})+$/i.test(slug) && !/^(detalle|page|index)$/i.test(slug) ? slug : '';
+}
 function escapeHtml(value = '') { return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
 function escapeAttr(value = '') { return escapeHtml(value); }
 function htmlResponse(html, status = 200) { return new Response(html, { status, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store, max-age=0, must-revalidate' } }); }

@@ -20,7 +20,7 @@ assert.doesNotMatch(
   /^\/casos-de-exito\/\* /m,
   'case study dynamic routes are not rewritten away from Pages Functions'
 );
-assert.match(redirectsFile, /^\/el-menu\/\* /m, 'menu rewrite remains untouched');
+assert.doesNotMatch(redirectsFile, /^\/el-menu\/\* /m, 'services use status-aware Functions');
 
 function makeCase(id, slug, title, seoTitle) {
   return {
@@ -154,7 +154,7 @@ for (const slug of [...removedSlugs, 'slug-aleatorio']) {
 for (const mode of ['500', 'html', 'timeout']) {
   installCmsFetch(mode);
   const result = await readResponse(await onRequest(contextFor('enoro')));
-  assert.equal(result.status, 200, `${mode} uses temporary shell`);
+  assert.equal(result.status, 503, `${mode} uses temporary shell`);
   assert.equal(result.noindex, true, `${mode} shell is noindex`);
   assert.match(result.html, /Cargando caso/, `${mode} keeps client fallback shell`);
 }

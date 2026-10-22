@@ -218,8 +218,9 @@ test('durable state never stores authentication keys', () => {
 });
 const root = path.resolve(import.meta.dirname, '..'), payload = verifySnapshot(signSnapshot(snapshot, 1, 'batch-1', key), key);
 const output = await renderCollections(root, payload.collections);
-assert.equal(output.size, 5);
+assert.equal(output.size, 6);
 for (const [file, html] of output) {
+  if (!file.endsWith('.html')) continue;
   const original = await readFile(path.join(root, file), 'utf8');
   for (const pattern of [/<h1\b[\s\S]*?<\/h1>/i, /<title>[\s\S]*?<\/title>/i, /<link\b[^>]*rel="canonical"[^>]*>/i]) assert.equal(html.match(pattern)?.[0], original.match(pattern)?.[0]);
   assert.doesNotMatch(html, /Cargando servicios|Cargando sectores|Cargando\.\.\./);

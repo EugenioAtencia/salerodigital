@@ -25,7 +25,8 @@ export async function buildSnapshotArtifacts({ root, output, packet, key, jobId,
     const pages = {};
     for (const [file, html] of rendered.output) {
       await mkdir(path.dirname(path.join(temporary, file)), { recursive: true });
-      await writeFile(path.join(temporary, file), html); pages[file] = sha256(html);
+      await writeFile(path.join(temporary, file), html);
+      if (file.endsWith('.html')) pages[file] = sha256(html);
     }
     // Nuestros menús stays byte-for-byte from the checkout and is not snapshot-generated.
     if (await readFile(path.join(root, 'nuestros-menus/index.html'), 'utf8') !== await readFile(path.join(temporary, 'nuestros-menus/index.html'), 'utf8')) fail('menu_pack_changed');

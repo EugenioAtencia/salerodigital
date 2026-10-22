@@ -5,6 +5,8 @@ import { pathToFileURL } from 'node:url';
 import { fetchCollections, ENDPOINTS, validateItem } from './lib/cms-collections.mjs';
 import { createRenderers, collectionSchema, jsonScript, SITE } from './lib/collection-renderers.mjs';
 
+import { editorialSitemap } from './lib/editorial-sitemap.mjs';
+
 export const BLOG_PAGE_SIZE = 12;
 export const blogPath = page => page === 1 ? '/la-rebotica/' : `/la-rebotica/page/${page}/`;
 
@@ -84,10 +86,11 @@ export async function renderCollections(root, collections) {
     const navigation = `<div class="rb-load-more-wrap" data-ssg-pagination>${page > 1 ? `<a class="btn btn-secondary rb-load-more" rel="prev" href="${blogPath(page - 1)}">Artículos anteriores</a>` : ''}${page < totalPages ? `<a class="btn btn-secondary rb-load-more" rel="next" id="rbLoadMore" href="${blogPath(page + 1)}">Cargar más artículos</a>` : ''}</div>`;
     html = html.replace(/<div class="rb-load-more-wrap"[^>]*>[\s\S]*?<\/div>/, navigation);
     if (!html.includes('data-ssg-pagination')) throw new Error('Missing blog navigation slot');
-    if (page > 1) html = html.replace(/<link\b[^>]*rel="canonical"[^>]*>/, `<link rel="canonical" href="${SITE}${pathname}">`);
+    html = html.replace(/<link\b[^>]*rel="canonical"[^>]*>/, `<link rel="canonical" href="${SITE}${pathname}">`);
     html = html.replace('</body>', `${jsonScript('salero-blog-data', { page, totalPages, posts: items.map(({ id, slug, status, date, title, excerpt, _embedded }) => ({ id, slug, status, date, title, excerpt, _embedded })) })}\n</body>`);
     output.set(page === 1 ? 'la-rebotica/index.html' : `la-rebotica/page/${page}/index.html`, withSchema(html, pathname, render.entries(items, '/la-rebotica')).replace(/[ \t]+$/gm, ''));
   }
+  output.set('sitemap.xml', editorialSitemap(collections, totalPages));
   return output;
 }
 

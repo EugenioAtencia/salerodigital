@@ -35,7 +35,7 @@ for (const invalid of [{ ...item(0), slug: '../escape' }, { ...item(0), title: {
 
 for (const [count, pages] of [[0, 1], [12, 1], [13, 2], [20, 2], [50, 5], [200, 17]]) {
   const data = fixture(count), output = await renderCollections(root, data);
-  assert.equal(output.size, pages + 4);
+  assert.equal(output.size, pages + 5);
   const home = output.get('index.html');
   assert.equal((home.match(/<article class="service-row"/g) || []).length, 4);
   assert.equal((home.match(/<article class="sector-card"/g) || []).length, 3);
