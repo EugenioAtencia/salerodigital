@@ -1,1 +1,1 @@
-/el-menu/* /el-menu/detalle/index.html 200
+# Service detail URLs are served by Pages Functions; unknown paths use 404.html.

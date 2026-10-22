@@ -160,12 +160,12 @@ export async function onRequest(context) {
   }
 
   // Route article HTML through server rendering even when a Pages route falls back to its client shell.
-  // Keep the previous handler available if the CMS is temporarily unavailable.
+  // Preserve real 404/502 responses instead of serving the client shell with HTTP 200.
   let response;
   if (isBlogArticlePath(normalizedPath)) {
     const slug = normalizedPath.split('/').filter(Boolean).at(-1);
     const serverResponse = await handleBlogPostRequest({ ...context, params: { ...context.params, slug } });
-    response = serverResponse.status === 200 ? serverResponse : await context.next();
+    response = serverResponse;
   } else {
     response = await context.next();
   }
@@ -173,7 +173,7 @@ export async function onRequest(context) {
 
   if (!contentType.includes('text/html')) return response;
 
-  const schema = isBlogArticlePath(requestUrl.pathname) ? null : schemaForPath(requestUrl.pathname);
+  const schema = response.status >= 400 || isBlogArticlePath(requestUrl.pathname) ? null : schemaForPath(requestUrl.pathname);
   const html = await response.text();
   let nextHtml = replaceLegacyOrigin(html);
   nextHtml = injectMontserrat(nextHtml);
@@ -197,6 +197,10 @@ export async function onRequest(context) {
 
   const headers = new Headers(response.headers);
   headers.delete('content-length');
+  if (response.status >= 400) {
+    headers.set('X-Robots-Tag', 'noindex');
+    headers.set('Cache-Control', 'no-store, max-age=0, must-revalidate');
+  }
 
   return new Response(nextHtml, {
     status: response.status,

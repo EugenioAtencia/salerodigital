@@ -353,7 +353,7 @@ export function schemaForPath(pathname = '/') {
     const url = `/el-menu/${serviceMatch}/`;
     return schemaGraph([
       common,
-      webPageSchema({ url, name: item.name, description: item.description, type: 'ServicePage', mainEntity: `${absoluteUrl(url)}#service` }),
+      webPageSchema({ url, name: item.name, description: item.description, type: 'WebPage', mainEntity: `${absoluteUrl(url)}#service` }),
       breadcrumbSchema([{ name: 'Inicio', url: '/' }, { name: 'El Menú', url: '/el-menu/' }, { name: item.name, url }]),
       serviceSchema({ ...item, url })
     ]);
@@ -365,7 +365,7 @@ export function schemaForPath(pathname = '/') {
     const url = `/sectores/${sectorMatch}/`;
     return schemaGraph([
       common,
-      webPageSchema({ url, name: item.name, description: item.description, type: 'ServicePage', mainEntity: `${absoluteUrl(url)}#service` }),
+      webPageSchema({ url, name: item.name, description: item.description, type: 'WebPage', mainEntity: `${absoluteUrl(url)}#service` }),
       breadcrumbSchema([{ name: 'Inicio', url: '/' }, { name: 'Sectores', url: '/sectores/' }, { name: item.name, url }]),
       serviceSchema({ ...item, url })
     ]);
@@ -392,7 +392,7 @@ function staticPageData(path) {
       url: '/',
       name: 'Salero Digital',
       description: 'Agencia digital para negocios locales que quieren mejorar su web, SEO, redes sociales y campañas con estrategia y cercanía.',
-      type: 'HomePage',
+      type: 'WebPage',
       breadcrumb: [{ name: 'Inicio', url: '/' }],
       extra: [
         itemListSchema({
