@@ -83,19 +83,27 @@ export async function handleBlogIndexRequest(context, page = 1) {
   const source = page === 1 ? await context.next() : await context.env.ASSETS.fetch(new URL('/la-rebotica/', context.request.url));
   if (!source.ok) return source;
   const template = await source.clone().text();
+  let stage = 'cms-read';
   try {
     // Fresh reads bypass the CMS/CDN cache. No deploy hook or WordPress write is needed.
     const posts = await fetchCollection('posts', { timeoutMs: 8000, fetchImpl: (url, options) => {
       const fresh = new URL(url); fresh.searchParams.set('_salero_listing', crypto.randomUUID());
-      return fetch(fresh.toString(), { ...options, cf: { cacheTtl: 0, cacheEverything: false } });
+      return fetch(fresh.toString(), { ...options, headers: { ...options.headers, 'User-Agent': 'SaleroDigital-Cloudflare-Blog-SSR' }, cf: { cacheTtl: 0, cacheEverything: false } });
     } });
     if (!Number.isSafeInteger(page) || page < 1 || page > Math.max(1, Math.ceil(posts.length / PAGE_SIZE))) {
       return editorialResponse('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Página no encontrada | Salero Digital</title></head><body><main><h1>Página no encontrada</h1><a href="/la-rebotica/">Volver a La Rebotica</a></main></body></html>', 404, 'not-found');
     }
+    stage = 'render';
     return editorialResponse(renderBlogIndexHtml(template, posts, page), 200, 'wordpress-live', source.headers);
-  } catch {
+  } catch (error) {
+    const http = /HTTP (\d{3})/.exec(String(error.message || ''));
+    const code = http ? `cms-http-${http[1]}` : /X-WP-Total/i.test(error.message || '') ? 'cms-pagination-headers' : /acf/i.test(error.message || '') ? 'cms-acf-shape' : /Non-JSON|Content-Type|JSON/i.test(error.message || '') ? 'cms-invalid-json' : stage;
     // A temporary CMS outage keeps the existing first-page snapshot available.
-    if (page === 1) return editorialResponse(template, 200, 'snapshot-fallback', source.headers);
+    if (page === 1) {
+      const response = editorialResponse(template, 200, 'snapshot-fallback', source.headers);
+      response.headers.set('X-Salero-Editorial-Fallback', code);
+      return response;
+    }
     return editorialResponse('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>La Rebotica | Salero Digital</title></head><body><main><h1>La Rebotica no está disponible temporalmente</h1><a href="/la-rebotica/">Volver al blog</a></main></body></html>', 503, 'cms-unavailable');
   }
 }
