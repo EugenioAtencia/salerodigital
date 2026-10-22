@@ -1,6 +1,7 @@
 import { renderJsonLd, schemaForPath } from './_shared/schema.js';
 import { handleBlogPostRequest } from './_shared/blog-renderer.js';
 import { renderSitemap } from './_shared/sitemap-renderer.js';
+import { handleBlogIndexRequest } from './_shared/blog-index-renderer.js';
 
 const SITE_ORIGIN = 'https://agenciaconsalero.es';
 const LEGACY_ORIGIN = 'https://salero.webagencia360.com';
@@ -162,7 +163,10 @@ export async function onRequest(context) {
   // Route article HTML through server rendering even when a Pages route falls back to its client shell.
   // Preserve real 404/502 responses instead of serving the client shell with HTTP 200.
   let response;
-  if (isBlogArticlePath(normalizedPath)) {
+  const blogPage = normalizedPath.match(/^\/la-rebotica\/page\/(\d+)\/$/);
+  if (normalizedPath === '/la-rebotica/' || blogPage) {
+    response = await handleBlogIndexRequest(context, blogPage ? Number(blogPage[1]) : 1);
+  } else if (isBlogArticlePath(normalizedPath)) {
     const slug = normalizedPath.split('/').filter(Boolean).at(-1);
     const serverResponse = await handleBlogPostRequest({ ...context, params: { ...context.params, slug } });
     response = serverResponse;
