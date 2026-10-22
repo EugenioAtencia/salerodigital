@@ -33,6 +33,23 @@ async function fetchPost(slug) {
   return Array.isArray(data) && data.length ? data[0] : null;
 }
 
+// The listing uses the same CMS transport as individual articles.
+export async function fetchPublishedBlogPosts() {
+  const posts = [], ids = new Set(), slugs = new Set();
+  for (let page = 1; page <= 100; page++) {
+    const url = new URL(`${CMS_API_BASE}/posts`);
+    Object.entries({ status: 'publish', _embed: '1', per_page: '100', page: String(page), orderby: 'date', order: 'desc', _t: String(Date.now()) }).forEach(([key, value]) => url.searchParams.set(key, value));
+    const data = await fetchWpCollection(url);
+    if (!Array.isArray(data)) throw new Error('Invalid blog collection');
+    for (const post of data) {
+      if (post.status !== 'publish' || !Number.isSafeInteger(post.id) || !/^(?:[a-z0-9_-]|%[a-f0-9]{2})+$/i.test(post.slug || '') || typeof post.title?.rendered !== 'string' || typeof post.excerpt?.rendered !== 'string' || !Number.isFinite(Date.parse(post.date)) || ids.has(post.id) || slugs.has(post.slug)) throw new Error('Invalid blog record');
+      ids.add(post.id); slugs.add(post.slug); posts.push(post);
+    }
+    if (data.length < 100) return posts;
+  }
+  throw new Error('Blog pagination limit');
+}
+
 async function fetchBlogContext(post) {
   const categories = Array.isArray(post.categories) ? post.categories.filter(Boolean) : [];
 

@@ -7,8 +7,8 @@ const originalFetch = globalThis.fetch;
 const post = index => ({ id: index + 1, slug: `articulo-${index + 1}`, status: 'publish', date: '2026-10-22T09:00:00', title: { rendered: `Título actualizado ${index + 1}` }, excerpt: { rendered: `<p>Extracto actual de WordPress ${index + 1}.</p>` }, _embedded: { 'wp:term': [[{ id: 3, name: 'SEO local', slug: 'seo-local' }]] } });
 const context = page => ({ request: new Request(`https://agenciaconsalero.es${page === 1 ? '/la-rebotica/' : `/la-rebotica/page/${page}/`}`), next: async () => new Response(template, { headers: { 'Content-Type': 'text/html', ETag: 'old-snapshot' } }), env: { ASSETS: { fetch: async () => new Response(template) } } });
 const cms = items => async (url, options) => {
-  assert.ok(new URL(url).searchParams.get('_salero_listing'));
-  assert.equal(options.cache, 'no-store');
+  assert.ok(new URL(url).searchParams.get('_t'));
+  assert.equal(options.headers['User-Agent'], 'SaleroDigital-Cloudflare-Blog-SSR');
   assert.equal(options.cf.cacheTtl, 0);
   return new Response(JSON.stringify(items), { headers: { 'Content-Type': 'application/json', 'X-WP-Total': String(items.length), 'X-WP-TotalPages': String(Math.ceil(items.length / 100)) } });
 };

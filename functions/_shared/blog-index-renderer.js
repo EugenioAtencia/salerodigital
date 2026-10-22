@@ -1,4 +1,4 @@
-import { fetchCollection } from '../../scripts/lib/cms-collections.mjs';
+import { fetchPublishedBlogPosts } from './blog-renderer.js';
 import { renderJsonLd, schemaForPath, SITE_ORIGIN } from './schema.js';
 
 const PAGE_SIZE = 12;
@@ -86,10 +86,7 @@ export async function handleBlogIndexRequest(context, page = 1) {
   let stage = 'cms-read';
   try {
     // Fresh reads bypass the CMS/CDN cache. No deploy hook or WordPress write is needed.
-    const posts = await fetchCollection('posts', { timeoutMs: 8000, fetchImpl: (url, options) => {
-      const fresh = new URL(url); fresh.searchParams.set('_salero_listing', crypto.randomUUID());
-      return fetch(fresh.toString(), { ...options, headers: { ...options.headers, 'User-Agent': 'SaleroDigital-Cloudflare-Blog-SSR' }, cf: { cacheTtl: 0, cacheEverything: false } });
-    } });
+    const posts = await fetchPublishedBlogPosts();
     if (!Number.isSafeInteger(page) || page < 1 || page > Math.max(1, Math.ceil(posts.length / PAGE_SIZE))) {
       return editorialResponse('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Página no encontrada | Salero Digital</title></head><body><main><h1>Página no encontrada</h1><a href="/la-rebotica/">Volver a La Rebotica</a></main></body></html>', 404, 'not-found');
     }
@@ -102,6 +99,7 @@ export async function handleBlogIndexRequest(context, page = 1) {
     if (page === 1) {
       const response = editorialResponse(template, 200, 'snapshot-fallback', source.headers);
       response.headers.set('X-Salero-Editorial-Fallback', code);
+      response.headers.set('X-Salero-Editorial-Reason', String(error.message || error.name || 'unavailable').replace(/https?:\/\/\S+/gi, '[origin]').replace(/[^a-zA-Z0-9 .:_-]/g, '').slice(0, 120));
       return response;
     }
     return editorialResponse('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>La Rebotica | Salero Digital</title></head><body><main><h1>La Rebotica no está disponible temporalmente</h1><a href="/la-rebotica/">Volver al blog</a></main></body></html>', 503, 'cms-unavailable');
