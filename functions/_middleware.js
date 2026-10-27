@@ -141,6 +141,45 @@ const GLOBAL_FOOTER = `<footer class="footer">
   </div>
 </footer>`;
 
+
+function enrichPregonero(html = '', route = '') {
+  if (route !== '/el-menu/el-pregonero/' || html.includes('id="pregonero-seo-local"')) return html;
+  // Keep the visual service name as an eyebrow while making the principal heading descriptive.
+  let next = html.replace(/(<h1\b[^>]*>)\s*El Pregonero\s*(<\/h1>)/i,
+    '$1Agencia SEO local en Morón de la Frontera$2');
+  if (next === html) return html; // Do not inject into an unexpected page/template.
+  const section = `
+<section id="pregonero-seo-local" class="section" aria-labelledby="pregonero-seo-heading">
+  <div class="container" style="max-width:1080px">
+    <span class="eyebrow">El Pregonero · SEO local</span>
+    <h2 id="pregonero-seo-heading">Que te encuentren cuando te están buscando</h2>
+    <p class="lead">En Salero Digital ayudamos a negocios de Morón de la Frontera, la Sierra Sur y la Campiña a mejorar su presencia en Google, Google Maps y las búsquedas que pueden convertirse en llamadas, visitas o solicitudes de presupuesto.</p>
+    <h2>¿Qué es el SEO local y cómo ayuda a tu negocio?</h2>
+    <p>El SEO local mejora la visibilidad de una empresa cuando alguien busca sus productos o servicios en un área concreta. Trabajamos la web y la ficha de Google Business Profile para facilitar que los clientes encuentren información útil y puedan contactar contigo. La visibilidad depende de la relevancia, la distancia y la competencia de cada búsqueda.</p>
+    <h2>Qué trabajamos en tu estrategia de posicionamiento local</h2>
+    <div class="cards-grid">
+      <article><h3>Auditoría y competencia</h3><p>Estudiamos el estado de tu web, tus búsquedas prioritarias y los negocios que compiten por la atención de tus posibles clientes.</p></article>
+      <article><h3>Google Business Profile</h3><p>Revisamos categorías, servicios, información, imágenes y coherencia con la web, además de oportunidades para mejorar la reputación y la gestión de reseñas.</p></article>
+      <article><h3>SEO técnico y contenidos</h3><p>Optimizamos páginas estratégicas, encabezados, enlaces internos y contenidos que responden a búsquedas con intención comercial.</p></article>
+      <article><h3>Medición y seguimiento</h3><p>Seguimos visibilidad, clics y, cuando existe medición adecuada, contactos, formularios y oportunidades reales de negocio.</p></article>
+    </div>
+    <h2>Cómo trabajamos el SEO local</h2>
+    <p>Comenzamos con una cata digital para entender tus objetivos. Después analizamos la situación de partida, priorizamos las mejoras y revisamos periódicamente los resultados. No prometemos primeras posiciones: proponemos acciones con sentido comercial y explicamos qué se puede medir.</p>
+    <h2>SEO local en Morón de la Frontera y municipios cercanos</h2>
+    <p>Trabajamos con negocios de Morón de la Frontera y atendemos proyectos de Arahal, Marchena, Montellano, La Puebla de Cazalla, El Coronil, Paradas y Osuna. Las futuras páginas específicas de cada municipio se enlazarán desde aquí cuando estén publicadas y aporten información diferenciada.</p>
+    <h2>Preguntas frecuentes sobre SEO local</h2>
+    <div class="pregonero-faq">
+      <h3>¿Cuánto tarda el SEO local en dar resultados?</h3><p>Depende de la competencia, la situación inicial de la web y la ficha de Google, y las mejoras necesarias. Algunas acciones se reflejan antes y otras requieren varios meses de seguimiento.</p>
+      <h3>¿Necesito una web para aparecer en Google Maps?</h3><p>No siempre. Una empresa elegible puede tener su perfil de Google sin página web, pero una web propia permite explicar sus servicios y posicionarse en más búsquedas.</p>
+      <h3>¿Qué diferencia hay entre SEO local y Google Ads?</h3><p>El SEO local busca mejorar la visibilidad orgánica; Google Ads permite contratar anuncios. Son canales distintos y complementarios, con costes y plazos diferentes.</p>
+      <h3>¿Podéis mejorar el posicionamiento de mi web actual?</h3><p>Sí. Primero revisamos su estado técnico, contenidos y oportunidades. No siempre hace falta crear una web nueva.</p>
+    </div>
+    <p><a class="btn btn-primary" href="/hablamos/">Pide tu cata digital</a></p>
+  </div>
+</section>`;
+  return next.replace(/<\/main>/i, section + '\n</main>');
+}
+
 export async function onRequest(context) {
   const requestUrl = new URL(context.request.url);
 
@@ -190,6 +229,7 @@ export async function onRequest(context) {
   nextHtml = removeLaRecetaLinks(nextHtml);
   nextHtml = optimizeAutoplayVideos(nextHtml);
   nextHtml = injectSeo(nextHtml, SEO_PAGES[normalizedPath]);
+  nextHtml = enrichPregonero(nextHtml, normalizedPath);
   nextHtml = injectGtm(nextHtml);
 
   if (schema && !nextHtml.includes('id="salero-schema-graph"') && !nextHtml.includes("id='salero-schema-graph'")) {
