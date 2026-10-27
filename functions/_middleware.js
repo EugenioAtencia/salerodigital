@@ -10,6 +10,7 @@ const GTM_ID = 'GTM-WSLMDJ8N';
 
 const MONTSERRAT_CSS = '<link rel="stylesheet" href="/assets/css/font-body-montserrat.css?v=3">';
 const PREGONERO_GRID_CSS = '<style id="pregonero-four-grid-style">.pregonero-seo-cards .pregonero-four-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.pregonero-seo-cards .pregonero-four-grid .service-action-card{min-width:0;padding:26px 20px}@media(max-width:1050px){.pregonero-seo-cards .pregonero-four-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.pregonero-seo-cards .pregonero-four-grid{grid-template-columns:1fr}}</style>';
+const CIMIENTOS_GRID_CSS = '<style id="cimientos-web-grid-style">.cimientos-web-cards .cimientos-four-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.cimientos-web-cards .cimientos-four-grid .service-action-card{min-width:0;padding:26px 20px}@media(max-width:1050px){.cimientos-web-cards .cimientos-four-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.cimientos-web-cards .cimientos-four-grid{grid-template-columns:1fr}}</style>';
 const SERVICE_RELATED_CSS = '<link rel="stylesheet" href="/assets/css/service-related.css?v=1">';
 const SERVICE_RELATED_JS = '<script src="/assets/js/service-related.js?v=1" defer></script>';
 const SERVICE_HERO_SECTOR_CSS = '<link rel="stylesheet" href="/assets/css/service-hero-sector-style.css?v=4">';
@@ -44,8 +45,8 @@ const SEO_PAGES = {
     canonical: '/el-menu/'
   },
   '/el-menu/cimientos-digitales/': {
-    title: 'Desarrollo web para negocios locales - Salero Digital',
-    description: 'Creamos webs rápidas, seguras y orientadas a conversión para negocios locales que necesitan una presencia digital profesional y rentable.',
+    title: 'Diseño y desarrollo web en Morón de la Frontera | Salero Digital',
+    description: 'Diseñamos páginas web y tiendas online para negocios de Morón y comarca. Desarrollo a medida, diseño responsive, SEO y enfoque comercial.',
     canonical: '/el-menu/cimientos-digitales/'
   },
   '/el-menu/el-pregonero/': {
@@ -192,6 +193,54 @@ function enrichPregonero(html = '', route = '') {
   return next.replace(/<\/main>/i, section + '\n</main>');
 }
 
+
+function enrichCimientos(html = '', route = '') {
+  if (route !== '/el-menu/cimientos-digitales/' || html.includes('id="cimientos-web-services"')) return html;
+  let next = html.replace(/(<h1\b[^>]*>)\s*Cimientos Digitales\s*(<\/h1>)/i,
+    '$1Diseño y desarrollo web en Morón de la Frontera$2');
+  if (next === html) return html;
+  const faqs = [
+    ['¿Cuánto cuesta diseñar una página web?', 'Depende del número de secciones, funcionalidades, contenidos, integraciones y mantenimiento. Tras revisar tu proyecto te proponemos un presupuesto con alcance y entregables claros.'],
+    ['¿Mi página web funcionará en móviles?', 'Sí. Diseñamos pensando en móviles, tabletas y ordenadores, con navegación, formularios y contenidos adaptados a cada pantalla.'],
+    ['¿Podéis renovar mi web sin perder su posicionamiento?', 'Sí, partimos de una auditoría de las URL actuales y planificamos contenidos, redirecciones y medición para reducir el riesgo de perder visibilidad. Ninguna migración garantiza conservar todas las posiciones.'],
+    ['¿La página tendrá SEO y podré actualizarla?', 'Preparamos una base SEO técnica con títulos, estructura, indexabilidad y rendimiento, y definimos contigo qué contenidos podrás gestionar. El posicionamiento continuado se trabaja como una estrategia adicional.']
+  ];
+  const accordion = '<div class="service-faq-accordion">' + faqs.map(([q,a],i) =>
+    '<details' + (i===0 ? ' open' : '') + '><summary><span>' + q + '</span></summary><div class="service-faq-answer"><p>' + a + '</p></div></details>'
+  ).join('') + '</div>';
+  const faqBlock = /<div class="service-faq-accordion">[\s\S]*?<\/div><\/section>/i;
+  if (!faqBlock.test(next)) return html;
+  const cards = `
+<section id="cimientos-web-services" class="service-action-section cimientos-web-cards" aria-labelledby="cimientos-web-heading">
+  <div class="service-block-heading">
+    <span class="service-section-kicker">Cimientos Digitales · Desarrollo web</span>
+    <h2 id="cimientos-web-heading">Qué construimos para tu negocio</h2>
+    <p>Una web no es solo un escaparate. Es una herramienta para explicar qué haces, generar confianza y facilitar el contacto o la venta.</p>
+  </div>
+  <div class="cimientos-four-grid">
+    <article class="service-action-card service-action-incluye"><span>01</span><h3>Diseño y experiencia de usuario</h3><p>Organizamos el contenido y diseñamos una navegación clara, adaptada a móviles y pensada para las necesidades de tus clientes.</p></article>
+    <article class="service-action-card service-action-beneficios"><span>02</span><h3>Desarrollo y funcionalidades</h3><p>Construimos webs corporativas, catálogos y tiendas online con formularios, integraciones y opciones de gestión según el proyecto.</p></article>
+    <article class="service-action-card service-action-proceso"><span>03</span><h3>SEO técnico y rendimiento</h3><p>Preparamos estructura, títulos, enlaces, accesibilidad básica, velocidad y configuración de indexación para que tu web tenga buenos cimientos.</p></article>
+    <article class="service-action-card service-action-incluye"><span>04</span><h3>Publicación y seguimiento</h3><p>Revisamos el funcionamiento antes de publicar, comprobamos formularios y medición, y acordamos las tareas de mantenimiento necesarias.</p></article>
+  </div>
+</section>`;
+  next = next.replace(faqBlock, accordion + '</section>' + cards);
+  const additional = `
+<section class="section cimientos-web-intro" aria-labelledby="cimientos-web-intro-title">
+  <div class="container" style="max-width:1080px">
+    <span class="eyebrow">Cimientos Digitales</span>
+    <h2 id="cimientos-web-intro-title">Tu web, preparada para trabajar por tu negocio</h2>
+    <p class="lead">En Salero Digital diseñamos y desarrollamos páginas web para empresas, comercios y profesionales de Morón de la Frontera, la Sierra Sur y la Campiña. Buscamos que cada proyecto sea fácil de usar, transmita confianza y ayude a conseguir contactos o ventas.</p>
+    <h2>Cómo desarrollamos una página web</h2>
+    <p>Empezamos por conocer tus servicios, clientes y objetivos. Después definimos la arquitectura de contenidos, trabajamos el diseño, desarrollamos las funciones necesarias y comprobamos el resultado antes del lanzamiento. Si ya tienes una web, estudiamos primero qué conviene conservar, mejorar o redirigir.</p>
+    <h2>Diseño web para negocios de Morón y comarca</h2>
+    <p>Trabajamos con proyectos de Morón de la Frontera y municipios del entorno como Arahal, Marchena, Montellano, La Puebla de Cazalla, Paradas y Osuna, tanto para nuevas webs como para rediseños y mejoras de proyectos existentes.</p>
+    <p><a class="btn btn-primary" href="/hablamos/">Pide tu cata digital</a></p>
+  </div>
+</section>`;
+  return next.replace(/<\/main>/i, additional + '\n</main>');
+}
+
 export async function onRequest(context) {
   const requestUrl = new URL(context.request.url);
 
@@ -242,6 +291,8 @@ export async function onRequest(context) {
   nextHtml = optimizeAutoplayVideos(nextHtml);
   nextHtml = injectSeo(nextHtml, SEO_PAGES[normalizedPath]);
   nextHtml = enrichPregonero(nextHtml, normalizedPath);
+  nextHtml = enrichCimientos(nextHtml, normalizedPath);
+  if (normalizedPath === '/el-menu/cimientos-digitales/' && nextHtml.includes('cimientos-four-grid')) nextHtml = nextHtml.replace('</head>', CIMIENTOS_GRID_CSS + '</head>');
   if (normalizedPath === '/el-menu/el-pregonero/' && nextHtml.includes('pregonero-four-grid')) nextHtml = nextHtml.replace('</head>', PREGONERO_GRID_CSS + '</head>');
   nextHtml = injectGtm(nextHtml);
 
