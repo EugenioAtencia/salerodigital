@@ -48,8 +48,8 @@ const SEO_PAGES = {
     canonical: '/el-menu/cimientos-digitales/'
   },
   '/el-menu/el-pregonero/': {
-    title: 'SEO local en Morón y comarca - Salero Digital',
-    description: 'Mejoramos tu presencia en Google y Maps para que clientes de Morón, Arahal, Marchena y la comarca encuentren tu negocio.',
+    title: 'Agencia SEO local en Morón de la Frontera | Salero Digital',
+    description: 'Mejoramos el SEO local de tu negocio en Morón de la Frontera y comarca. Google Maps, posicionamiento web y estrategia para captar clientes.',
     canonical: '/el-menu/el-pregonero/'
   },
   '/el-menu/gracia-y-presencia/': {
