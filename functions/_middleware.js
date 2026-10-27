@@ -12,6 +12,7 @@ const MONTSERRAT_CSS = '<link rel="stylesheet" href="/assets/css/font-body-monts
 const PREGONERO_GRID_CSS = '<style id="pregonero-four-grid-style">.pregonero-seo-cards .pregonero-four-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.pregonero-seo-cards .pregonero-four-grid .service-action-card{min-width:0;padding:26px 20px}@media(max-width:1050px){.pregonero-seo-cards .pregonero-four-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.pregonero-seo-cards .pregonero-four-grid{grid-template-columns:1fr}}</style>';
 const CIMIENTOS_GRID_CSS = '<style id="cimientos-web-grid-style">.cimientos-web-cards .cimientos-four-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.cimientos-web-cards .cimientos-four-grid .service-action-card{min-width:0;padding:26px 20px}@media(max-width:1050px){.cimientos-web-cards .cimientos-four-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.cimientos-web-cards .cimientos-four-grid{grid-template-columns:1fr}}</style>';
 const GRACIA_GRID_CSS = '<style id="gracia-social-grid-style">.gracia-social-cards .gracia-four-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.gracia-social-cards .gracia-four-grid .service-action-card{min-width:0;padding:26px 20px}@media(max-width:1050px){.gracia-social-cards .gracia-four-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.gracia-social-cards .gracia-four-grid{grid-template-columns:1fr}}</style>';
+const EMPUJON_GRID_CSS = '<style id="empujon-ads-grid-style">.empujon-ads-cards .empujon-four-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.empujon-ads-cards .empujon-four-grid .service-action-card{min-width:0;padding:26px 20px}@media(max-width:1050px){.empujon-ads-cards .empujon-four-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.empujon-ads-cards .empujon-four-grid{grid-template-columns:1fr}}</style>';
 const SERVICE_RELATED_CSS = '<link rel="stylesheet" href="/assets/css/service-related.css?v=1">';
 const SERVICE_RELATED_JS = '<script src="/assets/js/service-related.js?v=1" defer></script>';
 const SERVICE_HERO_SECTOR_CSS = '<link rel="stylesheet" href="/assets/css/service-hero-sector-style.css?v=4">';
@@ -61,8 +62,8 @@ const SEO_PAGES = {
     canonical: '/el-menu/gracia-y-presencia/'
   },
   '/el-menu/el-empujon/': {
-    title: 'Campañas de Google Ads y Meta Ads - Salero Digital',
-    description: 'Lanzamos campañas en Google Ads y Meta Ads para captar tráfico, leads y clientes con inversión controlada y medición clara.',
+    title: 'Agencia Google Ads y Meta Ads en Morón | Salero Digital',
+    description: 'Gestionamos campañas de Google Ads y Meta Ads para negocios de Morón de la Frontera y comarca. Estrategia, anuncios, conversiones y medición.',
     canonical: '/el-menu/el-empujon/'
   },
   '/sectores/': {
@@ -289,6 +290,53 @@ function enrichGracia(html = '', route = '') {
   return next.replace(/<\/main>/i, additional + '\n</main>');
 }
 
+
+function enrichEmpujon(html = '', route = '') {
+  if (route !== '/el-menu/el-empujon/' || html.includes('id="empujon-ads-content"')) return html;
+  let next = html.replace(/(<h1\b[^>]*>)\s*El Empujón\s*(<\/h1>)/i, '$1Agencia de Google Ads y Meta Ads en Morón de la Frontera$2');
+  if (next === html) return html;
+  const faqs = [
+    ['¿Qué presupuesto necesito para anunciarme en Google o Meta?', 'Depende de tus objetivos, sector, competencia y zona de captación. Primero definimos una inversión viable y distinguimos el presupuesto publicitario de los honorarios de gestión.'],
+    ['¿Qué diferencia hay entre Google Ads y Meta Ads?', 'Google Ads permite llegar a personas que buscan servicios o productos; Meta Ads ayuda a llegar a públicos segmentados en Facebook e Instagram. La elección depende de la demanda y los objetivos del negocio.'],
+    ['¿Cómo sabemos si las campañas generan clientes?', 'Configuramos y revisamos la medición de acciones relevantes, como formularios, llamadas o ventas. Analizamos la calidad de los contactos, el coste y los resultados disponibles, no solo clics.'],
+    ['¿Se pueden mejorar campañas que ya están activas?', 'Sí. Auditamos la configuración, las búsquedas o audiencias, los anuncios, los presupuestos y el seguimiento de conversiones antes de proponer cambios.']
+  ];
+  const accordion = '<div class="service-faq-accordion">' + faqs.map(([q,a],i) =>
+    '<details' + (i===0?' open':'') + '><summary><span>' + q + '</span></summary><div class="service-faq-answer"><p>' + a + '</p></div></details>'
+  ).join('') + '</div>';
+  const faqBlock = /<div class="service-faq-accordion">[\s\S]*?<\/div><\/section>/i;
+  if (!faqBlock.test(next)) return html;
+  const cards = `
+<section id="empujon-ads-content" class="service-action-section empujon-ads-cards" aria-labelledby="empujon-ads-heading">
+  <div class="service-block-heading">
+    <span class="service-section-kicker">El Empujón · Publicidad digital</span>
+    <h2 id="empujon-ads-heading">Qué trabajamos en tus campañas publicitarias</h2>
+    <p>Anuncios con una estrategia comercial, un presupuesto definido y una medición que ayude a tomar decisiones.</p>
+  </div>
+  <div class="empujon-four-grid">
+    <article class="service-action-card service-action-incluye"><span>01</span><h3>Estrategia y auditoría</h3><p>Analizamos tus objetivos, clientes, competencia, presupuesto y campañas anteriores para identificar oportunidades.</p></article>
+    <article class="service-action-card service-action-beneficios"><span>02</span><h3>Google Ads</h3><p>Planificamos y gestionamos anuncios de búsqueda y otros formatos adecuados para captar demanda relevante.</p></article>
+    <article class="service-action-card service-action-proceso"><span>03</span><h3>Meta Ads</h3><p>Diseñamos campañas para Facebook e Instagram, con segmentación, creatividades y mensajes adaptados al público.</p></article>
+    <article class="service-action-card service-action-incluye"><span>04</span><h3>Conversiones y optimización</h3><p>Revisamos formularios, llamadas y ventas medibles, analizamos costes y ajustamos las campañas según los resultados.</p></article>
+  </div>
+</section>`;
+  next = next.replace(faqBlock, accordion + '</section>' + cards);
+  const additional = `
+<section class="section empujon-ads-intro" aria-labelledby="empujon-ads-intro-title">
+  <div class="container" style="max-width:1080px">
+    <span class="eyebrow">El Empujón</span>
+    <h2 id="empujon-ads-intro-title">Publicidad digital para generar oportunidades, no solo clics</h2>
+    <p class="lead">En Salero Digital ayudamos a empresas, comercios y profesionales de Morón de la Frontera, la Sierra Sur y la Campiña a planificar y gestionar publicidad en Google, Facebook e Instagram con objetivos comerciales claros.</p>
+    <h2>Cómo gestionamos tus campañas de anuncios</h2>
+    <p>Comenzamos por entender qué quieres conseguir y cómo se convierte un contacto en cliente. Revisamos la medición, definimos públicos y presupuesto, configuramos las campañas y analizamos periódicamente las conversiones y la calidad de los resultados. No prometemos un número fijo de ventas ni resultados inmediatos.</p>
+    <h2>Campañas para negocios de Morón y comarca</h2>
+    <p>Trabajamos con empresas de Morón de la Frontera y municipios próximos como Arahal, Marchena, Montellano, La Puebla de Cazalla, Paradas y Osuna. Adaptamos cada campaña al ámbito de servicio real y a las búsquedas o audiencias que tienen sentido para el negocio.</p>
+    <p><a class="btn btn-primary" href="/hablamos/">Pide tu cata digital</a></p>
+  </div>
+</section>`;
+  return next.replace(/<\/main>/i, additional + '\n</main>');
+}
+
 export async function onRequest(context) {
   const requestUrl = new URL(context.request.url);
 
@@ -341,6 +389,8 @@ export async function onRequest(context) {
   nextHtml = enrichPregonero(nextHtml, normalizedPath);
   nextHtml = enrichCimientos(nextHtml, normalizedPath);
   nextHtml = enrichGracia(nextHtml, normalizedPath);
+  nextHtml = enrichEmpujon(nextHtml, normalizedPath);
+  if (normalizedPath === '/el-menu/el-empujon/' && nextHtml.includes('empujon-four-grid')) nextHtml = nextHtml.replace('</head>', EMPUJON_GRID_CSS + '</head>');
   if (normalizedPath === '/el-menu/gracia-y-presencia/' && nextHtml.includes('gracia-four-grid')) nextHtml = nextHtml.replace('</head>', GRACIA_GRID_CSS + '</head>');
   if (normalizedPath === '/el-menu/cimientos-digitales/' && nextHtml.includes('cimientos-four-grid')) nextHtml = nextHtml.replace('</head>', CIMIENTOS_GRID_CSS + '</head>');
   if (normalizedPath === '/el-menu/el-pregonero/' && nextHtml.includes('pregonero-four-grid')) nextHtml = nextHtml.replace('</head>', PREGONERO_GRID_CSS + '</head>');
