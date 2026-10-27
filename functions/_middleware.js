@@ -179,10 +179,10 @@ function enrichPregonero(html = '', route = '') {
   const accordion = '<div class="service-faq-accordion">' + faqs.map(([q, a], i) =>
     '<details' + (i === 0 ? ' open' : '') + '><summary><span>' + q + '</span></summary><div class="service-faq-answer"><p>' + a + '</p></div></details>'
   ).join('') + '</div>';
-  const faqBlock = /<div class="service-faq-accordion">[\\s\\S]*?<\\/div><\\/section>/i;
-  if (!faqBlock.test(next)) return html; // Keep original output if the expected design is absent.
+  const faqBlock = /<div class="service-faq-accordion">[\s\S]*?<\/div><\/section>/i;
+  if (!faqBlock.test(next)) return html;
   next = next.replace(faqBlock, accordion + '</section>');
-  return next.replace(/<\\/main>/i, section + '\\n</main>');
+  return next.replace(/<\/main>/i, section + '\n</main>');
 }
 
 export async function onRequest(context) {
