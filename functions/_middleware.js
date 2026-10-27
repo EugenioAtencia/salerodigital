@@ -11,6 +11,7 @@ const GTM_ID = 'GTM-WSLMDJ8N';
 const MONTSERRAT_CSS = '<link rel="stylesheet" href="/assets/css/font-body-montserrat.css?v=3">';
 const PREGONERO_GRID_CSS = '<style id="pregonero-four-grid-style">.pregonero-seo-cards .pregonero-four-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.pregonero-seo-cards .pregonero-four-grid .service-action-card{min-width:0;padding:26px 20px}@media(max-width:1050px){.pregonero-seo-cards .pregonero-four-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.pregonero-seo-cards .pregonero-four-grid{grid-template-columns:1fr}}</style>';
 const CIMIENTOS_GRID_CSS = '<style id="cimientos-web-grid-style">.cimientos-web-cards .cimientos-four-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.cimientos-web-cards .cimientos-four-grid .service-action-card{min-width:0;padding:26px 20px}@media(max-width:1050px){.cimientos-web-cards .cimientos-four-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.cimientos-web-cards .cimientos-four-grid{grid-template-columns:1fr}}</style>';
+const GRACIA_GRID_CSS = '<style id="gracia-social-grid-style">.gracia-social-cards .gracia-four-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.gracia-social-cards .gracia-four-grid .service-action-card{min-width:0;padding:26px 20px}@media(max-width:1050px){.gracia-social-cards .gracia-four-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.gracia-social-cards .gracia-four-grid{grid-template-columns:1fr}}</style>';
 const SERVICE_RELATED_CSS = '<link rel="stylesheet" href="/assets/css/service-related.css?v=1">';
 const SERVICE_RELATED_JS = '<script src="/assets/js/service-related.js?v=1" defer></script>';
 const SERVICE_HERO_SECTOR_CSS = '<link rel="stylesheet" href="/assets/css/service-hero-sector-style.css?v=4">';
@@ -55,8 +56,8 @@ const SEO_PAGES = {
     canonical: '/el-menu/el-pregonero/'
   },
   '/el-menu/gracia-y-presencia/': {
-    title: 'Gestión de redes sociales - Salero Digital',
-    description: 'Creamos estrategia, calendario y contenido para que tu marca tenga presencia real, conecte con su comunidad y genere confianza.',
+    title: 'Gestión de redes sociales en Morón | Salero Digital',
+    description: 'Gestionamos redes sociales para empresas de Morón de la Frontera y comarca. Estrategia, reels, contenidos y seguimiento profesional.',
     canonical: '/el-menu/gracia-y-presencia/'
   },
   '/el-menu/el-empujon/': {
@@ -241,6 +242,53 @@ function enrichCimientos(html = '', route = '') {
   return next.replace(/<\/main>/i, additional + '\n</main>');
 }
 
+
+function enrichGracia(html = '', route = '') {
+  if (route !== '/el-menu/gracia-y-presencia/' || html.includes('id="gracia-social-content"')) return html;
+  let next = html.replace(/(<h1\b[^>]*>)\s*Gracia y Presencia\s*(<\/h1>)/i, '$1Gestión profesional de redes sociales en Morón de la Frontera$2');
+  if (next === html) return html;
+  const faqs = [
+    ['¿Qué incluye la gestión profesional de redes sociales?', 'Analizamos tu marca y audiencia, definimos una estrategia de contenidos, preparamos publicaciones, coordinamos su programación y revisamos los resultados. El alcance exacto de cada servicio se define en la propuesta.'],
+    ['¿En qué redes sociales debería estar mi negocio?', 'Depende de dónde estén tus clientes y del contenido que puedas ofrecer. Estudiamos si tiene sentido trabajar Instagram, Facebook, TikTok o LinkedIn, sin abrir perfiles por obligación.'],
+    ['¿También creáis vídeos, reels y fotografías?', 'Podemos planificar y producir contenidos audiovisuales para los canales acordados. Antes concretamos grabaciones, materiales disponibles, frecuencia y formatos necesarios.'],
+    ['¿Cómo medimos si las redes sociales funcionan?', 'Revisamos alcance, interacción, visitas al perfil, clics y, cuando se pueden atribuir correctamente, consultas y conversiones. No nos limitamos a contar seguidores.']
+  ];
+  const accordion = '<div class="service-faq-accordion">' + faqs.map(([q,a],i) =>
+    '<details' + (i===0?' open':'') + '><summary><span>' + q + '</span></summary><div class="service-faq-answer"><p>' + a + '</p></div></details>'
+  ).join('') + '</div>';
+  const faqBlock = /<div class="service-faq-accordion">[\s\S]*?<\/div><\/section>/i;
+  if (!faqBlock.test(next)) return html;
+  const cards = `
+<section id="gracia-social-content" class="service-action-section gracia-social-cards" aria-labelledby="gracia-social-heading">
+  <div class="service-block-heading">
+    <span class="service-section-kicker">Gracia y Presencia · Redes sociales</span>
+    <h2 id="gracia-social-heading">Qué trabajamos en tus redes sociales</h2>
+    <p>Un plan de contenidos que combine identidad de marca, utilidad para tus clientes y objetivos medibles.</p>
+  </div>
+  <div class="gracia-four-grid">
+    <article class="service-action-card service-action-incluye"><span>01</span><h3>Estrategia y planificación</h3><p>Estudiamos tu negocio, los públicos, los canales adecuados y los temas que merece la pena comunicar.</p></article>
+    <article class="service-action-card service-action-beneficios"><span>02</span><h3>Diseño y contenido audiovisual</h3><p>Preparamos copys, creatividades, fotografías, reels y vídeos según los formatos y recursos del proyecto.</p></article>
+    <article class="service-action-card service-action-proceso"><span>03</span><h3>Gestión y publicación</h3><p>Organizamos el calendario editorial y programamos los contenidos, respetando la voz de tu marca y las particularidades de cada canal.</p></article>
+    <article class="service-action-card service-action-incluye"><span>04</span><h3>Análisis y mejora continua</h3><p>Revisamos alcance, interacción, tráfico y oportunidades para ajustar la estrategia con datos.</p></article>
+  </div>
+</section>`;
+  next = next.replace(faqBlock, accordion + '</section>' + cards);
+  const additional = `
+<section class="section gracia-social-intro" aria-labelledby="gracia-social-intro-title">
+  <div class="container" style="max-width:1080px">
+    <span class="eyebrow">Gracia y Presencia</span>
+    <h2 id="gracia-social-intro-title">Redes sociales con estrategia, no publicaciones por publicar</h2>
+    <p class="lead">En Salero Digital ayudamos a comercios, empresas y profesionales de Morón de la Frontera, la Sierra Sur y la Campiña a desarrollar una presencia en redes sociales reconocible y útil para su negocio.</p>
+    <h2>Cómo gestionamos las redes de tu empresa</h2>
+    <p>Empezamos por comprender tu actividad y definir a quién queremos llegar. Diseñamos un calendario de contenidos, acordamos los formatos y organizamos la producción, revisión y publicación. Después interpretamos los resultados para mejorar sin depender únicamente de métricas de popularidad.</p>
+    <h2>Comunicación para negocios de Morón y su comarca</h2>
+    <p>Prestamos servicios de gestión de redes sociales a negocios de Morón de la Frontera y localidades cercanas como Arahal, Marchena, Montellano, La Puebla de Cazalla, Paradas y Osuna. Adaptamos los mensajes a cada marca y a sus clientes, sin utilizar campañas idénticas para todos.</p>
+    <p><a class="btn btn-primary" href="/hablamos/">Pide tu cata digital</a></p>
+  </div>
+</section>`;
+  return next.replace(/<\/main>/i, additional + '\n</main>');
+}
+
 export async function onRequest(context) {
   const requestUrl = new URL(context.request.url);
 
@@ -292,6 +340,8 @@ export async function onRequest(context) {
   nextHtml = injectSeo(nextHtml, SEO_PAGES[normalizedPath]);
   nextHtml = enrichPregonero(nextHtml, normalizedPath);
   nextHtml = enrichCimientos(nextHtml, normalizedPath);
+  nextHtml = enrichGracia(nextHtml, normalizedPath);
+  if (normalizedPath === '/el-menu/gracia-y-presencia/' && nextHtml.includes('gracia-four-grid')) nextHtml = nextHtml.replace('</head>', GRACIA_GRID_CSS + '</head>');
   if (normalizedPath === '/el-menu/cimientos-digitales/' && nextHtml.includes('cimientos-four-grid')) nextHtml = nextHtml.replace('</head>', CIMIENTOS_GRID_CSS + '</head>');
   if (normalizedPath === '/el-menu/el-pregonero/' && nextHtml.includes('pregonero-four-grid')) nextHtml = nextHtml.replace('</head>', PREGONERO_GRID_CSS + '</head>');
   nextHtml = injectGtm(nextHtml);
