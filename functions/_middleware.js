@@ -163,7 +163,7 @@ function enrichPregonero(html = '', route = '') {
     <h2>Cómo trabajamos el SEO local</h2>
     <p>Comenzamos con una cata digital para entender tus objetivos. Después analizamos la situación de partida, priorizamos las mejoras y revisamos periódicamente los resultados. No prometemos primeras posiciones: proponemos acciones con sentido comercial y explicamos qué se puede medir.</p>
     <h2>SEO local en Morón de la Frontera y municipios cercanos</h2>
-    <p>Trabajamos con negocios de Morón de la Frontera y atendemos proyectos de Arahal, Marchena, Montellano, La Puebla de Cazalla, El Coronil, Paradas y Osuna. Las futuras páginas específicas de cada municipio se enlazarán desde aquí cuando estén publicadas y aporten información diferenciada.</p>
+    <p>Trabajamos desde Morón de la Frontera y ofrecemos servicios SEO a empresas del entorno. Conoce nuestro enfoque para <a href="/seo-local-arahal/">SEO local en Arahal</a>, <a href="/seo-local-marchena/">SEO local en Marchena</a> y <a href="/seo-local-montellano/">SEO local en Montellano</a>. También atendemos proyectos de La Puebla de Cazalla, El Coronil, Paradas y Osuna.</p>
     <p><a class="btn btn-primary" href="/hablamos/">Pide tu cata digital</a></p>
   </div>
 </section>`;
