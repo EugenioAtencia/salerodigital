@@ -9,6 +9,7 @@ const LEGACY_HOSTNAMES = new Set(['salero.webagencia360.com']);
 const GTM_ID = 'GTM-WSLMDJ8N';
 
 const MONTSERRAT_CSS = '<link rel="stylesheet" href="/assets/css/font-body-montserrat.css?v=3">';
+const PREGONERO_GRID_CSS = '<style id="pregonero-four-grid-style">@media (min-width:1200px){.pregonero-four-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}.pregonero-four-grid .service-action-card{min-width:0;padding:28px 24px}}@media (min-width:700px) and (max-width:1199px){.pregonero-four-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:699px){.pregonero-four-grid{grid-template-columns:minmax(0,1fr)}}</style>';
 const SERVICE_RELATED_CSS = '<link rel="stylesheet" href="/assets/css/service-related.css?v=1">';
 const SERVICE_RELATED_JS = '<script src="/assets/js/service-related.js?v=1" defer></script>';
 const SERVICE_HERO_SECTOR_CSS = '<link rel="stylesheet" href="/assets/css/service-hero-sector-style.css?v=4">';
@@ -180,7 +181,7 @@ function enrichPregonero(html = '', route = '') {
     <span class="service-section-kicker">Nuestro trabajo SEO local</span>
     <h2 id="pregonero-work-heading">Qué trabajamos en tu estrategia de posicionamiento local</h2>
   </div>
-  <div class="service-action-grid">
+  <div class="service-action-grid pregonero-four-grid">
     <article class="service-action-card service-action-incluye"><span>01</span><h3>Auditoría y competencia</h3><p>Estudiamos el estado de tu web, tus búsquedas prioritarias y los negocios que compiten por la atención de tus posibles clientes.</p></article>
     <article class="service-action-card service-action-beneficios"><span>02</span><h3>Google Business Profile</h3><p>Revisamos categorías, servicios, información, imágenes y coherencia con la web, además de oportunidades para mejorar la reputación y la gestión de reseñas.</p></article>
     <article class="service-action-card service-action-proceso"><span>03</span><h3>SEO técnico y contenidos</h3><p>Optimizamos páginas estratégicas, encabezados, enlaces internos y contenidos que responden a búsquedas con intención comercial.</p></article>
@@ -241,6 +242,7 @@ export async function onRequest(context) {
   nextHtml = optimizeAutoplayVideos(nextHtml);
   nextHtml = injectSeo(nextHtml, SEO_PAGES[normalizedPath]);
   nextHtml = enrichPregonero(nextHtml, normalizedPath);
+  if (normalizedPath === '/el-menu/el-pregonero/' && nextHtml.includes('pregonero-four-grid')) nextHtml = nextHtml.replace('</head>', PREGONERO_GRID_CSS + '</head>');
   nextHtml = injectGtm(nextHtml);
 
   if (schema && !nextHtml.includes('id="salero-schema-graph"') && !nextHtml.includes("id='salero-schema-graph'")) {
