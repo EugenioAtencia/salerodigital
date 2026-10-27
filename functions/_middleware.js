@@ -156,13 +156,6 @@ function enrichPregonero(html = '', route = '') {
     <p class="lead">En Salero Digital ayudamos a negocios de Morón de la Frontera, la Sierra Sur y la Campiña a mejorar su presencia en Google, Google Maps y las búsquedas que pueden convertirse en llamadas, visitas o solicitudes de presupuesto.</p>
     <h2>¿Qué es el SEO local y cómo ayuda a tu negocio?</h2>
     <p>El SEO local mejora la visibilidad de una empresa cuando alguien busca sus productos o servicios en un área concreta. Trabajamos la web y la ficha de Google Business Profile para facilitar que los clientes encuentren información útil y puedan contactar contigo. La visibilidad depende de la relevancia, la distancia y la competencia de cada búsqueda.</p>
-    <h2>Qué trabajamos en tu estrategia de posicionamiento local</h2>
-    <div class="cards-grid">
-      <article><h3>Auditoría y competencia</h3><p>Estudiamos el estado de tu web, tus búsquedas prioritarias y los negocios que compiten por la atención de tus posibles clientes.</p></article>
-      <article><h3>Google Business Profile</h3><p>Revisamos categorías, servicios, información, imágenes y coherencia con la web, además de oportunidades para mejorar la reputación y la gestión de reseñas.</p></article>
-      <article><h3>SEO técnico y contenidos</h3><p>Optimizamos páginas estratégicas, encabezados, enlaces internos y contenidos que responden a búsquedas con intención comercial.</p></article>
-      <article><h3>Medición y seguimiento</h3><p>Seguimos visibilidad, clics y, cuando existe medición adecuada, contactos, formularios y oportunidades reales de negocio.</p></article>
-    </div>
     <h2>Cómo trabajamos el SEO local</h2>
     <p>Comenzamos con una cata digital para entender tus objetivos. Después analizamos la situación de partida, priorizamos las mejoras y revisamos periódicamente los resultados. No prometemos primeras posiciones: proponemos acciones con sentido comercial y explicamos qué se puede medir.</p>
     <h2>SEO local en Morón de la Frontera y municipios cercanos</h2>
@@ -181,7 +174,20 @@ function enrichPregonero(html = '', route = '') {
   ).join('') + '</div>';
   const faqBlock = /<div class="service-faq-accordion">[\s\S]*?<\/div><\/section>/i;
   if (!faqBlock.test(next)) return html;
-  next = next.replace(faqBlock, accordion + '</section>');
+  const seoCards = `
+<section class="service-action-section pregonero-seo-cards" aria-labelledby="pregonero-work-heading">
+  <div class="service-block-heading">
+    <span class="service-section-kicker">Nuestro trabajo SEO local</span>
+    <h2 id="pregonero-work-heading">Qué trabajamos en tu estrategia de posicionamiento local</h2>
+  </div>
+  <div class="service-action-grid">
+    <article class="service-action-card service-action-incluye"><span>01</span><h3>Auditoría y competencia</h3><p>Estudiamos el estado de tu web, tus búsquedas prioritarias y los negocios que compiten por la atención de tus posibles clientes.</p></article>
+    <article class="service-action-card service-action-beneficios"><span>02</span><h3>Google Business Profile</h3><p>Revisamos categorías, servicios, información, imágenes y coherencia con la web, además de oportunidades para mejorar la reputación y la gestión de reseñas.</p></article>
+    <article class="service-action-card service-action-proceso"><span>03</span><h3>SEO técnico y contenidos</h3><p>Optimizamos páginas estratégicas, encabezados, enlaces internos y contenidos que responden a búsquedas con intención comercial.</p></article>
+    <article class="service-action-card service-action-incluye"><span>04</span><h3>Medición y seguimiento</h3><p>Seguimos visibilidad, clics y, cuando existe medición adecuada, contactos, formularios y oportunidades reales de negocio.</p></article>
+  </div>
+</section>`;
+  next = next.replace(faqBlock, accordion + '</section>' + seoCards);
   return next.replace(/<\/main>/i, section + '\n</main>');
 }
 
