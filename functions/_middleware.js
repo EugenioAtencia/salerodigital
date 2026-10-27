@@ -9,7 +9,7 @@ const LEGACY_HOSTNAMES = new Set(['salero.webagencia360.com']);
 const GTM_ID = 'GTM-WSLMDJ8N';
 
 const MONTSERRAT_CSS = '<link rel="stylesheet" href="/assets/css/font-body-montserrat.css?v=3">';
-const PREGONERO_GRID_CSS = '<style id="pregonero-four-grid-style">@media (min-width:1200px){.pregonero-four-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}.pregonero-four-grid .service-action-card{min-width:0;padding:28px 24px}}@media (min-width:700px) and (max-width:1199px){.pregonero-four-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:699px){.pregonero-four-grid{grid-template-columns:minmax(0,1fr)}}</style>';
+const PREGONERO_GRID_CSS = '<style id="pregonero-four-grid-style">@media (min-width:1200px){.pregonero-seo-cards .service-action-grid.pregonero-four-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:20px!important}.pregonero-seo-cards .service-action-grid.pregonero-four-grid .service-action-card{min-width:0;padding:28px 22px}}@media (min-width:700px) and (max-width:1199px){.pregonero-seo-cards .service-action-grid.pregonero-four-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}@media (max-width:699px){.pregonero-seo-cards .service-action-grid.pregonero-four-grid{grid-template-columns:minmax(0,1fr)!important}}</style>';
 const SERVICE_RELATED_CSS = '<link rel="stylesheet" href="/assets/css/service-related.css?v=1">';
 const SERVICE_RELATED_JS = '<script src="/assets/js/service-related.js?v=1" defer></script>';
 const SERVICE_HERO_SECTOR_CSS = '<link rel="stylesheet" href="/assets/css/service-hero-sector-style.css?v=4">';
