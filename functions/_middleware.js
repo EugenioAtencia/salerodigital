@@ -167,17 +167,22 @@ function enrichPregonero(html = '', route = '') {
     <p>Comenzamos con una cata digital para entender tus objetivos. Después analizamos la situación de partida, priorizamos las mejoras y revisamos periódicamente los resultados. No prometemos primeras posiciones: proponemos acciones con sentido comercial y explicamos qué se puede medir.</p>
     <h2>SEO local en Morón de la Frontera y municipios cercanos</h2>
     <p>Trabajamos con negocios de Morón de la Frontera y atendemos proyectos de Arahal, Marchena, Montellano, La Puebla de Cazalla, El Coronil, Paradas y Osuna. Las futuras páginas específicas de cada municipio se enlazarán desde aquí cuando estén publicadas y aporten información diferenciada.</p>
-    <h2>Preguntas frecuentes sobre SEO local</h2>
-    <div class="pregonero-faq">
-      <h3>¿Cuánto tarda el SEO local en dar resultados?</h3><p>Depende de la competencia, la situación inicial de la web y la ficha de Google, y las mejoras necesarias. Algunas acciones se reflejan antes y otras requieren varios meses de seguimiento.</p>
-      <h3>¿Necesito una web para aparecer en Google Maps?</h3><p>No siempre. Una empresa elegible puede tener su perfil de Google sin página web, pero una web propia permite explicar sus servicios y posicionarse en más búsquedas.</p>
-      <h3>¿Qué diferencia hay entre SEO local y Google Ads?</h3><p>El SEO local busca mejorar la visibilidad orgánica; Google Ads permite contratar anuncios. Son canales distintos y complementarios, con costes y plazos diferentes.</p>
-      <h3>¿Podéis mejorar el posicionamiento de mi web actual?</h3><p>Sí. Primero revisamos su estado técnico, contenidos y oportunidades. No siempre hace falta crear una web nueva.</p>
-    </div>
     <p><a class="btn btn-primary" href="/hablamos/">Pide tu cata digital</a></p>
   </div>
 </section>`;
-  return next.replace(/<\/main>/i, section + '\n</main>');
+  const faqs = [
+    ['¿Cuánto tarda el SEO local en dar resultados?', 'Depende de la competencia, la situación inicial de la web y la ficha de Google, y las mejoras necesarias. Algunas acciones se reflejan antes y otras requieren varios meses de seguimiento.'],
+    ['¿Necesito una web para aparecer en Google Maps?', 'No siempre. Una empresa elegible puede tener su perfil de Google sin página web, pero una web propia permite explicar sus servicios y posicionarse en más búsquedas.'],
+    ['¿Qué diferencia hay entre SEO local y Google Ads?', 'El SEO local busca mejorar la visibilidad orgánica; Google Ads permite contratar anuncios. Son canales distintos y complementarios, con costes y plazos diferentes.'],
+    ['¿Podéis mejorar el posicionamiento de mi web actual?', 'Sí. Primero revisamos su estado técnico, contenidos y oportunidades. No siempre hace falta crear una web nueva.']
+  ];
+  const accordion = '<div class="service-faq-accordion">' + faqs.map(([q, a], i) =>
+    '<details' + (i === 0 ? ' open' : '') + '><summary><span>' + q + '</span></summary><div class="service-faq-answer"><p>' + a + '</p></div></details>'
+  ).join('') + '</div>';
+  const faqBlock = /<div class="service-faq-accordion">[\\s\\S]*?<\\/div><\\/section>/i;
+  if (!faqBlock.test(next)) return html; // Keep original output if the expected design is absent.
+  next = next.replace(faqBlock, accordion + '</section>');
+  return next.replace(/<\\/main>/i, section + '\\n</main>');
 }
 
 export async function onRequest(context) {
