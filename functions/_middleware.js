@@ -9,6 +9,7 @@ const LEGACY_HOSTNAMES = new Set(['salero.webagencia360.com']);
 const GTM_ID = 'GTM-WSLMDJ8N';
 
 const MONTSERRAT_CSS = '<link rel="stylesheet" href="/assets/css/font-body-montserrat.css?v=3">';
+const PREGONERO_LOCAL_LINKS_CSS = '<style id="pregonero-local-links-style">#pregonero-seo-local a[href^="/seo-local-"]{color:#225a34!important;text-decoration:underline!important;text-decoration-thickness:2px!important;text-underline-offset:4px!important;font-weight:750!important;border-radius:3px;transition:color .15s ease,background-color .15s ease}#pregonero-seo-local a[href^="/seo-local-"]:hover{color:#123d23!important;background:#e7f2d9}#pregonero-seo-local a[href^="/seo-local-"]:focus-visible{outline:3px solid #225a34;outline-offset:3px;background:#e7f2d9}</style>';
 const PREGONERO_GRID_CSS = '<style id="pregonero-four-grid-style">.pregonero-seo-cards .pregonero-four-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.pregonero-seo-cards .pregonero-four-grid .service-action-card{min-width:0;padding:26px 20px}@media(max-width:1050px){.pregonero-seo-cards .pregonero-four-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.pregonero-seo-cards .pregonero-four-grid{grid-template-columns:1fr}}</style>';
 const CIMIENTOS_GRID_CSS = '<style id="cimientos-web-grid-style">.cimientos-web-cards .cimientos-four-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.cimientos-web-cards .cimientos-four-grid .service-action-card{min-width:0;padding:26px 20px}@media(max-width:1050px){.cimientos-web-cards .cimientos-four-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.cimientos-web-cards .cimientos-four-grid{grid-template-columns:1fr}}</style>';
 const GRACIA_GRID_CSS = '<style id="gracia-social-grid-style">.gracia-social-cards .gracia-four-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.gracia-social-cards .gracia-four-grid .service-action-card{min-width:0;padding:26px 20px}@media(max-width:1050px){.gracia-social-cards .gracia-four-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.gracia-social-cards .gracia-four-grid{grid-template-columns:1fr}}</style>';
@@ -394,6 +395,7 @@ export async function onRequest(context) {
   if (normalizedPath === '/el-menu/gracia-y-presencia/' && nextHtml.includes('gracia-four-grid')) nextHtml = nextHtml.replace('</head>', GRACIA_GRID_CSS + '</head>');
   if (normalizedPath === '/el-menu/cimientos-digitales/' && nextHtml.includes('cimientos-four-grid')) nextHtml = nextHtml.replace('</head>', CIMIENTOS_GRID_CSS + '</head>');
   if (normalizedPath === '/el-menu/el-pregonero/' && nextHtml.includes('pregonero-four-grid')) nextHtml = nextHtml.replace('</head>', PREGONERO_GRID_CSS + '</head>');
+  if (normalizedPath === '/el-menu/el-pregonero/' && nextHtml.includes('href="/seo-local-arahal/"')) nextHtml = nextHtml.replace('</head>', PREGONERO_LOCAL_LINKS_CSS + '</head>');
   nextHtml = injectGtm(nextHtml);
 
   if (schema && !nextHtml.includes('id="salero-schema-graph"') && !nextHtml.includes("id='salero-schema-graph'")) {
