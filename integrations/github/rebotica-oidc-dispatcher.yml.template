@@ -1,0 +1,30 @@
+name: Rebotica OIDC staging
+on:
+  repository_dispatch:
+    types: [salero-rebotica-staging]
+  workflow_dispatch:
+    inputs:
+      job_id: {required: true, type: string}
+      generation: {required: true, type: string}
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: salero-rebotica-staging-publisher
+  cancel-in-progress: false
+jobs:
+  build:
+    if: vars.SALERO_REBOTICA_STAGING_READY == 'true'
+    uses: EugenioAtencia/salerodigital/.github/workflows/rebotica-trusted-builder.yml@APPROVED_RELEASE_SHA
+    with:
+      job_id: ${{ github.event.client_payload.job_id || inputs.job_id }}
+      code_sha: APPROVED_RELEASE_SHA
+      generation: ${{ github.event.client_payload.generation || inputs.generation }}
+  monitor:
+    needs: build
+    if: always() && vars.SALERO_REBOTICA_STAGING_READY == 'true'
+    uses: EugenioAtencia/salerodigital/.github/workflows/rebotica-trusted-monitor.yml@APPROVED_RELEASE_SHA
+    with:
+      job_id: ${{ github.event.client_payload.job_id || inputs.job_id }}
+      code_sha: APPROVED_RELEASE_SHA
+      build_result: ${{ needs.build.result }}

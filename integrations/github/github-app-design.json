@@ -1,0 +1,16 @@
+{
+  "designOnly": true,
+  "name": "Salero editorial snapshots staging",
+  "visibility": "private",
+  "installationScope": "selected repositories only",
+  "selectedRepository": "salero-editorial-snapshots-staging",
+  "repositoryPermissions": { "contents": "write", "metadata": "read" },
+  "organizationPermissions": {},
+  "accountPermissions": {},
+  "webhookEnabled": false,
+  "subscribedEvents": [],
+  "tokenRepositories": ["salero-editorial-snapshots-staging"],
+  "tokenPermissions": { "contents": "write" },
+  "privateKeyLocation": "staging Worker secret only",
+  "credentialMaterial": "NONE"
+}

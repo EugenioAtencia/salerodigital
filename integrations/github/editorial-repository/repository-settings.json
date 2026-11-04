@@ -1,0 +1,15 @@
+{
+  "templateOnly": true,
+  "name": "salero-editorial-snapshots-staging",
+  "visibility": "private",
+  "defaultBranch": "snapshots",
+  "allowForking": "not configurable for this personal repository",
+  "hasIssues": false,
+  "hasProjects": false,
+  "hasWiki": false,
+  "actionsEnabled": false,
+  "pagesEnabled": false,
+  "writers": ["selected-repository-github-app"],
+  "lfs": false,
+  "forcePushFromAdapter": false
+}

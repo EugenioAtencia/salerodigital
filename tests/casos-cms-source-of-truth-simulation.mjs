@@ -20,7 +20,7 @@ assert.doesNotMatch(
   /^\/casos-de-exito\/\* /m,
   'case study dynamic routes are not rewritten away from Pages Functions'
 );
-assert.match(redirectsFile, /^\/el-menu\/\* /m, 'menu rewrite remains untouched');
+assert.doesNotMatch(redirectsFile, /^\/el-menu\/\* /m, 'service routes retain current Pages Functions and real 404 handling');
 
 function makeCase(id, slug, title, seoTitle) {
   return {

@@ -1,0 +1,7 @@
+.wrangler/
+.local/
+.dev.vars*
+.env
+.env.*
+*.pem
+*.key

@@ -1,0 +1,37 @@
+import assert from 'node:assert/strict';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { renderSnapshotPages } from '../scripts/lib/editorial-snapshot-pages.mjs';
+import { buildSnapshotArtifacts } from '../scripts/lib/editorial-snapshot-artifacts.mjs';
+import { signSnapshot, sha256 } from '../scripts/lib/editorial-push-snapshot.mjs';
+import { snapshotPage } from '../functions/_shared/snapshot-page.js';
+const root=fileURLToPath(new URL('../',import.meta.url)), key='offline-test-key-which-is-not-a-credential', codeSha='8283cebe5db420ecb0e4671cc99b21badee2288b';
+const slugs={servicios:['el-empujon','gracia-y-presencia','el-pregonero','cimientos-digitales'],sectores:['marketing-para-hosteleria-turismo','marketing-para-comercios-pymes','marketing-para-almazaras-aceite'],'casos-exito':['muebles-sarria','enoro'],posts:['articulo-uno','articulo-dos']};
+let id=0;const collections=Object.fromEntries(Object.entries(slugs).map(([type,items])=>[type,items.map(slug=>({id:++id,slug,status:'publish',date:'2026-06-01T12:00:00',title:{rendered:slug},excerpt:{rendered:'<p>Texto editorial</p>'},content:{rendered:'<p>Contenido íntegro</p>'},acf:{}}))]));
+let passed=0;async function test(label,fn){await fn();passed++;console.log('PASS '+label);}
+let pages;
+await test('all 11 individual pages render offline with current templates',async()=>{pages=await renderSnapshotPages(root,collections);assert.equal(pages.size,11);});
+for(const [file,html] of pages) await test('initial HTML and SEO '+file,async()=>{assert.match(html,/<h1/);assert.match(html,new RegExp(`https://agenciaconsalero.es/${file.replace('index.html','')}`));assert.equal((html.match(/id="salero-schema-graph"/g)||[]).length,1);assert.doesNotMatch(html,/Cargando|blog-article-client\.js|caso-hero-media-fix\.js|caso-de-exito-detalle[^" ]*\.js/);});
+await test('article body and BlogPosting schema present without JS',async()=>{const html=pages.get('la-rebotica/articulo-uno/index.html');assert.match(html,/Contenido íntegro/);assert.match(html,/BlogPosting/);});
+await test('numeric ACF media uses embedded snapshot only',async()=>{const c=structuredClone(collections);c['casos-exito'][1].acf.hero_image=999;c['casos-exito'][1].salero_snapshot_media={999:{id:999,source_url:'https://cms.webagencia360.com/test-image.jpg'}};assert.match((await renderSnapshotPages(root,c)).get('casos-de-exito/enoro/index.html'),/test-image.jpg/);});
+await test('missing numeric media blocks the build',async()=>{const c=structuredClone(collections);c['casos-exito'][0].acf.hero_image=888;await assert.rejects(renderSnapshotPages(root,c),/snapshot_media_missing/);});
+await test('unknown service template fails rather than silently publishes stale page',async()=>{const c=structuredClone(collections);c.servicios[0].slug='unknown-template';await assert.rejects(renderSnapshotPages(root,c),/snapshot_service_template_missing/);});
+const counts=Object.fromEntries(Object.entries(collections).map(([k,v])=>[k,v.length])), revision='a'.repeat(64),body=JSON.stringify({formatVersion:1,revision,counts,collections}),hash=sha256(body);
+const packet=signSnapshot({formatVersion:1,revision,counts,body,sha256:hash,snapshotId:`sha256:${hash}`,bytes:Buffer.byteLength(body)},1,'batch-1',key);
+const lease={...packet,jobId:'job-1',phase:'building',codeSha};delete lease.body;delete lease.signature;
+const dir=await mkdtemp(path.join(tmpdir(),'salero-github-pages-')),output=path.join(dir,'site');let receipt;
+try {
+await test('atomic isolated build writes 16 pages and exact receipt',async()=>{receipt=(await buildSnapshotArtifacts({root,output,packet,key,jobId:'job-1',check:async()=>lease,codeSha,tests:'passed'})).receipt;assert.equal(Object.keys(receipt.pages).length,16);assert.equal(receipt.publicationAuthorized,false);assert.equal(await readFile(path.join(output,'nuestros-menus/index.html'),'utf8'),await readFile(path.join(root,'nuestros-menus/index.html'),'utf8'));});
+await test('output in source checkout refused',async()=>{await assert.rejects(buildSnapshotArtifacts({root,output:root,packet,key,jobId:'job-1',check:async()=>lease,codeSha,tests:'passed'}),/isolated_output_required/);});
+await test('generation changed at final fence emits no artifacts',async()=>{let n=0;const bad=path.join(dir,'obsolete');await assert.rejects(buildSnapshotArtifacts({root,output:bad,packet,key,jobId:'job-1',check:async()=>++n===4?{...lease,generation:2}:lease,codeSha,tests:'passed'}),/obsolete_build/);await assert.rejects(readFile(path.join(bad,'salero-build.json')),/ENOENT/);});
+const assets={fetch:async request=>{const file=new URL(request.url).pathname.slice(1);try{return new Response(await readFile(path.join(output,file)),{headers:{'content-type':file.endsWith('.json')?'application/json':'text/html'}});}catch{return new Response('',{status:404});}}};
+for(const [directory,items] of Object.entries({ 'el-menu':slugs.servicios,sectores:slugs.sectores,'casos-de-exito':slugs['casos-exito'],'la-rebotica':slugs.posts})) for(const slug of items) await test('certified asset route '+directory+'/'+slug,async()=>{const context={env:{ASSETS:assets},params:{slug},request:new Request(`https://agenciaconsalero.es/${directory}/${slug}/`)};const result=await snapshotPage(context,directory,()=>{throw Error('CMS forbidden');});assert.equal(result.status,200);assert.equal(result.headers.get('x-salero-render'),'snapshot-asset');});
+// Only blog Functions are integrated in this scoped branch; other routes stay legacy.
+for(const directory of ['la-rebotica']) for(const suffix of ['.js','/index.js']) await test('actual Function '+directory+suffix,async()=>{const module=await import(`../functions/${directory}/[slug]${suffix}`);const slug={'el-menu':'cimientos-digitales',sectores:'marketing-para-almazaras-aceite','casos-de-exito':'enoro','la-rebotica':'articulo-uno'}[directory];const handler=module.onRequest||module.onRequestGet;const result=await handler({env:{ASSETS:assets},params:{slug},request:new Request(`https://agenciaconsalero.es/${directory}/${slug}/`)});assert.equal(result.status,200);assert.equal(result.headers.get('x-salero-render'),'snapshot-asset');});
+await test('deleted/unlisted page cannot fall back to old asset or CMS',async()=>{assert.equal((await snapshotPage({env:{ASSETS:assets},params:{slug:'deleted'},request:new Request('https://agenciaconsalero.es/el-menu/deleted/')},'el-menu',()=>{throw Error('CMS forbidden');})).status,404);});
+await test('HTML tampering returns 503 without CMS fallback',async()=>{const altered={fetch:async req=>new URL(req.url).pathname.endsWith('.json')?Response.json(receipt):new Response('<h1>corrupt</h1>',{headers:{'content-type':'text/html'}})};assert.equal((await snapshotPage({env:{ASSETS:altered},params:{slug:'enoro'},request:new Request('https://agenciaconsalero.es/casos-de-exito/enoro/')},'casos-de-exito',()=>{throw Error('CMS forbidden');})).status,503);});
+await test('legacy deployment rollback retains previous handler',async()=>{const result=await snapshotPage({env:{ASSETS:{fetch:async()=>new Response('',{status:404})}},request:new Request('https://agenciaconsalero.es/el-menu/x/')},'el-menu',async()=>new Response('legacy'));assert.equal(await result.text(),'legacy');});
+}finally{await rm(dir,{recursive:true,force:true});}
+console.log(`PASS snapshot pages: ${passed} checks; no deployment or CMS calls`);

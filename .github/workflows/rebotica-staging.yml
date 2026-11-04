@@ -1,0 +1,12 @@
+# Fail-closed placeholder. Install the pinned dispatcher template only after approval.
+name: Rebotica staging awaiting independent promoter
+on: workflow_dispatch
+permissions: {}
+jobs:
+  blocked:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - run: |
+          echo 'Staging promoter must be approved and configured before any editorial run.'
+          exit 1

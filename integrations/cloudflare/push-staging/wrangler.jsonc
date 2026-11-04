@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "salero-push-staging",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-08",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "vars": { "ENVIRONMENT": "staging", "CODE_SHA": "8283cebe5db420ecb0e4671cc99b21badee2288b", "GITHUB_OWNER": "UNCONFIGURED", "GITHUB_REPOSITORY": "salero-editorial-snapshots-staging" },
+  "durable_objects": { "bindings": [{ "name": "COORDINATOR", "class_name": "EditorialCoordinator" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["EditorialCoordinator"] }],
+  "observability": { "enabled": true }
+}
