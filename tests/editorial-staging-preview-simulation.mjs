@@ -80,6 +80,8 @@ try {
   const publicArticle = await mf.dispatchFetch('https://agenciaconsalero.es/la-rebotica/seo-moron-de-la-frontera/');
   assert.equal(publicArticle.status, 200); assert.equal(publicArticle.headers.get('x-salero-render'), 'snapshot-asset');
   const publicHtml = await publicArticle.text(); assert(publicHtml.includes('rel="canonical" href="https://agenciaconsalero.es/la-rebotica/seo-moron-de-la-frontera/"')); assert.match(publicHtml, /Complete offline content/);
+  assert.match(publicHtml, /GTM-WSLMDJ8N/); assert.match(publicHtml, /assets\/js\/consent\.js/);
+  assert.match(publicHtml, /font-body-montserrat\.css/);
   assert.equal(publicArticle.headers.get('x-robots-tag'), null);
   console.log('PASS compiled production middleware serves certified initial HTML with public canonical and no staging noindex; remote calls=0, deployments=0');
   console.log('PASS staging policy; remote calls=0, deployments=0');

@@ -2,7 +2,7 @@
 
 ## Único circuito
 
-WordPress origen: https://cms.webagencia360.com. Destino público: https://agenciaconsalero.es, Pages `salerodigital`, rama `main`. La Rebotica sirve HTML certificado del snapshot (artículos, listado, paginación, sitemap); no consulta WordPress en tiempo de petición. Casos, servicios, formularios y páginas comerciales conservan sus componentes existentes.
+WordPress origen: https://cms.webagencia360.com. Destino público: https://agenciaconsalero.es, Pages `salerodigital`, rama `main`. Tras verificar los hashes, el middleware conserva la navegación, tipografía, consentimiento y analítica existentes. La Rebotica sirve HTML certificado del snapshot (artículos, listado, paginación, sitemap); no consulta WordPress en tiempo de petición. Casos, servicios, formularios y páginas comerciales conservan sus componentes existentes.
 
 Se reutilizan los dos Workers existentes, sus credenciales y el repositorio privado `EugenioAtencia/salero-editorial-snapshots-staging`. Sus nombres conservan el sufijo histórico staging; el perfil de ejecución de producción limita explícitamente proyecto, rama, origen, OIDC y entorno Pages. No se crea otra infraestructura. El journal y los objetos `salero-production-editorial` / `production-only` son independientes de los de staging. Staging queda desactivado; sus evidencias y generación 2 se conservan.
 

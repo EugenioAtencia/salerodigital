@@ -349,9 +349,7 @@ export async function onRequest(context) {
   const normalizedPath = normalizePath(requestUrl.pathname);
 
   const certifiedEditorial = await snapshotEditorialRequest(context, normalizedPath);
-  if (certifiedEditorial) return certifiedEditorial;
-
-  if (normalizedPath === '/sitemap.xml/') return renderSitemap(context);
+  if (normalizedPath === '/sitemap.xml/') return certifiedEditorial || renderSitemap(context);
 
   if (REMOVED_PAGES.has(normalizedPath)) {
     return renderGoneResponse();
@@ -365,7 +363,11 @@ export async function onRequest(context) {
   // Preserve real 404/502 responses instead of serving the client shell with HTTP 200.
   let response;
   const blogPage = normalizedPath.match(/^\/la-rebotica\/page\/(\d+)\/$/);
-  if (normalizedPath === '/la-rebotica/' || blogPage) {
+  if (certifiedEditorial) {
+    // Verify immutable bytes first, then retain the shared navigation, consent,
+    // typography and analytics transforms used by the current public site.
+    response = certifiedEditorial;
+  } else if (normalizedPath === '/la-rebotica/' || blogPage) {
     response = await handleBlogIndexRequest(context, blogPage ? Number(blogPage[1]) : 1);
   } else if (isBlogArticlePath(normalizedPath)) {
     const slug = normalizedPath.split('/').filter(Boolean).at(-1);
