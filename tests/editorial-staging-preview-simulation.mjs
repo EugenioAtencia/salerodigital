@@ -72,5 +72,15 @@ try {
   assert.equal(missing.status, 404); assert.match(missing.headers.get('x-robots-tag'), /noindex/);
   const wrongHost = await mf.dispatchFetch('https://agenciaconsalero.es/la-rebotica/seo-moron-de-la-frontera/'); assert.equal(wrongHost.status, 503);
   console.log('PASS embedded legacy tracking removed, non-HTML noindex and staging artifact refuses production host');
+  await mf.dispose(); mf = null;
+  const productionCompiled = spawnSync(process.execPath, [root + '/integrations/cloudflare/push-staging/node_modules/wrangler/bin/wrangler.js', 'pages', 'functions', 'build', production + '/functions', '--outfile', production + '/_worker.js', '--build-output-directory', production, '--output-routes-path', production + '/_routes.json', '--compatibility-date', '2026-10-07'], {cwd: dir, encoding: 'utf8', env: {...process.env, WRANGLER_SEND_METRICS: 'false'}});
+  assert.equal(productionCompiled.status, 0, productionCompiled.stderr);
+  const productionWorker = await validatePagesWorkerUpload(await readFile(production + '/_worker.js'));
+  mf = new Miniflare(convertV4MiniflareOptions({modules: true, script: productionWorker.modules[0].content, compatibilityDate: '2026-10-07', serviceBindings: {ASSETS: asset}, outboundService: () => {throw Error('production_CMS_forbidden');}}));
+  const publicArticle = await mf.dispatchFetch('https://agenciaconsalero.es/la-rebotica/seo-moron-de-la-frontera/');
+  assert.equal(publicArticle.status, 200); assert.equal(publicArticle.headers.get('x-salero-render'), 'snapshot-asset');
+  const publicHtml = await publicArticle.text(); assert(publicHtml.includes('rel="canonical" href="https://agenciaconsalero.es/la-rebotica/seo-moron-de-la-frontera/"')); assert.match(publicHtml, /Complete offline content/);
+  assert.equal(publicArticle.headers.get('x-robots-tag'), null);
+  console.log('PASS compiled production middleware serves certified initial HTML with public canonical and no staging noindex; remote calls=0, deployments=0');
   console.log('PASS staging policy; remote calls=0, deployments=0');
 } finally { if (mf) await mf.dispose(); await rm(dir, { recursive: true, force: true }); }

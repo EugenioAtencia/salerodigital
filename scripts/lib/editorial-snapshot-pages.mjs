@@ -86,8 +86,6 @@ export async function renderSnapshotPages(root, collections) {
     let html = blog.renderPostPage(item.slug, item, blogContext);
     const featured = item._embedded?.['wp:featuredmedia']?.[0];
     html = html.replace('alt="" aria-hidden="true"', `alt="${esc(featured?.alt_text || '')}"`);
-    const tags = (item._embedded?.['wp:term'] || []).flat().filter(term => term.taxonomy === 'post_tag');
-    if (tags.length) html = html.replace('<span>Salero Digital</span>', `<span>Salero Digital</span>${tags.map(term => `<span>${esc(term.name)}</span>`).join('')}`);
     output.set(`la-rebotica/${item.slug}/index.html`, html);
   }
   for (const [file, html] of output) {

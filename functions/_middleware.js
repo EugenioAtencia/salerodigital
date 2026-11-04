@@ -1,3 +1,4 @@
+import { snapshotEditorialRequest } from './_shared/snapshot-page.js';
 import { renderJsonLd, schemaForPath } from './_shared/schema.js';
 import { handleBlogPostRequest } from './_shared/blog-renderer.js';
 import { renderSitemap } from './_shared/sitemap-renderer.js';
@@ -346,6 +347,9 @@ export async function onRequest(context) {
   }
 
   const normalizedPath = normalizePath(requestUrl.pathname);
+
+  const certifiedEditorial = await snapshotEditorialRequest(context, normalizedPath);
+  if (certifiedEditorial) return certifiedEditorial;
 
   if (normalizedPath === '/sitemap.xml/') return renderSitemap(context);
 

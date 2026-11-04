@@ -142,6 +142,7 @@ function renderPostPage(slug, post, blogContext = {}) {
   const faqBlock = renderBlogFaqBlock(faqData.faqs);
   const excerpt = stripHtml(post?.excerpt?.rendered || '').slice(0, 170);
   const categories = postCategories(post);
+  const tags = (post._embedded?.['wp:term'] || []).flat().filter(term => term.taxonomy === 'post_tag').map(term => term.name);
   const primaryCategory = categories[0] || 'La Rebotica';
   const featured = featuredImage(post);
   const date = formatDate(post.date);
@@ -206,7 +207,7 @@ ${renderHeader()}
               <span>Salero Digital</span>
             </div>
           </div>
-          ${renderHeroCard(categories)}
+          ${renderHeroCard(categories, tags)}
         </div>
       </section>
 
@@ -263,13 +264,14 @@ ${renderFooter()}
 </html>`;
 }
 
-function renderHeroCard(categories = []) {
+function renderHeroCard(categories = [], tags = []) {
   return `<aside class="ba-hero-card" aria-label="Resumen del artículo">
             <span>Receta digital</span>
             <p>Un contenido de La Rebotica para tomar decisiones con más criterio y menos ruido.</p>
             <div class="ba-hero-tags">
               ${(categories.length ? categories : ['Marketing digital', 'Estrategia']).slice(0, 4).map(cat => `<strong>${escapeHtml(cat)}</strong>`).join('')}
             </div>
+            ${tags.length ? `<ul class="ba-article-tags" aria-label="Etiquetas del artículo">${tags.map(tag => `<li>${escapeHtml(tag)}</li>`).join('')}</ul>` : ''}
           </aside>`;
 }
 

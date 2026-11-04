@@ -11,7 +11,7 @@ export async function applyStagingPreview(directory, { scope, branch }) {
   const entry = 'export async function onRequest(context)';
   const gtm = "const GTM_ID = 'GTM-WSLMDJ8N';";
   if (!original.includes(entry) || !original.includes(gtm)) fail('staging_middleware_shape');
-  const middleware = "import { snapshotFile } from './_shared/snapshot-page.js';\n" + original.replace(entry, 'async function originalOnRequest(context)').replace(gtm, "const GTM_ID = '';");
+  const middleware = original.replace(entry, 'async function originalOnRequest(context)').replace(gtm, "const GTM_ID = '';");
   const wrapper = `
 // Generated staging-only response policy. HTML hashes certify the ASSETS bytes
 // before the existing middleware and this policy transform the response.
@@ -20,10 +20,7 @@ export async function onRequest(context) {
   if (url.protocol !== 'https:' || !/^(?:[a-z0-9-]+\\.)?salerodigital-staging\\.pages\\.dev$/.test(url.hostname)) {
     return new Response('Staging host required.', {status: 503, headers: {'X-Robots-Tag': 'noindex, nofollow'}});
   }
-  const normalized = url.pathname.replace(/\\/+$/, '') + '/';
-  const blog = normalized.startsWith('/la-rebotica/');
-  const file = normalized === '/sitemap.xml/' ? 'sitemap.xml' : normalized.slice(1) + 'index.html';
-  const response = blog || file === 'sitemap.xml' ? await snapshotFile(context, file) : await originalOnRequest(context);
+  const response = await originalOnRequest(context);
   const headers = new Headers(response.headers);
   headers.set('X-Robots-Tag', 'noindex, nofollow');
   if (headers.has('location')) headers.set('location', headers.get('location').replaceAll('https://agenciaconsalero.es', url.origin));

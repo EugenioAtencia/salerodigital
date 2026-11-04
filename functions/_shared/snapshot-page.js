@@ -33,3 +33,17 @@ async function certifiedFile(context, receipt, file) {
 }
 const unavailable = () => new Response('Publicación no verificable.', { status: 503, headers: { 'Cache-Control': 'no-store' } });
 const missing = () => new Response('Contenido no publicado.', { status: 404, headers: { 'Cache-Control': 'no-store' } });
+
+// One editorial delivery path for coordinated staging and future production artifacts.
+// A legacy deployment without the coordinated receipt keeps its existing behavior.
+export async function snapshotEditorialRequest(context, normalizedPath) {
+  if (normalizedPath !== '/sitemap.xml/' && !normalizedPath.startsWith('/la-rebotica/')) return null;
+  const response = await context.env.ASSETS.fetch(new Request(new URL('/salero-build.json', context.request.url), {headers: {Accept: 'application/json'}}));
+  if (response.status === 404) return null;
+  if (response.status !== 200 || !/application\/json/i.test(response.headers.get('content-type') || '')) return unavailable();
+  let receipt; try { receipt = await response.json(); } catch { return unavailable(); }
+  if (receipt.mode !== 'snapshot-coordinated') return null;
+  if (receipt.scope !== 'rebotica' || receipt.buildSuccess !== true || receipt.snapshotConsistent !== true || receipt.tests !== 'passed' || !receipt.pages) return unavailable();
+  const file = normalizedPath === '/sitemap.xml/' ? 'sitemap.xml' : normalizedPath.slice(1) + 'index.html';
+  return certifiedFile(context, receipt, file);
+}
