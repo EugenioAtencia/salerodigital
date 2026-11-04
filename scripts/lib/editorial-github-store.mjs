@@ -5,9 +5,9 @@ const identity = packet => { const { body, ...metadata } = packet; return metada
 
 // Git is persistence only. Caller owns durable intent checkpoints and generation fences.
 export class GitHubSnapshotStore {
-  constructor({ owner, repository, branch = 'snapshots', token, fetchImpl = (...args) => fetch(...args), timeoutMs = 5000, key }) {
+  constructor({ owner, repository, branch = 'snapshots', token, fetchImpl = (...args) => fetch(...args), timeoutMs = 5000, key, eventType = 'salero-rebotica-staging' }) {
     if (!/^[a-zA-Z0-9-]{1,39}$/.test(owner || '') || !/^salero-editorial-snapshots(?:-staging)?$/.test(repository || '') || branch !== 'snapshots') fail('github_repository');
-    Object.assign(this, { owner, repository, branch, token, fetchImpl, timeoutMs, key });
+    Object.assign(this, { owner, repository, branch, token, fetchImpl, timeoutMs, key, eventType });
     this.base = `/repos/${owner}/${repository}`;
   }
   async api(path, method = 'GET', body) {
@@ -39,7 +39,7 @@ export class GitHubSnapshotStore {
     let response;
     try { response = await this.fetchImpl(`https://api.github.com${this.base}/dispatches`, { method: 'POST', redirect: 'manual', signal: AbortSignal.timeout(this.timeoutMs),
       headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json', 'X-GitHub-Api-Version': '2026-03-10', 'User-Agent': 'Salero-Editorial-Staging' },
-      body: JSON.stringify({ event_type: 'salero-rebotica-staging', client_payload: { job_id: notification.jobId, generation: notification.generation, code_sha: notification.codeSha } }) }); }
+      body: JSON.stringify({ event_type: this.eventType, client_payload: { job_id: notification.jobId, generation: notification.generation, code_sha: notification.codeSha } }) }); }
     catch { fail('github_unavailable'); }
     if (response.status !== 204) fail(response.status === 429 ? 'github_rate_limit' : 'github_unavailable');
   }

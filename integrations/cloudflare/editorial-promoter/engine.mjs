@@ -1,3 +1,4 @@
+import {publicationTarget,assertProductionSnapshot} from './target.mjs';
 import {createHmac} from 'node:crypto';
 import {sha256,verifySnapshot,signSnapshot,fail} from '../../../scripts/lib/editorial-push-snapshot.mjs';
 import {exact,jobId,filesManifest,receiptMatches,SPECIAL,CHUNK} from './policy.mjs';
@@ -44,7 +45,7 @@ export class PromoterEngine{
    if(!bytes)return{uploaded:false,part:args.part};
    if(bytes.length!==file.bytes||sha256(bytes)!==file.sha256)fail('artifact_hash');
    if(file.path==='salero-build.json'){
-    let receipt;try{receipt=JSON.parse(bytes);}catch{fail('artifact_receipt');}receiptMatches(receipt,lease,job.codeSha);job.receipt=receipt;
+    let receipt;try{receipt=JSON.parse(bytes);}catch{fail('artifact_receipt');}receiptMatches(receipt,lease,job.codeSha,this.config);job.receipt=receipt;
    }
    if(SPECIAL.has(file.path))job.special[file.path]=bytes.toString('base64');
    else await this.pages.upload(file,bytes); // Content-addressed upload is safe to repeat after a lost ACK.
@@ -57,7 +58,7 @@ export class PromoterEngine{
    // Durable marker BEFORE the non-idempotent deployment call. Never submit it twice.
    if(['creation_started','submitted','published','failed'].includes(job.phase))return this.summary(job);
    if(!job.files||!job.receipt||job.files.some(f=>!job.uploaded[f.path]))fail('artifact_incomplete');
-   const lease=await this.coordinator('promoter','check',[job.jobId]);receiptMatches(job.receipt,lease,job.codeSha);
+   const lease=await this.coordinator('promoter','check',[job.jobId]);receiptMatches(job.receipt,lease,job.codeSha,this.config);
    if(lease.artifactDigest!==job.digest)fail('artifact_conflict');
    await this.coordinator('promoter','preparePromotion',[job.jobId,job.digest]);
    job.phase='creation_started';await this.store.put(job);
@@ -72,13 +73,14 @@ export class PromoterEngine{
    return this.summary(job);
   }
   const d=await this.pages.inspect(job);if(!d||!['success','failure'].includes(d.latest_stage?.status))return this.summary(job);
-  if(d.latest_stage.status==='success')receiptMatches(d.receipt,job.receipt,job.codeSha);
-  await this.coordinator('monitor','settle',[job.jobId,{jobId:job.jobId,codeSha:job.codeSha,id:d.id,environment:'preview',status:d.latest_stage.status,receipt:d.receipt}]);
+  if(d.latest_stage.status==='success')receiptMatches(d.receipt,job.receipt,job.codeSha,this.config);
+  await this.coordinator('monitor','settle',[job.jobId,{jobId:job.jobId,codeSha:job.codeSha,id:d.id,environment:publicationTarget(this.config).pagesEnvironment,status:d.latest_stage.status,receipt:d.receipt}]);
   job.phase=d.latest_stage.status==='success'?'published':'failed';job.deploymentId=d.id;job.url=d.url;await this.store.put(job);return this.summary(job);
  }
  async owned(id,actor){jobId(id);const job=await this.store.get(id);if(!job||job.runId!==actor.run_id||job.runAttempt!==actor.run_attempt||job.runSha!==actor.sha)fail('artifact_run');return job;}
  publicLease(lease,job){
   verifySnapshot(lease.packet,this.config.SNAPSHOT_KEY);
+  if(publicationTarget(this.config).environment==='production')assertProductionSnapshot(lease.packet);
   const verificationKey=createHmac('sha256',this.config.SNAPSHOT_KEY).update('build-packet:'+job.jobId+':'+job.runId+':'+job.codeSha).digest('hex');
   // Per-job transit key only. Long-lived snapshot/authentication keys stay in Cloudflare.
   return {...lease,packet:signSnapshot(lease.packet,lease.generation,lease.batchId,verificationKey),verificationKey};

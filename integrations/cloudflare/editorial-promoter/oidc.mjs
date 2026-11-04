@@ -1,3 +1,4 @@
+import {publicationTarget} from './target.mjs';
 import {fail} from '../../../scripts/lib/editorial-push-snapshot.mjs';
 import {REPOSITORY,CODE_REPOSITORY} from './policy.mjs';
 const ISSUER='https://token.actions.githubusercontent.com';
@@ -13,7 +14,7 @@ export async function verifyOIDC(token,role,config,{fetchImpl=fetch,now=Math.flo
  const parts=token.split('.');if(parts.length!==3||parts.some(s=>!s||!/^[A-Za-z0-9_-]+$/.test(s)))fail('oidc_token');
  let h,c;try{h=JSON.parse(Buffer.from(parts[0],'base64url'));c=JSON.parse(Buffer.from(parts[1],'base64url'));}catch{fail('oidc_token');}
  if(h.alg!=='RS256'||h.typ!=='JWT'||typeof h.kid!=='string'||h.jku||h.jwk||h.x5u||h.crit)fail('oidc_algorithm');
- if(c.iss!==ISSUER||c.aud!==`urn:salero:rebotica:staging:${role}`||c.repository!==REPOSITORY||c.repository_id!==config.REPOSITORY_ID||c.repository_visibility!=='private'||c.ref!=='refs/heads/snapshots'||!['repository_dispatch','workflow_dispatch'].includes(c.event_name)||c.runner_environment!=='github-hosted'||c.job_workflow_sha!==config.TRUSTED_WORKFLOW_SHA||c.job_workflow_ref!==`${CODE_REPOSITORY}/.github/workflows/rebotica-trusted-${role}.yml@${config.TRUSTED_WORKFLOW_SHA}`)fail('oidc_origin');
+ if(c.iss!==ISSUER||c.aud!==`urn:salero:rebotica:${publicationTarget(config).environment}:${role}`||c.repository!==REPOSITORY||c.repository_id!==config.REPOSITORY_ID||c.repository_visibility!=='private'||c.ref!=='refs/heads/snapshots'||!['repository_dispatch','workflow_dispatch'].includes(c.event_name)||c.runner_environment!=='github-hosted'||c.job_workflow_sha!==config.TRUSTED_WORKFLOW_SHA||c.job_workflow_ref!==`${CODE_REPOSITORY}/.github/workflows/rebotica-trusted-${role}.yml@${config.TRUSTED_WORKFLOW_SHA}`)fail('oidc_origin');
  if(!Number.isSafeInteger(c.exp)||!Number.isSafeInteger(c.iat)||!Number.isSafeInteger(c.nbf)||c.exp<=now||c.nbf>now+15||c.iat>now+15||c.exp-c.iat>600||c.iat<now-600||typeof c.jti!=='string'||c.jti.length>120||!c.jti||!/^\d+$/.test(c.run_id||'')||!/^\d+$/.test(c.run_attempt||'')||!/^[a-f0-9]{40}$/.test(c.sha||''))fail('oidc_claims');
  const response=await fetchImpl(ISSUER+'/.well-known/jwks',{redirect:'manual',signal:AbortSignal.timeout(10000)});
  if(response.status!==200)fail('oidc_keys');

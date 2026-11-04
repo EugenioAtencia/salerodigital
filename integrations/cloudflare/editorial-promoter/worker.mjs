@@ -1,3 +1,4 @@
+import {publicationTarget} from './target.mjs';
 import {DurableObject} from 'cloudflare:workers';
 import {fail} from '../../../scripts/lib/editorial-push-snapshot.mjs';
 import {signCommand} from '../../../scripts/lib/editorial-push-rpc.mjs';
@@ -13,7 +14,7 @@ export default{
   if(env.PROMOTER_ENABLED!=='true')return response({error:'promoter_disabled'},503);
   if(request.method!=='POST'||url.pathname!==`/v1/${operation}`||!operations.includes(operation)||url.search)return response({error:'route'},404);
   if(!/^application\/json(?:\s*;|$)/i.test(request.headers.get('content-type')||''))return response({error:'content_type'},415);
-  return env.PROMOTER.getByName('staging-only').fetch(request); // Heavy work stays in the SQLite DO.
+  return env.PROMOTER.getByName(publicationTarget(env).environment==='production'?'production-only':'staging-only').fetch(request); // Heavy work stays in the SQLite DO.
  }
 };
 export class StagingPromoter extends DurableObject{
@@ -21,7 +22,7 @@ export class StagingPromoter extends DurableObject{
  fetch(request){const result=this.serial.then(()=>this.handle(request));this.serial=result.catch(()=>{});return result;}
  async handle(request){
   try{
-   if(this.env.PROMOTER_ENABLED!=='true'||this.env.ENVIRONMENT!=='staging')fail('promoter_disabled');
+   if(this.env.PROMOTER_ENABLED!=='true'||!['staging','production'].includes(this.env.ENVIRONMENT))fail('promoter_disabled');
    const keys=['BUILDER_KEY','PROMOTER_KEY','MONITOR_KEY','SNAPSHOT_KEY'].map(k=>this.env[k]);
    if(keys.some(k=>typeof k!=='string'||k.length<32)||new Set(keys).size!==keys.length||!this.env.PAGES_DEPLOY_TOKEN||this.env.CODE_SHA!==this.env.TRUSTED_WORKFLOW_SHA)fail('promoter_configuration');
    const operation=new URL(request.url).pathname.split('/')[2],role=operation==='status'?'monitor':'builder';
@@ -45,7 +46,7 @@ export class StagingPromoter extends DurableObject{
     const r=await this.env.EDITORIAL_COORDINATOR.fetch('https://internal/rpc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(signCommand(role,op,a,key,Math.floor(Date.now()/1000)))});
     if(r.status!==200)fail('coordinator_unavailable');const d=await boundedJSON(r,1200000);if(d.ok!==true)fail(/^[a-z_]+$/.test(d.error||'')?d.error:'coordinator_unavailable');return d.value;
    };
-   const engine=new PromoterEngine({store,coordinator,pages:new StagingPages(this.env.PAGES_DEPLOY_TOKEN),config:this.env});
+   const engine=new PromoterEngine({store,coordinator,pages:new StagingPages(this.env.PAGES_DEPLOY_TOKEN,undefined,this.env),config:this.env});
    return response({ok:true,value:await engine.execute(operation,args,actor)});
   }catch(error){return response({ok:false,error:/^[a-z_]{1,60}$/.test(error.message||'')?error.message:'promoter_failed'},403);}
  }

@@ -14,11 +14,12 @@ const jobId=process.env.SALERO_BUILD_JOB_ID,codeSha=process.env.SALERO_CODE_SHA,
 try{
  if(!/^[a-z0-9-]{1,80}$/.test(jobId||'')||!/^[a-f0-9]{40}$/.test(codeSha||'')||!Number.isSafeInteger(generation)||generation<1)throw Error('build_identity');
  const head=spawnSync('git',['rev-parse','HEAD'],{encoding:'utf8'});if(head.status!==0||head.stdout.trim()!==codeSha)throw Error('code_revision');
- const tests=spawnSync(process.execPath,['scripts/test-rebotica-editorial.mjs'],{stdio:'inherit'});if(tests.status!==0)throw Error('critical_tests');
+ const production=process.env.SALERO_PUBLICATION_ENVIRONMENT==='production';
+ for(const test of (production?['tests/editorial-delivery-simulation.mjs','tests/editorial-production-policy.mjs']:['scripts/test-rebotica-editorial.mjs'])){const tests=spawnSync(process.execPath,[test],{stdio:'inherit'});if(tests.status!==0)throw Error('critical_tests');}
  await retryEditorial(()=>broker('claim',{jobId,generation,codeSha}));
  const initial=await broker('check',{jobId});
  const site=path.join(await mkdtemp(path.join(os.tmpdir(),'salero-broker-site-')),'site');
- await buildSnapshotArtifacts({root:process.cwd(),output:site,packet:initial.packet,key:initial.verificationKey,jobId,codeSha,tests:'passed',scope:'rebotica',branch:'codex/rebotica-editorial-staging',check:()=>broker('check',{jobId})});
+ await buildSnapshotArtifacts({root:process.cwd(),output:site,packet:initial.packet,key:initial.verificationKey,jobId,codeSha,tests:'passed',scope:'rebotica',branch:production?'main':'codex/rebotica-editorial-staging',sourceOrigin:production?'https://cms.webagencia360.com':null,check:()=>broker('check',{jobId})});
  const cli=path.resolve('integrations/cloudflare/push-staging/node_modules/wrangler/bin/wrangler.js');
  const compiled=spawnSync(process.execPath,[cli,'pages','functions','build',path.join(site,'functions'),'--outfile',path.join(site,'_worker.js'),'--build-output-directory',site,'--output-routes-path',path.join(site,'_routes.json'),'--compatibility-date','2026-10-09'],{encoding:'utf8',env:{...process.env,WRANGLER_SEND_METRICS:'false'}});
  if(compiled.status!==0)throw Error('functions_compile');

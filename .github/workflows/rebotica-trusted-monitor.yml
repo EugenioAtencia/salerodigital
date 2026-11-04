@@ -2,6 +2,7 @@ name: Immutable staging monitor
 on:
   workflow_call:
     inputs:
+      publication: {required: false, type: string, default: staging}
       job_id: {required: true, type: string}
       code_sha: {required: true, type: string}
       build_result: {required: true, type: string}
@@ -19,7 +20,7 @@ jobs:
           import {appendFileSync} from 'node:fs';
           const u=new URL(process.env.ACTIONS_ID_TOKEN_REQUEST_URL);
           if(u.protocol!=='https:'||!u.hostname.endsWith('.actions.githubusercontent.com')||u.username||u.password)throw Error('oidc_request_origin');
-          u.searchParams.set('audience','urn:salero:rebotica:staging:monitor');
+          u.searchParams.set('audience',`urn:salero:rebotica:${process.env.PUBLICATION_ENVIRONMENT}:monitor`);
           const r=await fetch(u,{redirect:'error',headers:{Authorization:'Bearer '+process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN}});
           if(r.status!==200||!r.headers.get('content-type')?.includes('application/json'))throw Error('oidc_request');
           const d=await r.json(),c=JSON.parse(Buffer.from(d.value.split('.')[1],'base64url'));
@@ -28,6 +29,7 @@ jobs:
           appendFileSync(process.env.GITHUB_OUTPUT,`sha=${sha}\n`);
           JS
         env:
+          PUBLICATION_ENVIRONMENT: ${{ inputs.publication }}
           REQUESTED_CODE: ${{ inputs.code_sha }}
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -39,5 +41,6 @@ jobs:
           node-version: 22.16.0
       - run: node scripts/monitor-broker-staging.mjs
         env:
+          SALERO_PUBLICATION_ENVIRONMENT: ${{ inputs.publication }}
           SALERO_BUILD_JOB_ID: ${{ inputs.job_id }}
           SALERO_BUILD_RESULT: ${{ inputs.build_result }}

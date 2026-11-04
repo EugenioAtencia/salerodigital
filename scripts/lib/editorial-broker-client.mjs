@@ -3,7 +3,7 @@ import {boundedJSON} from '../../integrations/cloudflare/editorial-promoter/oidc
 const ENDPOINT='https://salero-editorial-promoter-staging.eu-atencia.workers.dev';
 let cached=null;
 export async function githubOIDC(role){
- const audience=`urn:salero:rebotica:staging:${role}`;
+ const audience=`urn:salero:rebotica:${process.env.SALERO_PUBLICATION_ENVIRONMENT || 'staging'}:${role}`;
  if(cached?.role===role&&cached.expires>Date.now()+30000)return cached.token;
  const url=new URL(process.env.ACTIONS_ID_TOKEN_REQUEST_URL);
  if(url.protocol!=='https:'||!url.hostname.endsWith('.actions.githubusercontent.com')||url.username||url.password)throw Error('oidc_request_origin');

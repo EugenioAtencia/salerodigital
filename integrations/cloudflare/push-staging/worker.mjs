@@ -1,3 +1,4 @@
+import {publicationTarget,assertProductionSnapshot} from '../editorial-promoter/target.mjs';
 // Staging adapter. No routes, hooks, cron, public bucket or production activation.
 import { DurableObject } from 'cloudflare:workers';
 import { EditorialPushCoordinator } from '../../../scripts/lib/editorial-push-coordinator.mjs';
@@ -11,7 +12,7 @@ const reply = (data, status = 200) => Response.json(data, { status, headers: { '
 const keys = env => ({ editor: env.EDITOR_KEY, builder: env.BUILDER_KEY, promoter: env.PROMOTER_KEY, monitor: env.MONITOR_KEY });
 export default {
   async fetch(request, env) {
-    if (env.ENVIRONMENT !== 'staging') return reply({ error: 'staging_only' }, 503);
+    if (!['staging','production'].includes(env.ENVIRONMENT)) return reply({ error: 'staging_only' }, 503);
     if (request.method !== 'POST' || new URL(request.url).pathname !== '/rpc') return reply({ error: 'route' }, 404);
     if (!/^application\/json(?:\s*;|$)/i.test(request.headers.get('content-type') || '')) return reply({ error: 'content_type' }, 415);
     // Read with an actual byte bound, including chunked requests without Content-Length.
@@ -27,7 +28,7 @@ export default {
       const body = new Uint8Array(bytes); let offset = 0;
       for (const chunk of chunks) { body.set(chunk, offset); offset += chunk.length; }
       const command = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(body));
-      return reply(await env.COORDINATOR.getByName('salero-staging-editorial').invoke(command));
+      return reply(await env.COORDINATOR.getByName(publicationTarget(env).environment==='production'?'salero-production-editorial':'salero-staging-editorial').invoke(command));
     } catch {
       // Never echo exceptions, input bodies, endpoint URLs or credentials.
       return reply({ error: 'request_failed' }, 503);
@@ -40,7 +41,7 @@ export class EditorialCoordinator extends DurableObject {
     super(ctx, env); this.sql = ctx.storage.sql;
     this.sql.exec('CREATE TABLE IF NOT EXISTS coordinator (id INTEGER PRIMARY KEY CHECK (id = 1), state TEXT NOT NULL)');
     this.github = new GitHubSnapshotStore({ owner: env.GITHUB_OWNER, repository: env.GITHUB_REPOSITORY,
-      key: env.SNAPSHOT_KEY, token: installationToken(env, undefined, { diagnostic: record => {
+      key: env.SNAPSHOT_KEY, eventType: env.ENVIRONMENT==='production'?'salero-rebotica-production':'salero-rebotica-staging', token: installationToken(env, undefined, { diagnostic: record => {
         if (env.ENVIRONMENT === 'staging' && env.GITHUB_AUTH_DIAGNOSTICS === 'true') console.info(JSON.stringify(record));
       } }) });
     this.inflight = new Map(); // Optimization only; all recovery information is persisted in SQLite.
@@ -63,8 +64,10 @@ export class EditorialCoordinator extends DurableObject {
   }
   async invoke(command) {
     const secrets = [...Object.values(keys(this.env)), this.env.SNAPSHOT_KEY];
-    if (this.env.ENVIRONMENT !== 'staging' || secrets.some(key => typeof key !== 'string' || key.length < 32)
+    if (!['staging','production'].includes(this.env.ENVIRONMENT) || secrets.some(key => typeof key !== 'string' || key.length < 32)
       || new Set(secrets).size !== 5 || !/^[a-f0-9]{40}$/.test(this.env.CODE_SHA || '')) return { ok: false, error: 'configuration' };
+    publicationTarget(this.env);
+    if(this.env.ENVIRONMENT==='production'&&command.operation==='offer')assertProductionSnapshot(command.args[0]);
     const result = this.transaction(model => {
       // Authorize/consume nonce in SQLite before any asynchronous object operation.
       const facade = Object.create(model);

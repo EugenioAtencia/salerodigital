@@ -1,3 +1,4 @@
+import {publicationTarget} from './target.mjs';
 import {sha256,canonical,fail} from '../../../scripts/lib/editorial-push-snapshot.mjs';
 export const ACCOUNT='0bd72789f683471596f05b6d0c4653fc';
 export const PROJECT='salerodigital-staging';
@@ -20,6 +21,8 @@ export function filesManifest(files){
  if(total>80*1024*1024||!paths.has('salero-build.json')||!paths.has('la-rebotica/index.html')||!paths.has('_worker.js'))fail('artifact_manifest');
  return sha256(JSON.stringify(canonical([...files].sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0))));
 }
-export function receiptMatches(r,lease,codeSha){
- if(!r||r.jobId!==lease.jobId||r.generation!==lease.generation||r.snapshotId!==lease.snapshotId||r.revision!==lease.revision||r.sha256!==lease.sha256||r.commit!==codeSha||r.branch!==BRANCH||r.scope!=='rebotica'||r.mode!=='snapshot-coordinated'||r.tests!=='passed'||r.buildSuccess!==true||r.snapshotConsistent!==true||JSON.stringify(canonical(r.counts))!==JSON.stringify(canonical(lease.counts)))fail('artifact_receipt');
+export function receiptMatches(r,lease,codeSha,config={}){
+ const target=publicationTarget(config);
+ if(target.environment==='production'&&r?.sourceOrigin!==target.origin)fail('production_snapshot_origin');
+ if(!r||r.jobId!==lease.jobId||r.generation!==lease.generation||r.snapshotId!==lease.snapshotId||r.revision!==lease.revision||r.sha256!==lease.sha256||r.commit!==codeSha||r.branch!==target.branch||r.scope!=='rebotica'||r.mode!=='snapshot-coordinated'||r.tests!=='passed'||r.buildSuccess!==true||r.snapshotConsistent!==true||JSON.stringify(canonical(r.counts))!==JSON.stringify(canonical(lease.counts)))fail('artifact_receipt');
 }

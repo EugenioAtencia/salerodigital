@@ -11,8 +11,10 @@ final class Salero_Rebotica_Staging {
     private static $store; private static $journal; private static $transport; private static $event; private static $held=false; private static $started=false;
     public static function boot() {
         if (defined('SALERO_PAGES_ENABLED') && SALERO_PAGES_ENABLED!==false) return;
-        if (!defined('SALERO_REBOTICA_STAGING_ENABLED') || SALERO_REBOTICA_STAGING_ENABLED!==true) return;
-        if (parse_url(home_url('/'),PHP_URL_HOST)!=='staging6.cms.webagencia360.com') return;
+        $host=parse_url(home_url('/'),PHP_URL_HOST);
+        $staging=$host==='staging6.cms.webagencia360.com' && defined('SALERO_REBOTICA_STAGING_ENABLED') && SALERO_REBOTICA_STAGING_ENABLED===true;
+        $production=$host==='cms.webagencia360.com' && defined('SALERO_REBOTICA_PRODUCTION_ENABLED') && SALERO_REBOTICA_PRODUCTION_ENABLED===true;
+        if(!$staging && !$production)return;
         foreach(array('SALERO_REBOTICA_COORDINATOR_URL','SALERO_REBOTICA_EDITOR_KEY','SALERO_REBOTICA_SNAPSHOT_KEY') as $name) if(!defined($name)) return;
         self::$store=new Salero_Rebotica_WordPress_Store();
         self::$transport=new Salero_Editorial_Push_Staging_Transport(SALERO_REBOTICA_COORDINATOR_URL,SALERO_REBOTICA_EDITOR_KEY,SALERO_REBOTICA_SNAPSHOT_KEY);
@@ -28,6 +30,22 @@ final class Salero_Rebotica_Staging {
         add_action('pre_delete_term',array(__CLASS__,'term'),1,2);
         add_action('shutdown',array(__CLASS__,'finish'),999);
         add_action(self::CRON,array(__CLASS__,'tick'));
+    }
+    // Explicit initial publication of current public state, without editing a post.
+    public static function publishCurrent($validate=null) {
+        if(!self::$journal)throw new RuntimeException('editorial_not_enabled');
+        self::guard(true);
+        try {
+            self::$journal->finished(self::$event);
+            self::$journal->prepare(function()use($validate){
+                $snapshot=Salero_WordPress_Snapshot_Source::export(100,true,array(self::$journal,'revision'));
+                if($validate)call_user_func($validate,$snapshot);
+                return $snapshot;
+            },array(self::$transport,'packet'));
+            self::$journal->flush(function($job){$ack=self::$transport->command('notify',array($job['jobId'],$job['generation']));return ($ack['dispatched'] ?? false)===true;});
+            $s=self::$journal->state();
+            if($s['outbox'] || $s['dispatch'] || $s['phase']!=='closed')throw new RuntimeException('publication_pending');
+        } finally {self::$store->unlock();self::$held=false;self::$started=false;}
     }
     private static function guard($visible) {
         if(!$visible) return;

@@ -75,19 +75,22 @@ final class Salero_Rebotica_Journal {
  */
 final class Salero_Rebotica_WordPress_Store {
     const OPTION='salero_rebotica_staging_journal';
-    private $name;
+    private $name; private $option;
     public function __construct() {
         $host=parse_url(home_url('/'),PHP_URL_HOST);
-        if ($host!=='staging6.cms.webagencia360.com' || !defined('SALERO_REBOTICA_STAGING_ENABLED') || SALERO_REBOTICA_STAGING_ENABLED!==true) throw new RuntimeException('staging_not_enabled');
+        $staging=$host==='staging6.cms.webagencia360.com' && defined('SALERO_REBOTICA_STAGING_ENABLED') && SALERO_REBOTICA_STAGING_ENABLED===true;
+        $production=$host==='cms.webagencia360.com' && defined('SALERO_REBOTICA_PRODUCTION_ENABLED') && SALERO_REBOTICA_PRODUCTION_ENABLED===true;
+        if(!$staging && !$production)throw new RuntimeException('staging_not_enabled');
+        $this->option=$production?'salero_rebotica_production_journal':self::OPTION;
         $this->name='salero-blog-'.substr(hash('sha256',ABSPATH),0,32);
     }
     public function lock() { global $wpdb; if ((int)$wpdb->get_var($wpdb->prepare('SELECT GET_LOCK(%s,0)',$this->name))!==1) throw new RuntimeException('editorial_writer_busy'); }
     public function unlock() { global $wpdb; $wpdb->get_var($wpdb->prepare('SELECT RELEASE_LOCK(%s)',$this->name)); }
-    public function load() { global $wpdb; return maybe_unserialize($wpdb->get_var($wpdb->prepare("SELECT option_value FROM {$wpdb->options} WHERE option_name=%s",self::OPTION))); }
+    public function load() { global $wpdb; return maybe_unserialize($wpdb->get_var($wpdb->prepare("SELECT option_value FROM {$wpdb->options} WHERE option_name=%s",$this->option))); }
     public function save($state) {
         global $wpdb;
         if ((int)$wpdb->get_var($wpdb->prepare('SELECT IS_USED_LOCK(%s) = CONNECTION_ID()',$this->name))!==1) throw new RuntimeException('editorial_writer_unlocked');
-        update_option(self::OPTION,$state,false);
+        update_option($this->option,$state,false);
         if ($this->load()!==$state) throw new RuntimeException('journal_persistence_failed');
     }
 }

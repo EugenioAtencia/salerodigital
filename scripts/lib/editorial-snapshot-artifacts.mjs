@@ -1,3 +1,4 @@
+import {assertProductionSnapshot} from '../../integrations/cloudflare/editorial-promoter/target.mjs';
 import { cp, mkdir, writeFile, rename, rm, stat, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { renderVerifiedSnapshot } from './editorial-snapshot-ssg.mjs';
@@ -5,10 +6,11 @@ import { sha256, fail } from './editorial-push-snapshot.mjs';
 import { applyStagingPreview } from './editorial-staging-preview.mjs';
 
 // Isolated output only. No deploy, hook, promotion or modification of the source checkout.
-export async function buildSnapshotArtifacts({ root, output, packet, key, jobId, check, codeSha, tests, scope = 'all', branch = 'main' }) {
+export async function buildSnapshotArtifacts({ root, output, packet, key, jobId, check, codeSha, tests, scope = 'all', branch = 'main', sourceOrigin = null }) {
   root = path.resolve(root); output = path.resolve(output);
   if (output === root || output.startsWith(root + path.sep) || root.startsWith(output + path.sep)) fail('isolated_output_required');
   if (!/^[a-f0-9]{40}$/.test(codeSha || '') || tests !== 'passed') fail('build_preconditions');
+  if(sourceOrigin==='https://cms.webagencia360.com'){if(branch!=='main'||scope!=='rebotica')fail('production_build_scope');assertProductionSnapshot(packet);}
   const lease = await check(jobId);
   if (lease.codeSha !== codeSha) fail('code_revision');
   const rendered = await renderVerifiedSnapshot({ root, packet, key, jobId, check, includeIndividuals: true, scope });
@@ -45,7 +47,7 @@ export async function buildSnapshotArtifacts({ root, output, packet, key, jobId,
     const finalLease = await check(jobId);
     if (finalLease.phase !== 'building' || finalLease.codeSha !== codeSha || finalLease.snapshotId !== packet.snapshotId || finalLease.generation !== packet.generation || finalLease.revision !== packet.revision) fail('obsolete_build');
     const receipt = { ...rendered.identity, commit: codeSha, branch, scope, mode: 'snapshot-coordinated', buildSuccess: true,
-      snapshotConsistent: true, tests, pages, ...(sitemapSha256 ? { sitemapSha256 } : {}), publicationAuthorized: false };
+      snapshotConsistent: true, tests, pages, ...(sitemapSha256 ? { sitemapSha256 } : {}), publicationAuthorized: false, ...(sourceOrigin ? {sourceOrigin} : {}) };
     await writeFile(path.join(temporary, 'salero-build.json'), JSON.stringify(receipt, null, 2) + '\n');
     await rename(temporary, output);
     return { receipt, files: Object.keys(pages) };
