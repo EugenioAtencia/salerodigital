@@ -31,4 +31,23 @@ function initHeroVideo(){const media=document.querySelector('.hero-media');if(!m
 function initHeroNotesMotion(){const hero=document.querySelector('.hero-video-section');const cards=document.querySelectorAll('.hero-notes .visual-card');if(!hero||!cards.length)return;if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;if(window.innerWidth<1024)return;let ticking=false;const update=()=>{const rect=hero.getBoundingClientRect();const scrolled=Math.max(0,-rect.top);const range=Math.min(scrolled,380);cards.forEach(card=>{const speed=parseFloat(card.dataset.speed||'0.12');card.style.setProperty('--move',`${range*speed}px`)});ticking=false};const onScroll=()=>{if(!ticking){window.requestAnimationFrame(update);ticking=true}};update();window.addEventListener('scroll',onScroll,{passive:true});window.addEventListener('resize',update)}
 function initHeroCardNavigation(){document.querySelectorAll('.hero-notes .visual-card').forEach(card=>{const button=card.querySelector('.visual-card-button');const url=card.dataset.url;if(!button||!url)return;button.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();window.location.href=url})})}
 function initLazySectionVideos(){const videoBlocks=document.querySelectorAll('[data-lazy-video]');if(!videoBlocks.length)return;if(window.innerWidth<1024)return;if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;const loadVideo=block=>{if(block.dataset.loaded==='true')return;const src=block.dataset.lazyVideo;if(!src)return;const video=document.createElement('video');video.autoplay=true;video.muted=true;video.loop=true;video.playsInline=true;video.preload='metadata';video.setAttribute('aria-hidden','true');video.innerHTML=`<source src="${src}" type="video/mp4">`;block.appendChild(video);block.dataset.loaded='true'};if(!('IntersectionObserver' in window)){videoBlocks.forEach(loadVideo);return}const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(!entry.isIntersecting)return;loadVideo(entry.target);observer.unobserve(entry.target)})},{rootMargin:'450px 0px'});videoBlocks.forEach(block=>observer.observe(block))}
-document.addEventListener('DOMContentLoaded',()=>{injectGlobalNavStyles();ensureHeaderShell();renderGlobalNav();setActiveNav();initNavDropdowns();initHeaderScroll();initMenuToggle();initHeroVideo();initHeroNotesMotion();initHeroCardNavigation();initLazySectionVideos()});
+// Official identity only: shared by static pages and server-rendered shells.
+function renderOfficialLogos(){
+  const image=()=>{const img=document.createElement('img');img.className='salero-official-logo';img.src='/assets/img/logo-salerodigital.svg';img.alt='Salero Digital';img.width=167;img.height=100;img.decoding='async';return img};
+  document.querySelectorAll('.site-header .logo').forEach(link=>{link.href='/';link.classList.add('salero-official-logo-link');link.replaceChildren(image())});
+  document.querySelectorAll('.footer h2').forEach(heading=>{
+    if(heading.textContent.trim()!=='Salero Digital')return;
+    const link=document.createElement('a');link.href='/';link.className='salero-official-logo-link';link.setAttribute('aria-label','Salero Digital, inicio');link.appendChild(image());heading.replaceChildren(link);
+  });
+  if(!document.getElementById('salero-official-logo-styles')){
+    const style=document.createElement('style');style.id='salero-official-logo-styles';style.textContent=`
+.site-header .salero-official-logo-link,.footer .salero-official-logo-link{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:#fffdf7;border-radius:8px;padding:4px 8px;opacity:1;text-shadow:none;line-height:0}
+.site-header .salero-official-logo{display:block;width:100px;height:auto;max-width:100%;object-fit:contain}
+.footer .salero-official-logo{display:block;width:167px;height:auto;max-width:100%;object-fit:contain}
+.footer .salero-official-logo-link{padding:12px}
+@media(max-width:1120px){.site-header .salero-official-logo{width:92px}}
+@media(max-width:680px){.site-header .salero-official-logo{width:84px}}
+`;document.head.appendChild(style);
+  }
+}
+document.addEventListener('DOMContentLoaded',()=>{injectGlobalNavStyles();ensureHeaderShell();renderOfficialLogos();renderGlobalNav();setActiveNav();initNavDropdowns();initHeaderScroll();initMenuToggle();initHeroVideo();initHeroNotesMotion();initHeroCardNavigation();initLazySectionVideos()});
