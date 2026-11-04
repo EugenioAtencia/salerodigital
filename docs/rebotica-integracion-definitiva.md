@@ -26,7 +26,7 @@ WordPress edita; el exportador entrega un snapshot inmutable; el coordinador, Ac
 
 El middleware compartido selecciona el contrato `snapshot-coordinated` mediante salero-build.json y verifica hashes de artículos, listado, paginación y sitemap. Si una página fue retirada devuelve 404; si la certificación es inválida devuelve 503, nunca contenido del CMS ni de un snapshot anterior. Sin contrato coordinado permanece el comportamiento del despliegue legado para rollback. Son modos de despliegue excluyentes, no dos fuentes simultáneas. La política staging añade únicamente origen, noindex y retirada de analítica; no implementa otra ruta editorial.
 
-Se conservan renderizadores SEO actuales, FAQ, índice, relacionados, títulos especiales, schema, estilos responsive y páginas comerciales de main. El sitemap no editorial se toma del checkout; antes del cambio de producción debe certificarse que su inventario coincide con los casos que se quieran mantener públicos.
+Se conservan renderizadores SEO actuales, FAQ, índice, relacionados, títulos especiales, schema, estilos responsive y páginas comerciales de main. El sitemap no editorial se toma del checkout. Se comparó con producción (HTTP 200) y se incorporaron las dos URLs de casos publicadas que faltaban en el XML local: muebles-sarria y enoro; se conserva también muebles-sarria-captacion-leads-automatizacion. Así no desaparecen al sustituir el sitemap dinámico.
 
 ## Estado y activación pendiente
 
