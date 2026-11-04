@@ -875,3 +875,28 @@ h1,h2,h3{margin:0;line-height:.98;letter-spacing:-.055em}h1,h2{font-family:var(-
     border-radius:28px !important;
   }
 }
+
+/* Official identity: reserve the same boxes before and after JS enhancement.
+   Background images cover legacy dynamic shells without changing their HTML. */
+.site-header .logo{
+  display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+  width:100px;height:auto;aspect-ratio:167 / 100;
+  padding:0;border:0;border-radius:0;box-shadow:none;text-shadow:none;
+  background:transparent url('/assets/img/logo-salerodigital.svg') center / contain no-repeat;
+}
+.site-header .logo > span{display:none}
+.site-header .logo:has(.salero-official-logo){background-image:none}
+.site-header .logo .salero-official-logo{display:block;width:100%;height:auto;aspect-ratio:167 / 100;object-fit:contain}
+.footer .footer-grid > div:first-child > h2{
+  width:167px;height:100px;max-width:100%;overflow:hidden;text-indent:-10000px;
+  background:transparent url('/assets/img/logo-salerodigital-blanco.svg') left center / contain no-repeat;
+}
+.footer .footer-grid > div:first-child > h2:has(.salero-official-logo){background-image:none}
+.footer .salero-official-logo-link{
+  display:block;width:167px;height:100px;max-width:100%;padding:0;border:0;
+  border-radius:0;background:transparent;box-shadow:none;text-shadow:none;
+  text-indent:0;line-height:0;opacity:1;
+}
+.footer .salero-official-logo{display:block;width:100%;height:auto;aspect-ratio:167 / 100;object-fit:contain}
+@media(max-width:1120px){.site-header .logo{width:92px}}
+@media(max-width:680px){.site-header .logo{width:84px}}
