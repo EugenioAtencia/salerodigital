@@ -103,7 +103,7 @@ function renderSectorPage(slug, item) {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/main.css?v=50">
+  <link rel="stylesheet" href="/assets/css/main.css?v=52">
   <link rel="stylesheet" href="/assets/css/sector-detail.css?v=4">
   <link rel="stylesheet" href="/assets/css/sector-action-layout.css?v=2">
   <link rel="stylesheet" href="/assets/css/sector-faq-layout.css?v=2">
@@ -323,7 +323,7 @@ function parseFaqs(value) {
 }
 
 function renderErrorPage(title, message) {
-  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/main.css?v=50"></head><body>${renderHeader()}<main class="container section"><div class="error"><h1>${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p></div></main>${renderFooter()}<script src="/assets/js/config.js?v=7"></script><script src="/assets/js/helpers.js?v=41"></script></body></html>`;
+  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/main.css?v=52"></head><body>${renderHeader()}<main class="container section"><div class="error"><h1>${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p></div></main>${renderFooter()}<script src="/assets/js/config.js?v=7"></script><script src="/assets/js/helpers.js?v=41"></script></body></html>`;
 }
 
 function getAcf(item = {}) {

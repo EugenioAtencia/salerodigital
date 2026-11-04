@@ -194,7 +194,7 @@ function renderCasoPage(slug, item) {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/main.css?v=50">
+  <link rel="stylesheet" href="/assets/css/main.css?v=52">
   <link rel="stylesheet" href="/assets/css/caso-de-exito-detalle.css?v=20">
   <link rel="stylesheet" href="/assets/css/caso-receta-carousel.css?v=8">
   <link rel="stylesheet" href="/assets/css/caso-receta-carousel-fix.css?v=2">
@@ -396,7 +396,7 @@ function htmlResponse(html, status = 200) {
 }
 
 function renderErrorPage(title, message) {
-  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/assets/css/main.css?v=50"></head><body>${renderHeader()}<main><section class="caso-detail-loading"><div class="container"><span class="eyebrow">Casos de éxito</span><h1>${escapeHtml(title)}</h1><p>${message}</p><p><a class="btn btn-primary" href="/casos-de-exito/">Volver a casos de éxito</a></p></div></section></main>${renderFooter()}</body></html>`;
+  return `<!doctype html><html lang="es"><head><title>${escapeHtml(title)} | Salero Digital</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/assets/css/main.css?v=52"></head><body>${renderHeader()}<main><section class="caso-detail-loading"><div class="container"><span class="eyebrow">Casos de éxito</span><h1>${escapeHtml(title)}</h1><p>${message}</p><p><a class="btn btn-primary" href="/casos-de-exito/">Volver a casos de éxito</a></p></div></section></main>${renderFooter()}</body></html>`;
 }
 
 function getAcf(item) {

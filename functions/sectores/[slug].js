@@ -115,7 +115,7 @@ function renderNotFound(slug) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, follow">
-  <link rel="stylesheet" href="/assets/css/main.css?v=50">
+  <link rel="stylesheet" href="/assets/css/main.css?v=52">
 </head>
 <body>
   <main class="container section">
@@ -146,7 +146,7 @@ function renderUnavailable() {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, follow">
-  <link rel="stylesheet" href="/assets/css/main.css?v=50">
+  <link rel="stylesheet" href="/assets/css/main.css?v=52">
 </head>
 <body>
   <main class="container section">
