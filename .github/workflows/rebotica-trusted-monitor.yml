@@ -1,0 +1,43 @@
+name: Immutable staging monitor
+on:
+  workflow_call:
+    inputs:
+      job_id: {required: true, type: string}
+      code_sha: {required: true, type: string}
+      build_result: {required: true, type: string}
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - id: release
+        run: |
+          node --input-type=module <<'JS'
+          import {appendFileSync} from 'node:fs';
+          const u=new URL(process.env.ACTIONS_ID_TOKEN_REQUEST_URL);
+          if(u.protocol!=='https:'||!u.hostname.endsWith('.actions.githubusercontent.com')||u.username||u.password)throw Error('oidc_request_origin');
+          u.searchParams.set('audience','urn:salero:rebotica:staging:monitor');
+          const r=await fetch(u,{redirect:'error',headers:{Authorization:'Bearer '+process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN}});
+          if(r.status!==200||!r.headers.get('content-type')?.includes('application/json'))throw Error('oidc_request');
+          const d=await r.json(),c=JSON.parse(Buffer.from(d.value.split('.')[1],'base64url'));
+          const sha=c.job_workflow_sha;
+          if(!/^[a-f0-9]{40}$/.test(sha||'')||sha!==process.env.REQUESTED_CODE)throw Error('immutable_release');
+          appendFileSync(process.env.GITHUB_OUTPUT,`sha=${sha}\n`);
+          JS
+        env:
+          REQUESTED_CODE: ${{ inputs.code_sha }}
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: EugenioAtencia/salerodigital
+          ref: ${{ steps.release.outputs.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22.16.0
+      - run: node scripts/monitor-broker-staging.mjs
+        env:
+          SALERO_BUILD_JOB_ID: ${{ inputs.job_id }}
+          SALERO_BUILD_RESULT: ${{ inputs.build_result }}

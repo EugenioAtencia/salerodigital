@@ -1,0 +1,43 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "salero-push-staging",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-08",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "workers_dev": true,
+  "vars": {
+    "ENVIRONMENT": "staging",
+    "CODE_SHA": "UNCONFIGURED",
+    "GITHUB_OWNER": "EugenioAtencia",
+    "GITHUB_REPOSITORY": "salero-editorial-snapshots-staging",
+    "CODE_BRANCH": "codex/rebotica-editorial-staging",
+    "PAGES_ENVIRONMENT": "preview"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "COORDINATOR",
+        "class_name": "EditorialCoordinator"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "EditorialCoordinator"
+      ]
+    }
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "account_id": "0bd72789f683471596f05b6d0c4653fc",
+  "preview_urls": false,
+  "routes": [],
+  "triggers": {
+    "crons": []
+  }
+}
